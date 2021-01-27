@@ -18,6 +18,7 @@
 #include <Error.h>
 #include <Window/Window.h>
 #include <Render/Renderer.h>
+#include <Camera/Camera.h>
 
 // Global data
 #include <Window/WindowData.h>
