@@ -1,8 +1,15 @@
 int main()
 {
     Log::Init();
+    Render::Renderer renderer;
+    
+    if (!renderer.Init())
+        return 1;
 
-    LOG_INFO("GolfGL");
+    while (renderer.IsRunning())
+    {
+        renderer.Update();
+    }
 
     return 0;
 }

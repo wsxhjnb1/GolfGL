@@ -16,6 +16,12 @@
 // classes
 #include <Logger/Log.h>
 #include <Error.h>
+#include <Window/Window.h>
+#include <Render/Renderer.h>
+
+// Global data
+#include <Window/WindowData.h>
+#include <Window/imguiData.h>
 
 
 // STL
