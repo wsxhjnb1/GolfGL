@@ -13,16 +13,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// classes
-#include <Logger/Log.h>
-#include <Error.h>
-#include <Window/Window.h>
-#include <Render/Renderer.h>
-#include <Camera/Camera.h>
 
 // Global data
 #include <Window/WindowData.h>
 #include <Window/imguiData.h>
+
+
+// classes
+#include <Logger/Log.h>
+#include <Error.h>
+#include <Window/Window.h>
+#include <Input/Input.h>
+#include <Render/Renderer.h>
+#include <Camera/Camera.h>
 
 
 // STL
