@@ -23,7 +23,7 @@ private:
 	
 	unsigned m_Texture;
 
-	float m_speed = 0.05f;
+	float m_speed;
 	bool m_moving = false;
 	float m_timeout = 0.f;
 };

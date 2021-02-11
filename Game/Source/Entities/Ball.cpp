@@ -3,13 +3,11 @@
 #include "Ball.h"
 
 Ball::Ball()
-	:	Render::Model("Resources/Objects/golfBall/Golf Ball OBJ.obj")
-    , m_Shader("ball"), direction(glm::vec3(0.f)), position(glm::vec3(0.f, -95.f, -2.f))
-    , projection(glm::mat4(0.f)), view(glm::mat4(0.f))
+	:	Render::Model("Resources/Objects/golfBall/golfBall.obj")
+    , m_Shader("ball"), direction(Camera::GetCamera().GetCameraFront()), position(glm::vec3(0.f, 0.f, 0.f))
+    , projection(glm::mat4(1.f)), view(glm::mat4(1.f)), m_speed(0.f)
 {       
-    model = glm::scale(glm::mat4(1.f), glm::vec3(0.01f));
-    model = glm::translate(model, position);
-
+    
     Render::Texture t{ "Resources/Objects/golfBall/diffuse.jpg" }; // check name
     m_Texture = t.GetID();
 }
@@ -30,8 +28,8 @@ void Ball::Update(float delta)
     if (m_moving)
     {
         m_speed -= 0.0001f;
-        position = -m_speed * glm::vec3{ direction.x, 0.f, direction.z };
-        model = glm::translate(model, position);
+        position = -m_speed * glm::normalize(glm::vec3{ direction.z, 0.f, -direction.x });
+        model = glm::translate(glm::mat4{1.f}, position);
 
         if (m_timeout - delta <= 0.f)
         {
