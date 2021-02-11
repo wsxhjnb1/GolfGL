@@ -5,7 +5,7 @@
 Ball::Ball()
 	:	Render::Model("Resources/Objects/golfBall/golfBall.obj")
     , m_Shader("ball"), direction(Camera::GetCamera().GetCameraFront()), position(glm::vec3(0.f, 0.f, 0.f))
-    , projection(glm::mat4(1.f)), view(glm::mat4(1.f)), model(glm::translate(glm::mat4{ 1.f }, position))
+    , projection(glm::mat4(1.f)), view(glm::mat4(1.f)), model(glm::mat4{ 1.f })
     , m_speed(0.f)
 {           
     m_Texture = Render::Texture::LoadNativeTexture("Resources/Objects/golfBall/diffuse.jpg");

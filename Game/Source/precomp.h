@@ -12,11 +12,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <stb_image/stb_image.h>
 
 // Global data
-#include <Window/WindowData.h>
-#include <Window/imguiData.h>
+#include <Data.h>
 
 // Enums
 namespace Render {
@@ -37,6 +36,7 @@ namespace Render {
 #include <Input/Input.h>
 #include <Render/Renderer.h>
 #include <Camera/Camera.h>
+#include <Render/Texture.h>
 
 
 // STL
