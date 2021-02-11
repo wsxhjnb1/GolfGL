@@ -5,11 +5,10 @@
 Ball::Ball()
 	:	Render::Model("Resources/Objects/golfBall/golfBall.obj")
     , m_Shader("ball"), direction(Camera::GetCamera().GetCameraFront()), position(glm::vec3(0.f, 0.f, 0.f))
-    , projection(glm::mat4(1.f)), view(glm::mat4(1.f)), m_speed(0.f)
-{       
-    
-    Render::Texture t{ "Resources/Objects/golfBall/diffuse.jpg" }; // check name
-    m_Texture = t.GetID();
+    , projection(glm::mat4(1.f)), view(glm::mat4(1.f)), model(glm::translate(glm::mat4{ 1.f }, position))
+    , m_speed(0.f)
+{           
+    m_Texture = Render::Texture::LoadNativeTexture("Resources/Objects/golfBall/diffuse.jpg");
 }
 
 Ball::~Ball()
@@ -17,9 +16,7 @@ Ball::~Ball()
 }
 
 void Ball::Update(float delta)
-{        
-    m_Shader.ActivateShader(); 
-    glBindTexture(GL_TEXTURE_2D, m_Texture);
+{            
     projection = glm::perspective(glm::radians(Camera::GetCamera().GetCameraZoom())
         , (float)WindowData::width / (float)WindowData::height, 0.1f, 100.0f);
 
@@ -46,6 +43,8 @@ void Ball::Update(float delta)
         m_speed = 0.05f;
     }                
 
+    m_Shader.ActivateShader();
+    glBindTexture(GL_TEXTURE_2D, m_Texture);
 
     m_Shader.setMat4("projection", projection);
     m_Shader.setMat4("view", view);

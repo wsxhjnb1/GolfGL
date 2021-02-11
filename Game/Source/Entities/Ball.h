@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Render/Model.h>
+#include <Model/Model.h>
 #include <Render/Shader.h>
 
 class Ball : public Render::Model
@@ -9,7 +9,7 @@ public:
 	Ball();
 	~Ball();
 
-	void Update(float delta) override;
+	void Update(float delta);
 private:
 
 	Render::Shader m_Shader;

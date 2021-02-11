@@ -2,6 +2,7 @@
 
 class Window;
 class Floor;
+class Ball;
 
 namespace Render {	
 
@@ -33,9 +34,8 @@ namespace Render {
 		Shader* m_FloorShader;
 		Shader* m_ScreenShader;
 		Shader* m_SkyboxShader;
-
-		Model* m_Model;
-		Floor* m_Floor;
+		Ball*   m_Ball;
+		Floor*  m_Floor;
 
 		unsigned int skyboxVAO, skyboxVBO;
 

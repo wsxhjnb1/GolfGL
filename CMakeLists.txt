@@ -72,8 +72,10 @@ set(LIBS ${LIBS} imgui)
 file(GLOB SOURCE
 			"Game/Source/*.h"			
             "Game/Source/*.cpp" 
-            "Game/Source/**/*.h"			
-            "Game/Source/**/*.cpp"            
+            "Game/Source/**/*.h"		
+            "Game/Source/**/*.cpp"
+			"Game/Source/**/**/*.h"		
+            "Game/Source/**/**/*.cpp"
         )
 
 set(NAME "GolfGL")
@@ -115,4 +117,5 @@ include_directories(${CMAKE_SOURCE_DIR}/External/assimp/include
                     ${CMAKE_SOURCE_DIR}/External/imgui/backends
 					${CMAKE_SOURCE_DIR}/External/stb_image
                     ${CMAKE_SOURCE_DIR}/External
-                    ${CMAKE_SOURCE_DIR}/Game/Source)
+                    ${CMAKE_SOURCE_DIR}/Game/Source
+					${CMAKE_SOURCE_DIR}/Game/Source/Render)

@@ -58,8 +58,8 @@ bool Render::Renderer::Init()
     m_FloorShader = new Shader("floor");
     m_ScreenShader = new Shader("screen");
     m_SkyboxShader = new Shader("skybox");
-
-    m_Model = new Ball();
+    
+    m_Ball = new Ball();
     m_Floor = new Floor(); 
 
     cubemapTexture = loadCubemap(faces);
@@ -132,8 +132,8 @@ void Render::Renderer::Update()
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Entities
-    m_Model->Update(delta);
+    // Entities  
+    m_Ball->Update(delta);
     m_Floor->Draw(m_FloorShader);
 
 
@@ -188,8 +188,7 @@ Render::Renderer::~Renderer()
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteVertexArrays(1, &skyboxVBO);
     glDeleteVertexArrays(1, &quadVAO);
-    glDeleteVertexArrays(1, &quadVBO);
-    delete m_Model;        
+    glDeleteVertexArrays(1, &quadVBO);          
     delete m_FloorShader;
     delete m_ScreenShader;
     delete m_SkyboxShader;
