@@ -1,3 +1,7 @@
+/*
+  This code was mainly copied from https://github.com/JoeyDeVries/LearnOpenGL
+*/
+
 #pragma once
 
 #include <precomp.h>
@@ -33,6 +37,7 @@ namespace Render {
         Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices, const std::vector<Render::Texture>& _textures);
         Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices, const Render::Texture&  _textures);
         
+        // ~Mesh();
 
         // render the mesh
         void Draw(Shader* shader);
@@ -42,7 +47,26 @@ namespace Render {
         // render data 
         unsigned VBO, EBO;
 
-        void m_Init();
+        inline void m_Init();
+        
+
+        // Helper struct
+        struct _typeCounter
+        {
+            /*
+             * indexing:
+             * diffuse  = 0;
+             * specular = 1;
+             * normal   = 2;
+             * height   = 3;
+            */
+            unsigned counterArray[4]{ 0, 0, 0, 0 };
+
+            inline std::string TextureNameFactory(TextureType type)
+            {
+                return Texture::TypeToStringN(type, ++counterArray[(unsigned)type]);
+            }
+        } m_TypeCounter;
 	};
 
 }

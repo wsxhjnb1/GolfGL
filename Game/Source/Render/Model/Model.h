@@ -1,8 +1,13 @@
+/*
+  This code was mainly copied from https://github.com/JoeyDeVries/LearnOpenGL
+*/
+
 #pragma once
 
 #include <vector>
 #include <string>
-#include <Render/Mesh.h>
+
+#include "Mesh.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -13,18 +18,15 @@ namespace Render {
     {
     public:
         Model(std::string name)
-        {
-            // name.insert(0, objectDir);
+        {            
             loadModel(name);
         }
-        void Draw(Shader* shader);
+        void Draw(Shader* shader);        
 
-        virtual void Update(float delta) = 0;
-
-        // inline static const char* objectDir = "Resources\\Objects\\";
-    private:
-        // model data
+    protected:
         std::vector<Texture> textures_loaded;
+    private:
+        // model data        
         std::vector<Mesh> meshes;
         std::string directory;
 
@@ -32,6 +34,6 @@ namespace Render {
         void processNode(aiNode* node, const aiScene* scene);
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);
         std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-            std::string typeName);
+            TextureType typeName);
     };
 } // Redner

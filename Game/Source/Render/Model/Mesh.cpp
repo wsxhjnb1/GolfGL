@@ -1,3 +1,7 @@
+/*
+  This code was mainly copied from https://github.com/JoeyDeVries/LearnOpenGL
+*/
+
 #include <precomp.h>
 
 #include "Mesh.h"
@@ -17,28 +21,19 @@ Render::Mesh::Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsig
 void Render::Mesh::Draw(Render::Shader* shader)
 {
     shader->ActivateShader();
-    // bind appropriate textures
-    unsigned int diffuseNr = 0;
-    unsigned int specularNr = 0;
-    unsigned int normalNr = 0;
-    unsigned int heightNr = 0;
+
+    
+    // bind appropriate textures    
     for (unsigned int i = 0; i < textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-        // retrieve texture number (the N in diffuse_textureN)
-        std::string number;
-        std::string name = textures[i].GetType();
-        if (name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
-            number = std::to_string(specularNr++); // transfer unsigned int to stream
-        else if (name == "texture_normal")
-            number = std::to_string(normalNr++); // transfer unsigned int to stream
-        else if (name == "texture_height")
-            number = std::to_string(heightNr++); // transfer unsigned int to stream
+                                          // retrieve texture number 
+        
+        TextureType type = textures[i].GetType();        
+        
 
         // now set the sampler to the correct texture unit
-        shader->SetValue((name + number), (int)i);
+        shader->SetValue(m_TypeCounter.TextureNameFactory(type), (int)i);
         
         // and finally bind the texture
         glBindTexture(GL_TEXTURE_2D, textures[i].GetID());

@@ -18,6 +18,17 @@
 #include <Window/WindowData.h>
 #include <Window/imguiData.h>
 
+// Enums
+namespace Render {
+	enum class TextureType{
+		  DIFFUSE = 0
+		, NORMAL
+		, SPECULAR
+		, HEIGHT
+		, TEX_ERRORTYPE
+	};
+}
+
 
 // classes
 #include <Logger/Log.h>
