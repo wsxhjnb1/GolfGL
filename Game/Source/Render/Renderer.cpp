@@ -28,11 +28,9 @@ bool Render::Renderer::Init()
         return false;
     }
 
-    
-    // glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
-    glDepthFunc(GL_ALWAYS);
-    
+    glEnable(GL_DEPTH_TEST);
+    // glDepthFunc(GL_LESS);
+    // glEnable(GL_STENCIL_TEST);
 
     glViewport( 0, 0, WindowData::width, WindowData::height ); 
 
@@ -55,6 +53,9 @@ bool Render::Renderer::Init()
 
     // stbi_set_flip_vertically_on_load(true);
      
+    
+    
+
 
     if (!m_EntryManager.Init())
         return false;
@@ -74,7 +75,7 @@ void Render::Renderer::Update()
     float delta = timeValue - lastTime;
     lastTime = timeValue;    
 
-    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_EntryManager.Update(delta);
 
