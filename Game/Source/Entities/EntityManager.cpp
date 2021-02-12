@@ -4,7 +4,7 @@
 
 #include "Skybox/Skybox.h"
 #include "Floor.h";
-#include "Ball.h"
+#include "Ball/Ball.h"
 
 Entities::EntityManager::~EntityManager()
 {
