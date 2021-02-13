@@ -31,7 +31,6 @@ namespace Render {
 
 // classes
 #include <Logger/Log.h>
-#include <Error.h>
 #include <Camera/Camera.h>
 #include <Window/Window.h>
 #include <Input/Input.h>

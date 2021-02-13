@@ -20,9 +20,9 @@ if (MSVC)
 	list(APPEND CMAKE_CXX_FLAGS " /std:c++17")
 	list(APPEND CMAKE_CXX_FLAGS_DEBUG " /std:c++17")	
 else()
-	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")
-	list(APPEND CMAKE_CXX_FLAGS_DEBUG " -std=c++17")
+	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")	
 endif(MSVC)
+
 message(STATUS ${CMAKE_CXX_FLAGS})
 
 # find the required packages
