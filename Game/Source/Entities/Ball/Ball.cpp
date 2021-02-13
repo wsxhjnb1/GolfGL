@@ -9,7 +9,8 @@ namespace Entities {
     Ball::Ball()
         : Render::Model("Resources/Objects/golfBall/golfBall.obj")
         , Entity("entity"), position(ballDefault::position)
-        , direction(CAMERA.GetCameraFront()), m_angle(ballDefault::angle)        
+        , direction(CAMERA.GetCameraFront()), m_angle(ballDefault::angle)  
+        , m_speed(0.f)
     {        
         // diffuse texture is loaded in parent class    
         m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end()
@@ -19,6 +20,7 @@ namespace Entities {
 
             shader.ActivateShader();
             shader.SetValue("material.diffuse", 0);
+            
     }
 
 
@@ -64,11 +66,8 @@ namespace Entities {
             m_speed -= 0.001f;   
             position += ballDefault::scalarFixer * m_speed * direction;
 
-            model = glm::translate(glm::mat4(1.f), position);
-            m_angle += 5*m_speed; m_angle %= 360;
-            model = glm::rotate(model, glm::radians((float)m_angle), glm::normalize(glm::vec3{ direction.z, 0.f, -direction.x }));
-
             
+            m_angle += 3*m_speed; m_angle %= 360;                                    
         }
         else if (glfwGetKey(Window::GetGlfwWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {            
@@ -78,6 +77,9 @@ namespace Entities {
 
             m_speed = ballDefault::speed;
         }
+
+        model = glm::translate(glm::mat4{ 1.f }, position);
+        model = glm::rotate(model, glm::radians((float)m_angle), m_NormalOnVec(direction));
     }    
 
 }

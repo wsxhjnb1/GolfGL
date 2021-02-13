@@ -30,7 +30,7 @@ namespace Entities {
 
 		inline glm::vec3 m_NormalOnVec(const glm::vec3& direction)
 		{
-			return { direction.z, 0.f, -direction.x };
+			return glm::normalize(glm::vec3{ direction.z, 0.f, -direction.x });
 		}
 		
 	};
