@@ -3,7 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-
+#include <Render/PostProcessing/Framebuffer.h>
 
 
 bool Render::Renderer::Init()
@@ -53,8 +53,8 @@ bool Render::Renderer::Init()
 
     // stbi_set_flip_vertically_on_load(true);
      
-    
-    
+    m_FrameBuff = new Framebuffer();
+    m_FrameBuff->Init();
 
 
     if (!m_EntryManager.Init())
@@ -75,11 +75,13 @@ void Render::Renderer::Update()
     float delta = timeValue - lastTime;
     lastTime = timeValue;    
 
+    m_FrameBuff->BindSceneBegin();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_EntryManager.Update(delta);
 
-
+    m_FrameBuff->BindSceneEnd();
 
     if (m_Window->IsRunning())
     {        

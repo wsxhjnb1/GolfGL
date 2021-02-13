@@ -4,7 +4,9 @@ class Window;
 
 #include <Entities/EntityManager.h>
 
-namespace Render {				
+namespace Render {	
+
+	class Framebuffer;
 
 	class Renderer
 	{
@@ -24,7 +26,8 @@ namespace Render {
 
 	private:
 		float lastTime;
-		Window* m_Window;		
+		Window* m_Window;
+		Framebuffer* m_FrameBuff;
 
 		Entities::EntityManager m_EntryManager;
 		
