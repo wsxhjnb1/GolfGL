@@ -6,7 +6,7 @@
 #include "imgui_impl_opengl3.h"
 #include "misc/cpp/imgui_stdlib.h"
 #define GLFW_INCLUDE_NONE
-#include <glad/glad.h>
+#include <glad.h>
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 #include <glm/glm.hpp>
