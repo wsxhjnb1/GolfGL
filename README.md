@@ -17,13 +17,19 @@ Still in early stage.
 > ### **Linux (Debian based)**
 > - Prerequisites:
 > ```
-> $ sudo apt install g++ cmake git build-essential libgl1-mesa-dev libsoil-dev libglm-dev libassimp-dev libglew-dev > libglfw3-dev libxinerama-dev libxcursor-dev libxi-dev mesa-common-dev mesa-utils libxxf86vm-dev libfreetype6-dev
+> $ sudo apt install g++ cmake git build-essential libgl1-mesa-dev libsoil-dev libglm-dev libassimp-dev libglew-dev libglfw3-dev libxinerama-dev libxcursor-dev libxi-dev mesa-common-dev mesa-utils libxxf86vm-dev libfreetype6-dev
 > ```
 > ```
 > $ cmake -P configure.cmake
 > $ make -C build
 > $ cd bin/GolfGL && ./GolfGL
 > ```
+> <br>
+
+> ### **Docker**
+> 
+> [Docker image](https://hub.docker.com/repository/docker/djordjetane/golfgl)
+> 
 > <br>
 ---------------------------
 ## **Commands**
