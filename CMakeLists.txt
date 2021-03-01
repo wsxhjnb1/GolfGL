@@ -6,18 +6,25 @@ IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
+if(UNIX)
+  find_package(Freetype REQUIRED)
+  message(STATUS "Found Freetype in ${FREETYPE_INCLUDE_DIR_ft2build}")
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 if(WIN32)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+  link_directories(${CMAKE_SOURCE_DIR}/External/freetype2/win64 
+          ${CMAKE_SOURCE_DIR}/External/GLFW/lib 
+          ${CMAKE_SOURCE_DIR}/External/assimp/lib)
+
+  set(FREETYPE_INCLUDE_DIR_ft2build "${CMAKE_SOURCE_DIR}/External/freetype2/include")          
 endif(WIN32)
 
-link_directories(${CMAKE_SOURCE_DIR}/External/freetype2/win64 
-				 ${CMAKE_SOURCE_DIR}/External/GLFW/lib 
-				 ${CMAKE_SOURCE_DIR}/External/assimp/lib)
-
 if (MSVC)	
-	list(APPEND CMAKE_CXX_FLAGS " /std:c++17")		
+	list(APPEND CMAKE_CXX_FLAGS " /std:c++17")  	
 else()
 	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")	
 endif(MSVC)
@@ -31,6 +38,8 @@ find_package(GLFW3 REQUIRED)
 message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
 find_package(ASSIMP REQUIRED)
 message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
+
+
 
 
 if(WIN32)
@@ -48,20 +57,21 @@ else()
 endif(WIN32)
 
 
-configure_file(configuration/root_directory.h.in configuration/root_directory.h)
+configure_file(configuration/rootDirectory.h.in configuration/rootDirectory.h)
 include_directories(${CMAKE_BINARY_DIR}/configuration)
 
 
 # first create relevant static libraries requried for other projects
-add_library(STB_IMAGE "External/stb_image/stb_image.cpp")
-set(LIBS ${LIBS} STB_IMAGE)
+set(STB_IMAGE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/stb_image")
 
-add_library(GLAD "External/GLAD/glad.c")
-set(LIBS ${LIBS} GLAD)
+set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/GLAD")
+add_library(glad "${GLAD_INCLUDE_DIR}/glad.c")
+set(LIBS ${LIBS} glad)
 
-file(GLOB IMGUI_SRC 
-		"External/imgui/*.cpp"
-		"External/imgui/backends/*.cpp"
+set(IMGUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/imgui")
+file(GLOB_RECURSE IMGUI_SRC 
+    "${IMGUI_INCLUDE_DIR}/*.cpp"
+		"${IMGUI_INCLUDE_DIR}/backends/*.cpp"
 	)
 add_library(imgui ${IMGUI_SRC})	
 set(LIBS ${LIBS} imgui)
@@ -77,18 +87,21 @@ add_executable(${NAME} ${SOURCE})
 
 
 target_link_libraries(${NAME} ${LIBS})
-target_precompile_headers(${NAME} PUBLIC Game/Source/precomp.h)
+if(UNIX)
+  
+endif()
 
-if(WIN32)
-
+if(MSVC)
+    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Ycprecomp.h")
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
     set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	
-	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${NAME})	
+	  set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${NAME})	
 	
-elseif(UNIX)
+else()
+    target_precompile_headers(${NAME} PUBLIC Game/Source/precomp.h)
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
 	
-endif(WIN32)
+endif(MSVC)
 
 
 add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -107,14 +120,15 @@ if(WIN32)
 endif(WIN32)
 
 
-include_directories(${CMAKE_SOURCE_DIR}/External/assimp/include
-                    ${CMAKE_SOURCE_DIR}/External/freetype2/include
-                    ${CMAKE_SOURCE_DIR}/External/GLAD
-                    ${CMAKE_SOURCE_DIR}/External/GLFW/include                    
-                    ${CMAKE_SOURCE_DIR}/External/imgui
+include_directories(${ASSIMP_INCLUDE_DIR}
+                    ${FREETYPE_INCLUDE_DIR_ft2build}
+                    ${GLAD_INCLUDE_DIR}
+                    ${GLFW3_INCLUDE_DIR}
+                    ${IMGUI_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}/External/imgui/backends
-					${CMAKE_SOURCE_DIR}/External/stb_image
+					          ${STB_IMAGE_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}/External
                     ${CMAKE_SOURCE_DIR}/Game/Source
-					${CMAKE_SOURCE_DIR}/Game/Source/Render)
+					          ${CMAKE_SOURCE_DIR}/Game/Source/Render
+                   )
 												
