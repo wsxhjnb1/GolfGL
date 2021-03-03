@@ -56,7 +56,7 @@ message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
 if(WIN32)
   set(LIBS glad glfw3 opengl32 assimp freetype imgui)
 
-elseif() # UNIX
+else() # UNIX
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
   find_package(OpenGL REQUIRED)
   add_definitions(${OPENGL_DEFINITIONS})

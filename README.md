@@ -8,8 +8,9 @@ Still in early stage.
 >     - [cmake](https://github.com/Kitware/CMake/releases/download/v3.20.0-rc2/cmake-3.20.0-rc2-windows-x86_64.msi)  binaries
 >     - [Visual Studio](https://visualstudio.microsoft.com/downloads/#)
 > ```
-> > cmake -P configure.cmake  
-> > msbuild build\GolfGL.sln
+> > mkdir build && cd build  
+> > cmake ..
+> > cmake --build .
 > > cd bin/GolfGL/$[Debug | Release]
 > > GolfGL.exe
 > ```
@@ -20,8 +21,9 @@ Still in early stage.
 > $ sudo apt install g++ cmake git build-essential libgl1-mesa-dev libsoil-dev libglm-dev libassimp-dev libglew-dev libglfw3-dev libxinerama-dev libxcursor-dev libxi-dev mesa-common-dev mesa-utils libxxf86vm-dev libfreetype6-dev
 > ```
 > ```
-> $ cmake -P configure.cmake
-> $ make -C build
+> $ mkdir build && cd build
+> $ cmake ..
+> $ make
 > $ cd bin/GolfGL && ./GolfGL
 > ```
 > <br>
