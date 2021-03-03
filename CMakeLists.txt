@@ -70,9 +70,25 @@ else() # UNIX
 endif(WIN32)
 
 
+set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
+# CLANG-FORMAT
+file(GLOB_RECURSE GameSrc
+  "Game/*.cpp"
+  "Game/*.h"
+  )
+
+foreach(srcFile ${GameSrc})
+
+   
+  execute_process(COMMAND "clang-format -i" "${srcFile}"
+                  COMMAND_ECHO STDOUT
+                  )
+endforeach()
+
+
 # Game files
 set(NAME "GolfGL")
-set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
+
 file(
     GLOB_RECURSE _source_list 
     LIST_DIRECTORIES false

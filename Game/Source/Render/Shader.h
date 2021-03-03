@@ -41,7 +41,7 @@ namespace Render {
 	private:
 		unsigned m_ID;
 		
-		void checkCompileErrors(unsigned int shader, const char* type) const;
+		void checkCompileErrors(unsigned int shader, const std::string& type) const;
 
 
 		friend Renderer;
