@@ -1,18 +1,20 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
+
 project ("GolfGL")
+
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-if (MSVC)	
-	list(APPEND CMAKE_CXX_FLAGS " /std:c++17")  	
-else()
+if (NOT MSVC)	
 	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")	
-endif(MSVC)
-
+endif()
 message(STATUS ${CMAKE_CXX_FLAGS})
+
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 if(UNIX)
@@ -68,10 +70,25 @@ else() # UNIX
 endif(WIN32)
 
 
+set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
+# CLANG-FORMAT
+file(GLOB_RECURSE GameSrc
+  "Game/*.cpp"
+  "Game/*.h"
+  )
+
+foreach(srcFile ${GameSrc})
+
+   
+  execute_process(COMMAND "clang-format -i" "${srcFile}"
+                  COMMAND_ECHO STDOUT
+                  )
+endforeach()
+
 
 # Game files
 set(NAME "GolfGL")
-set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
+
 file(
     GLOB_RECURSE _source_list 
     LIST_DIRECTORIES false
@@ -80,6 +97,7 @@ file(
     "${_src_root_path}/*.vs"
     "${_src_root_path}/*.fs"
 )
+
 
 add_executable(${NAME} ${_source_list})
 foreach(_source IN ITEMS ${_source_list})
@@ -92,14 +110,19 @@ endforeach()
 target_link_libraries(${NAME} ${LIBS})
 
 
-if(MSVC)
-    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Ycprecomp.h /MP")
+if(MSVC)        
+    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Ycprecomp.h /std:c++17")
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
-    set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	
-    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	    
+    set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	    
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	        
+       
+    # CLANG-TIDY
+    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
+    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
+    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "--checks=*")
+    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
 	
 else()
-    target_precompile_headers(${NAME} PUBLIC Game/Source/precomp.h)
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
 	
 endif(MSVC)
@@ -114,12 +137,13 @@ add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND
 							
 
 if(WIN32)									
-		add_custom_command(TARGET ${NAME} POST_BUILD COMMAND 
+		add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
 								${CMAKE_COMMAND} -E copy
 								"${CMAKE_SOURCE_DIR}/External/assimp/lib/assimp-vc140-mt.dll" $<TARGET_FILE_DIR:${NAME}>)	
-	
 endif(WIN32)
 
+file(GLOB_RECURSE externHeaders ${CMAKE_SOURCE_DIR}/External/*.h)
+set_source_files_properties(${externHeaders} PROPERTIES COMPILE_FLAGS "-w")
 
 include_directories(${ASSIMP_INCLUDE_DIR}
                     ${FREETYPE_INCLUDE_DIR_ft2build}
@@ -132,4 +156,6 @@ include_directories(${ASSIMP_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}/Game/Source
 					          ${CMAKE_SOURCE_DIR}/Game/Source/Render
                    )
-												
+
+
+				

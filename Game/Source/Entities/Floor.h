@@ -10,7 +10,7 @@ namespace Entities {
         Floor();
         ~Floor();
 
-        void Update(float delta);        
+        void Update(float delta) override;        
 
     private:
 

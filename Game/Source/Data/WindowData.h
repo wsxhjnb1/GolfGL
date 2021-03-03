@@ -8,7 +8,7 @@ struct WindowData
 
 	inline static const char* glslVersion = "#version 330";
 
-	inline static std::string GetResolution() 
+	inline static auto GetResolution() -> std::string 
 	{
 		return std::to_string(width) + "x" + std::to_string(height);
 	}

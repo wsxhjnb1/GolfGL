@@ -17,7 +17,7 @@ public:
 	void operator=(const Log&) = delete;
 		
 	static void Init();
-	inline static spdlog::logger& GetLogger() { return *ms_Logger; }	
+	inline static auto GetLogger() -> spdlog::logger& { return *ms_Logger; }	
 
 private:
 	inline static std::shared_ptr<spdlog::logger> ms_Logger;	

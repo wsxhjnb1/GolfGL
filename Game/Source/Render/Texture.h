@@ -9,22 +9,22 @@ namespace Render {
 	{
 	public:	
 
-		Texture(std::string name, TextureType type = TextureType::DIFFUSE);
+		Texture(const std::string& name, TextureType type = TextureType::DIFFUSE);
 
-		unsigned GetID();
-		std::string GetName();		
-		Render::TextureType GetType();
+		auto GetID() -> unsigned;
+		auto GetName() -> std::string;		
+		auto GetType() -> Render::TextureType;
 		
-		static unsigned LoadNativeTexture(std::string name
-					, Render::TextureType type = Render::TextureType::DIFFUSE);	
+		static auto LoadNativeTexture(const std::string& name
+					, Render::TextureType type = Render::TextureType::DIFFUSE) -> unsigned;	
 
 		// string in format "texture_{type}"
-		inline static TextureType TypeFromString(const std::string& type_)
+		inline static auto TypeFromString(const std::string& type_) -> TextureType
 		{
 			return (TextureType)std::toupper(type_[8]);
 		}
 
-		inline static std::string TypeToString(TextureType type)
+		inline static auto TypeToString(TextureType type) -> std::string
 		{
 			switch (type)
 			{
@@ -47,7 +47,7 @@ namespace Render {
 		/* string in format "texture_{_type_}N" where N is 
 		*  ordinary number of texture 
 		*/
-		inline static std::string TypeToStringN(TextureType type, unsigned N)
+		inline static auto TypeToStringN(TextureType type, unsigned N) -> std::string
 		{
 			return TypeToString(type) + std::to_string(N);
 		}

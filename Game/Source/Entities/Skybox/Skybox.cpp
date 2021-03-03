@@ -11,7 +11,7 @@ Entities::Skybox::Skybox()  :	Entity("skybox")
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyData.vertices), &skyData.vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)nullptr);
 
     texture = m_LoadCubemap();
     shader.ActivateShader();
@@ -41,7 +41,7 @@ void Entities::Skybox::Update(float delta)
     glDepthFunc(GL_LESS);
 }
 
-unsigned Entities::Skybox::m_LoadCubemap()
+auto Entities::Skybox::m_LoadCubemap() -> unsigned
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);

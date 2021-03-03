@@ -10,11 +10,11 @@ public:
 	Window(Window&&) = delete;
 	void operator=(const Window&) = delete;
 		
-	static GLFWwindow* GetGlfwWindow();
+	static auto GetGlfwWindow() -> GLFWwindow*;
 
 
-	bool Init();
-	bool IsRunning();
+	auto Init() -> bool;
+	auto IsRunning() -> bool;
 	void Update();		
 
 	Window() = default;

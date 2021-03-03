@@ -118,16 +118,16 @@ void Render::Shader::setMat4(const std::string& name, const glm::mat4& mat) cons
 	glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* type) const
+inline void Render::Shader::checkCompileErrors(unsigned int shader, const std::string& type) const
 {
 	int success;
 	char infoLog[1024];
-	if (type != "PROGRAM")
+	if (type.compare("PROGRAM"))
 	{
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success)
 		{
-			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+			glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
 			LOG_ERROR("ERROR::SHADER_COMPILATION_ERROR of type: {} \n{} \n-- -------------------------------------------------- - -- \n", type, infoLog);
 		}
 	}
@@ -136,7 +136,7 @@ inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* 
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success)
 		{
-			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+			glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
 			LOG_ERROR("ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n -- --------------------------------------------------- -- ", type, infoLog);
 		}
 	}
