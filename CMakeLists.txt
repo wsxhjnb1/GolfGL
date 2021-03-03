@@ -6,23 +6,6 @@ IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-if(UNIX)
-  find_package(Freetype REQUIRED)
-  message(STATUS "Found Freetype in ${FREETYPE_INCLUDE_DIR_ft2build}")
-endif()
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
-
-if(WIN32)
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
-  link_directories(${CMAKE_SOURCE_DIR}/External/freetype2/win64 
-          ${CMAKE_SOURCE_DIR}/External/GLFW/lib 
-          ${CMAKE_SOURCE_DIR}/External/assimp/lib)
-
-  set(FREETYPE_INCLUDE_DIR_ft2build "${CMAKE_SOURCE_DIR}/External/freetype2/include")          
-endif(WIN32)
-
 if (MSVC)	
 	list(APPEND CMAKE_CXX_FLAGS " /std:c++17")  	
 else()
@@ -31,7 +14,35 @@ endif(MSVC)
 
 message(STATUS ${CMAKE_CXX_FLAGS})
 
+
+if(UNIX)
+  find_package(Freetype REQUIRED)
+  message(STATUS "Found Freetype in ${FREETYPE_INCLUDE_DIR_ft2build}")
+  
+  set(GLAD_LIBRARY "${CMAKE_SOURCE_DIR}/External/GLAD/lib/unix/libglad.a")
+  set(IMGUI_LIBRARY "${CMAKE_SOURCE_DIR}/External/imgui/lib/unix/libimgui.a")    
+endif(UNIX)
+
+if(WIN32)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+  link_directories(${CMAKE_SOURCE_DIR}/External/freetype2/win64 
+                  ${CMAKE_SOURCE_DIR}/External/GLFW/lib 
+                  ${CMAKE_SOURCE_DIR}/External/assimp/lib
+                  ${CMAKE_SOURCE_DIR}/External/GLAD/lib/win64
+                  ${CMAKE_SOURCE_DIR}/External/imgui/lib/win64
+                  )
+
+  set(FREETYPE_INCLUDE_DIR_ft2build "${CMAKE_SOURCE_DIR}/External/freetype2/include")    
+endif(WIN32)
+
+# Include paths for External libs
+set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/GLAD")
+set(IMGUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/imgui")
+set(STB_IMAGE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/stb_image")
+
 # find the required packages
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 find_package(GLM REQUIRED)
 message(STATUS "GLM included at ${GLM_INCLUDE_DIR}")
 find_package(GLFW3 REQUIRED)
@@ -41,61 +52,51 @@ message(STATUS "Found ASSIMP in ${ASSIMP_INCLUDE_DIR}")
 
 
 
-
+# Grouping libs
 if(WIN32)
-  set(LIBS glfw3 opengl32 assimp freetype)
-elseif(UNIX)
+  set(LIBS glad glfw3 opengl32 assimp freetype imgui)
+
+else() # UNIX
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
   find_package(OpenGL REQUIRED)
   add_definitions(${OPENGL_DEFINITIONS})
   find_package(X11 REQUIRED)  
   
-  set(LIBS ${GLFW3_LIBRARY} X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl pthread freetype ${ASSIMP_LIBRARY})
+  set(LIBS ${GLAD_LIBRARY} ${GLFW3_LIBRARY} X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl 
+      pthread freetype ${ASSIMP_LIBRARY} ${IMGUI_LIBRARY})
   set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
-else()
-  set(LIBS )
 endif(WIN32)
 
 
-configure_file(configuration/rootDirectory.h.in configuration/rootDirectory.h)
-include_directories(${CMAKE_BINARY_DIR}/configuration)
 
-
-# first create relevant static libraries requried for other projects
-set(STB_IMAGE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/stb_image")
-
-set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/GLAD")
-add_library(glad "${GLAD_INCLUDE_DIR}/glad.c")
-set(LIBS ${LIBS} glad)
-
-set(IMGUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/imgui")
-file(GLOB_RECURSE IMGUI_SRC 
-    "${IMGUI_INCLUDE_DIR}/*.cpp"
-		"${IMGUI_INCLUDE_DIR}/backends/*.cpp"
-	)
-add_library(imgui ${IMGUI_SRC})	
-set(LIBS ${LIBS} imgui)
-
-
-file(GLOB_RECURSE SOURCE
-			"Game/Source/*.h"			
-            "Game/Source/*.cpp" 
-        )
-
+# Game files
 set(NAME "GolfGL")
-add_executable(${NAME} ${SOURCE})
+set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
+file(
+    GLOB_RECURSE _source_list 
+    LIST_DIRECTORIES false
+    "${_src_root_path}/*.cpp"
+    "${_src_root_path}/*.h"
+    "${_src_root_path}/*.vs"
+    "${_src_root_path}/*.fs"
+)
 
+add_executable(${NAME} ${_source_list})
+foreach(_source IN ITEMS ${_source_list})
+    get_filename_component(_source_path "${_source}" PATH)
+    file(RELATIVE_PATH _source_path_rel "${_src_root_path}" "${_source_path}")
+    string(REPLACE "/" "\\" _group_path "${_source_path_rel}")
+    source_group("${_group_path}" FILES "${_source}")
+endforeach()
 
 target_link_libraries(${NAME} ${LIBS})
-if(UNIX)
-  
-endif()
+
 
 if(MSVC)
-    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Ycprecomp.h")
+    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Ycprecomp.h /MP")
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
     set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	
-	  set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${NAME})	
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	    
 	
 else()
     target_precompile_headers(${NAME} PUBLIC Game/Source/precomp.h)
@@ -125,7 +126,7 @@ include_directories(${ASSIMP_INCLUDE_DIR}
                     ${GLAD_INCLUDE_DIR}
                     ${GLFW3_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}
-                    ${CMAKE_SOURCE_DIR}/External/imgui/backends
+                    ${IMGUI_INCLUDE_DIR}/backends
 					          ${STB_IMAGE_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}/External
                     ${CMAKE_SOURCE_DIR}/Game/Source
