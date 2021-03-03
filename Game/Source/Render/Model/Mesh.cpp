@@ -4,16 +4,20 @@
 
 #include <precomp.h>
 
+
+#include <utility>
+
+
 #include "Mesh.h"
 
-Render::Mesh::Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices,const std::vector<Render::Texture>& _textures)
-    :   vertices(_vertices), indices(_indices), textures(_textures)
+Render::Mesh::Mesh(std::vector<Render::Vertex>  _vertices, std::vector<unsigned>  _indices,std::vector<Render::Texture>  _textures)
+    :   vertices(std::move(_vertices)), indices(std::move(_indices)), textures(std::move(_textures))
 {    
     m_Init();
 }
 
-Render::Mesh::Mesh(const std::vector<Vertex>& _vertices, const std::vector<unsigned>& _indices, const Texture& _texture)
-    : vertices(_vertices), indices(_indices), textures(std::vector{ _texture })
+Render::Mesh::Mesh(std::vector<Vertex>  _vertices, std::vector<unsigned>  _indices, const Texture& _texture)
+    : vertices(std::move(_vertices)), indices(std::move(_indices)), textures(std::vector{ _texture })
 {
     m_Init();
 }
@@ -41,7 +45,7 @@ void Render::Mesh::Draw(Render::Shader* shader)
 
     // draw mesh
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 
     // always good practice to set everything back to defaults once configured.
@@ -69,7 +73,7 @@ void Render::Mesh::m_Init()
     // set the vertex attribute pointers
     // vertex Positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)nullptr);
     // vertex normals
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));

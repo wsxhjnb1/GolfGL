@@ -11,10 +11,10 @@ namespace Entities {
 	public:
 		~EntityManager();
 
-		bool Init();
+		auto Init() -> bool;
 		
 		void Update(float delta);
-		bool LoadEntity(const std::string& name, std::unique_ptr<Entity>&& entity);
+		auto LoadEntity(const std::string& name, std::unique_ptr<Entity>&& entity) -> bool;
 
 	private:
 		std::unordered_map<std::string, std::unique_ptr<Entity>> m_Table;

@@ -4,7 +4,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-bool Input::Init(Window* window)
+auto Input::Init(Window* window) -> bool
 {
 	if (window == nullptr)
 	{
@@ -30,7 +30,7 @@ void Input::ProcessInput()
 		glfwSetWindowShouldClose(glfwWindow, true);
 
 
-	float currentFrame = (float)glfwGetTime();
+	auto currentFrame = (float)glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 	Camera::GetCamera().SetCameraSpeed(deltaTime);

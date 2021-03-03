@@ -3,7 +3,7 @@
 #include "EntityManager.h"
 
 #include "Skybox/Skybox.h"
-#include "Floor.h";
+#include "Floor.h"
 #include "Ball/Ball.h"
 
 Entities::EntityManager::~EntityManager()
@@ -11,7 +11,7 @@ Entities::EntityManager::~EntityManager()
 	m_Table.clear();
 }
 
-bool Entities::EntityManager::Init()
+auto Entities::EntityManager::Init() -> bool
 {
 	// Loading initial entities	
 	if( LoadEntity("skybox", std::make_unique<Skybox>()) 
@@ -27,7 +27,7 @@ bool Entities::EntityManager::Init()
 }
 
 // void Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity> entity)
-bool Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity>&& entity)
+auto Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity>&& entity) -> bool
 {	
 	m_Table[name] = std::move( entity );
 

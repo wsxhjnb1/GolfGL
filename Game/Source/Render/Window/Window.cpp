@@ -48,7 +48,7 @@ struct GxDataTmp
 #endif // _DEBUG
 
 
-bool Window::Init()
+auto Window::Init() -> bool
 {	
 	m_glfwWindow = glfwCreateWindow(WindowData::width, WindowData::height, WindowData::windowTitle, nullptr, nullptr);
 	if (m_glfwWindow == nullptr)
@@ -67,7 +67,7 @@ bool Window::Init()
 	return true;
 }
 
-bool Window::IsRunning()
+auto Window::IsRunning() -> bool
 {
 	return m_running;
 }
@@ -142,7 +142,7 @@ void Window::Update()
 	glfwPollEvents();
 }
 
-GLFWwindow* Window::GetGlfwWindow()
+auto Window::GetGlfwWindow() -> GLFWwindow*
 {
 	return m_glfwWindow;
 }

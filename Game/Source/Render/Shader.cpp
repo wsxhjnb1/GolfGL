@@ -127,7 +127,7 @@ inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success)
 		{
-			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+			glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
 			LOG_ERROR("ERROR::SHADER_COMPILATION_ERROR of type: {} \n{} \n-- -------------------------------------------------- - -- \n", type, infoLog);
 		}
 	}
@@ -136,7 +136,7 @@ inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* 
 		glGetProgramiv(shader, GL_LINK_STATUS, &success);
 		if (!success)
 		{
-			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+			glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
 			LOG_ERROR("ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n -- --------------------------------------------------- -- ", type, infoLog);
 		}
 	}

@@ -6,13 +6,12 @@
 #include <Render/PostProcessing/Framebuffer.h>
 
 
-bool Render::Renderer::Init()
+auto Render::Renderer::Init() -> bool
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);    
-    const char* glslVersion = "#version 330";
 
     m_Window = new Window;
     if ( !m_Window->Init() )
@@ -89,12 +88,12 @@ void Render::Renderer::Update()
     }        
 }
 
-bool Render::Renderer::IsRunning()
+auto Render::Renderer::IsRunning() -> bool
 {
     return m_Window->m_running;
 }
 
-Window* Render::Renderer::GetWindow()
+auto Render::Renderer::GetWindow() -> Window*
 {
     return m_Window;
 }

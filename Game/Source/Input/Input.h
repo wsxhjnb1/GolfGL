@@ -7,7 +7,7 @@ class Input
 public:
 
 	Input() = default;
-	bool Init( Window* window );
+	auto Init( Window* window ) -> bool;
 	void ProcessInput();
 
 	inline static float lastX = WindowData::width / 2.0f;
