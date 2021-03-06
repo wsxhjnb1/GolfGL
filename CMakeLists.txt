@@ -5,12 +5,15 @@ project ("GolfGL")
 
 
 IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+  SET(CMAKE_BUILD_TYPE Debug)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
+
+
 if (NOT MSVC)	
-	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")	
+	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")
 endif()
+
 message(STATUS ${CMAKE_CXX_FLAGS})
 
 
@@ -107,6 +110,7 @@ foreach(_source IN ITEMS ${_source_list})
     source_group("${_group_path}" FILES "${_source}")
 endforeach()
 
+
 target_link_libraries(${NAME} ${LIBS})
 
 
@@ -123,6 +127,12 @@ if(MSVC)
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
 	
 else()
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      target_compile_definitions(${NAME} PUBLIC _DEBUG)
+    else()
+      target_compile_definitions(${NAME} PUBLIC NDEBUG)
+    endif()
+
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
 	
 endif(MSVC)

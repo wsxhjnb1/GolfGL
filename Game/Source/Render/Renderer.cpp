@@ -35,7 +35,7 @@ auto Render::Renderer::Init() -> bool
 
     glfwSetFramebufferSizeCallback(m_Window->GetGlfwWindow(), Window::FrameBufferResizeCallback);
 
-
+    const char* glslVersion = "#version 330";
     // ImGui part
 #ifdef _DEBUG
     IMGUI_CHECKVERSION();
