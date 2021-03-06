@@ -1,5 +1,10 @@
 #pragma once
 
+#ifdef WIN32
+#include <Windows.h>
+#endif // WIN32
+
+
 // extern libs
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
