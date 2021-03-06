@@ -34,8 +34,8 @@ namespace Render {
         unsigned VAO;
 
         // constructor
-        Mesh(std::vector<Render::Vertex>  _vertices, std::vector<unsigned>  _indices, std::vector<Render::Texture>  _textures);
-        Mesh(std::vector<Render::Vertex>  _vertices, std::vector<unsigned>  _indices, const Render::Texture&  _textures);
+        Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices, const std::vector<Render::Texture>& _textures);
+        Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices, const Render::Texture&  _textures);
         
         // ~Mesh();
 
@@ -62,7 +62,7 @@ namespace Render {
             */
             unsigned counterArray[4]{ 0, 0, 0, 0 };
 
-            inline auto TextureNameFactory(TextureType type) -> std::string
+            inline std::string TextureNameFactory(TextureType type)
             {
                 return Texture::TypeToStringN(type, ++counterArray[(unsigned)type]);
             }

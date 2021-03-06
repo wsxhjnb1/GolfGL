@@ -17,7 +17,7 @@ namespace Render {
     class Model
     {
     public:
-        Model(const std::string& name)
+        Model(std::string name)
         {            
             loadModel(name);
         }
@@ -30,10 +30,10 @@ namespace Render {
         std::vector<Mesh> meshes;
         std::string directory;
 
-        void loadModel(const std::string& path);
+        void loadModel(std::string path);
         void processNode(aiNode* node, const aiScene* scene);
-        auto processMesh(aiMesh* mesh, const aiScene* scene) -> Mesh;
-        auto loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-            TextureType typeName) -> std::vector<Texture>;
+        Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+        std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
+            TextureType typeName);
     };
 } // Redner

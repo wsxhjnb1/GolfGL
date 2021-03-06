@@ -15,11 +15,11 @@ namespace Render {
 		Renderer(Renderer&&) = delete;
 		void operator=(const Renderer&) = delete;
 
-		auto Init() -> bool;
+		bool Init();
 		void Update();
-		auto IsRunning() -> bool;
+		bool IsRunning();
 
-		auto GetWindow() -> Window*;
+		Window* GetWindow();
 
 		Renderer() = default;
 		~Renderer();

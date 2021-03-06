@@ -6,12 +6,13 @@
 #include <Render/PostProcessing/Framebuffer.h>
 
 
-auto Render::Renderer::Init() -> bool
+bool Render::Renderer::Init()
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);    
+    const char* glslVersion = "#version 330";
 
     m_Window = new Window;
     if ( !m_Window->Init() )
@@ -35,7 +36,7 @@ auto Render::Renderer::Init() -> bool
 
     glfwSetFramebufferSizeCallback(m_Window->GetGlfwWindow(), Window::FrameBufferResizeCallback);
 
-    const char* glslVersion = "#version 330";
+
     // ImGui part
 #ifdef _DEBUG
     IMGUI_CHECKVERSION();
@@ -88,12 +89,12 @@ void Render::Renderer::Update()
     }        
 }
 
-auto Render::Renderer::IsRunning() -> bool
+bool Render::Renderer::IsRunning()
 {
     return m_Window->m_running;
 }
 
-auto Render::Renderer::GetWindow() -> Window*
+Window* Render::Renderer::GetWindow()
 {
     return m_Window;
 }

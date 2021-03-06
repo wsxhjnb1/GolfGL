@@ -15,7 +15,7 @@ namespace Entities {
 		unsigned m_VAO, m_VBO;
 		
 
-		auto m_LoadCubemap() -> unsigned;
+		unsigned m_LoadCubemap();
 		inline void updatePV() override
 		{
 			projection = glm::perspective(glm::radians(Camera::GetCamera().GetCameraZoom())
