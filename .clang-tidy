@@ -2,6 +2,19 @@ Checks: '
 -*,
 performance-*,
 modernize-*,
+-modernize-use-trailing-return-type,
+-modernize-avoid-c-arrays,
+-modernize-make-shared,
+-modernize-make-unique,
+-modernize-use-auto,
+-modernize-use-uncaught-exceptions,
+-performance-no-int-to-ptr,
+portability-restrict-system-includes
+bugprone-suspicious-semicolon
 '
 
-HeaderFilterRegex: "(/[a-zA-Z]+)*/Game/Source/."
+HeaderFilterRegex: '*Game/Source'
+
+CheckOptions:
+  - key:     modernize-use-transparent-functors.SafeMode
+    value:   'true'
