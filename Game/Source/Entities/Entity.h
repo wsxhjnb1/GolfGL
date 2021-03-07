@@ -10,6 +10,8 @@ namespace Entities {
 	public:
 		virtual void Update(float delta) = 0;
 
+		virtual ~Entity() { glDeleteTextures(1, &texture); }
+
 	protected:
 		Entity(const std::string& shaderName)
 			: shader(shaderName), texture(0)

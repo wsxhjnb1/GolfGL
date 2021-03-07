@@ -11,6 +11,9 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 if (NOT MSVC)	
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    list(APPEND CMAKE_CXX_FLAGS "-g")
+  endif()
 	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")
 endif()
 
