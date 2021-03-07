@@ -10,22 +10,22 @@ Render::Texture::Texture(const std::string& name, Render::TextureType type)
 	m_ID = LoadNativeTexture(name, type);
 }
 
-auto Render::Texture::GetID() -> unsigned
+unsigned Render::Texture::GetID()
 {
 	return m_ID;
 }
 
-auto Render::Texture::GetName() -> std::string
+std::string Render::Texture::GetName()
 {
 	return m_Name;
 }
 
-auto Render::Texture::GetType() -> Render::TextureType
+Render::TextureType Render::Texture::GetType()
 {
 	return m_Type;
 }
 
-auto Render::Texture::LoadNativeTexture(const std::string& name, Render::TextureType type) -> unsigned
+unsigned Render::Texture::LoadNativeTexture(const std::string& name, Render::TextureType type)
 {
 	unsigned id;
 

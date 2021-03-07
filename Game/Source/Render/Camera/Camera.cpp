@@ -27,7 +27,7 @@ void Camera::LookLeft()
     cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
-auto Camera::LookAt() -> glm::mat4
+glm::mat4 Camera::LookAt()
 {
     return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
@@ -37,17 +37,17 @@ void Camera::SetCameraSpeed(float dt)
     cameraSpeed = MovementSpeed * dt;
 }
 
-auto Camera::GetCameraPos() -> glm::vec3
+glm::vec3 Camera::GetCameraPos()
 {
     return cameraPos;
 }
 
-auto Camera::GetCameraZoom() -> float
+float Camera::GetCameraZoom()
 {
     return Zoom;
 }
 
-auto Camera::GetCameraFront() -> glm::vec3
+glm::vec3 Camera::GetCameraFront()
 {
     return cameraFront;
 }

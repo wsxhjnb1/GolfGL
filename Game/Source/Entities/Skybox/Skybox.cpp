@@ -41,7 +41,7 @@ void Entities::Skybox::Update(float delta)
     glDepthFunc(GL_LESS);
 }
 
-auto Entities::Skybox::m_LoadCubemap() -> unsigned
+unsigned Entities::Skybox::m_LoadCubemap()
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);

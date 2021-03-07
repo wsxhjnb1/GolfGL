@@ -118,11 +118,11 @@ void Render::Shader::setMat4(const std::string& name, const glm::mat4& mat) cons
 	glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-inline void Render::Shader::checkCompileErrors(unsigned int shader, const std::string& type) const
+inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* type) const
 {
 	int success;
 	char infoLog[1024];
-	if (type.compare("PROGRAM"))
+	if (std::strcmp(type, "PROGRAM"))
 	{
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success)

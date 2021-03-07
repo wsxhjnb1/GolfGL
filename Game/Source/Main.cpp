@@ -1,5 +1,5 @@
 #include <precomp.h>
-auto main() -> int
+int main()
 {
     Log::Init();
     Render::Renderer renderer;

@@ -10,7 +10,7 @@ namespace Entities {
         : Render::Model("Resources/Objects/golfBall/golfBall.obj")
         , Entity("entity"), position(ballDefault::position)
         , direction(CAMERA.GetCameraFront()), m_angle(ballDefault::angle)  
-         
+        , m_speed(0.f)
     {        
         // diffuse texture is loaded in parent class    
         m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end()

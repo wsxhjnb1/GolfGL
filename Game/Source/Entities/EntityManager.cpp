@@ -11,7 +11,7 @@ Entities::EntityManager::~EntityManager()
 	m_Table.clear();
 }
 
-auto Entities::EntityManager::Init() -> bool
+bool Entities::EntityManager::Init()
 {
 	// Loading initial entities	
 	if( LoadEntity("skybox", std::make_unique<Skybox>()) 
@@ -27,7 +27,7 @@ auto Entities::EntityManager::Init() -> bool
 }
 
 // void Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity> entity)
-auto Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity>&& entity) -> bool
+bool Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity>&& entity)
 {	
 	m_Table[name] = std::move( entity );
 

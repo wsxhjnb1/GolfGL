@@ -47,7 +47,7 @@ void Render::Model::processNode(aiNode* node, const aiScene* scene)
 }
 
 using namespace std;
-auto Render::Model::processMesh(aiMesh* mesh, const aiScene* scene) -> Render::Mesh
+Render::Mesh Render::Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
     // data to fill
     vector<Vertex> vertices;
@@ -128,8 +128,8 @@ auto Render::Model::processMesh(aiMesh* mesh, const aiScene* scene) -> Render::M
     return Mesh(vertices, indices, textures);
 }
 
-auto Render::Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type
-                                                                    , Render::TextureType typeName) -> std::vector<Render::Texture>
+std::vector<Render::Texture> Render::Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type
+                                                                    , Render::TextureType typeName)
 {
     std::vector<Texture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)

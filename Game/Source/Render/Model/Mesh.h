@@ -62,7 +62,7 @@ namespace Render {
             */
             unsigned counterArray[4]{ 0, 0, 0, 0 };
 
-            inline auto TextureNameFactory(TextureType type) -> std::string
+            inline std::string TextureNameFactory(TextureType type)
             {
                 return Texture::TypeToStringN(type, ++counterArray[(unsigned)type]);
             }

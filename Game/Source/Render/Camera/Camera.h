@@ -9,19 +9,19 @@ public:
 	void operator=(const Camera&) = delete;
 	
 	static void Init();
-	inline static auto GetCamera() -> Camera& { return *ms_Camera; }
+	inline static Camera& GetCamera() { return *ms_Camera; }
 
 	void LookUp();
 	void LookDown();
 	void LookRight();
 	void LookLeft();
-    auto LookAt() -> glm::mat4;
+    glm::mat4 LookAt();
 	void SetCameraSpeed(float dt);
 
-	auto GetCameraPos() -> glm::vec3;
-	auto GetCameraZoom() -> float;
+	glm::vec3 GetCameraPos();
+	float GetCameraZoom();
 
-	auto GetCameraFront() -> glm::vec3;
+	glm::vec3 GetCameraFront();
 
 
 	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = GL_TRUE);
