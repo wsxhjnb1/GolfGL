@@ -2,6 +2,8 @@ Checks: '
 -*,
 performance-*,
 modernize-*,
+readability-*,
+clang-analyzer-*,
 -modernize-use-trailing-return-type,
 -modernize-avoid-c-arrays,
 -modernize-make-shared,
@@ -9,12 +11,29 @@ modernize-*,
 -modernize-use-auto,
 -modernize-use-uncaught-exceptions,
 -performance-no-int-to-ptr,
-portability-restrict-system-includes
-bugprone-suspicious-semicolon
+-readability-uppercase-literal-suffix,
+portability-restrict-system-includes,
+bugprone-suspicious-semicolon,
+google-build-using-namespace
 '
 
-HeaderFilterRegex: '*Game/Source'
+HeaderFilterRegex: '*Game/Source/.*'
 
 CheckOptions:
   - key:     modernize-use-transparent-functors.SafeMode
     value:   'true'
+
+  - key:     modernize-use-nullptr.NullMacros
+    value:   'NULL'
+
+  - key:     readability-braces-around-state.ShortStatementLines
+    value:   '1'
+
+  - key:     readability-inconsistent-declaration-parameter-name.Strict
+    value:   'true'
+
+  - key:     readability-uniqueptr-delete-release.PreferResetCall 
+    value:   'true'
+
+  - key:     readability-magic-numbers.IgnoredIntegerValues
+    value:   '1;2;3;4;5;180;360'

@@ -8,11 +8,11 @@
 
 void Render::Model::Draw(Shader* shader)
 {
-	for (unsigned int i = 0; i < meshes.size(); i++)
-		meshes[i].Draw(shader);
+	for (auto & meshe : meshes)
+		meshe.Draw(shader);
 }
 
-void Render::Model::loadModel(std::string path)
+void Render::Model::loadModel(const std::string& path)
 {
     // read file via ASSIMP
     Assimp::Importer importer;
@@ -138,12 +138,12 @@ std::vector<Render::Texture> Render::Model::loadMaterialTextures(aiMaterial* mat
         mat->GetTexture(type, i, &str);
         // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
         bool skip = false;
-        for (unsigned int j = 0; j < textures_loaded.size(); j++)
+        for (auto & j : textures_loaded)
         {            
             // auto textureName = textures_loaded[j].GetName().substr()
-            if (std::strcmp(textures_loaded[j].GetName().c_str(), str.C_Str()) == 0)
+            if (std::strcmp(j.GetName().c_str(), str.C_Str()) == 0)
             {
-                textures.push_back(textures_loaded[j]);
+                textures.push_back(j);
                 skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
                 break;
             }

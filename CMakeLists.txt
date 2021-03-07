@@ -133,6 +133,7 @@ else()
       target_compile_definitions(${NAME} PUBLIC NDEBUG)
     endif()
 
+
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
 	
 endif(MSVC)

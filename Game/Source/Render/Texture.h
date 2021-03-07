@@ -4,18 +4,25 @@
 
 namespace Render {	
 
-	
+	enum class TextureType
+    {
+        DIFFUSE = 0,
+        NORMAL,
+        SPECULAR,
+        HEIGHT,
+        TEX_ERRORTYPE
+    };	
 	class Texture
 	{
 	public:	
 
-		Texture(std::string name, TextureType type = TextureType::DIFFUSE);
+		Texture(const std::string& name, TextureType type = TextureType::DIFFUSE);
 
 		unsigned GetID();
 		std::string GetName();		
 		Render::TextureType GetType();
 		
-		static unsigned LoadNativeTexture(std::string name
+		static unsigned LoadNativeTexture(const std::string& name
 					, Render::TextureType type = Render::TextureType::DIFFUSE);	
 
 		// string in format "texture_{type}"

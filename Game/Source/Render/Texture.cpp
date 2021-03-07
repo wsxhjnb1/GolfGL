@@ -4,7 +4,7 @@
 
 #include <stb_image.h>
 
-Render::Texture::Texture(std::string name, Render::TextureType type)
+Render::Texture::Texture(const std::string& name, Render::TextureType type)
 	: m_Name(name.substr( name.find_last_of('/') + 1)), m_Type(type)
 {	
 	m_ID = LoadNativeTexture(name, type);
@@ -25,7 +25,7 @@ Render::TextureType Render::Texture::GetType()
 	return m_Type;
 }
 
-unsigned Render::Texture::LoadNativeTexture(std::string name, Render::TextureType type)
+unsigned Render::Texture::LoadNativeTexture(const std::string& name, Render::TextureType type)
 {
 	unsigned id;
 

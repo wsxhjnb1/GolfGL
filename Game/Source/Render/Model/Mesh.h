@@ -34,8 +34,8 @@ namespace Render {
         unsigned VAO;
 
         // constructor
-        Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices, const std::vector<Render::Texture>& _textures);
-        Mesh(const std::vector<Render::Vertex>& _vertices, const std::vector<unsigned>& _indices, const Render::Texture&  _textures);
+        Mesh(std::vector<Render::Vertex>  _vertices, std::vector<unsigned>  _indices, std::vector<Render::Texture>  _textures);
+        Mesh(std::vector<Render::Vertex>  _vertices, std::vector<unsigned>  _indices, const Render::Texture&  _textures);
         
         // ~Mesh();
 

@@ -22,18 +22,6 @@
 // Global data
 #include <Data.h>
 
-// Enums
-namespace Render
-{
-    enum class TextureType
-    {
-        DIFFUSE = 0,
-        NORMAL,
-        SPECULAR,
-        HEIGHT,
-        TEX_ERRORTYPE
-    };
-}
 
 // classes
 #include <Camera/Camera.h>
@@ -51,3 +39,4 @@ namespace Render
 #include <sstream>
 #include <unordered_set>
 #include <vector>
+#include <utility>
