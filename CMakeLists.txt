@@ -11,9 +11,6 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 if (NOT MSVC)	
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    list(APPEND CMAKE_CXX_FLAGS "-g")
-  endif()
 	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")
 endif()
 
@@ -131,6 +128,7 @@ if(MSVC)
 	
 else()
     if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g")
       target_compile_definitions(${NAME} PUBLIC _DEBUG)
     else()
       target_compile_definitions(${NAME} PUBLIC NDEBUG)
