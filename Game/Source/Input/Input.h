@@ -1,13 +1,11 @@
 #pragma once
 
-class Window;
-
 class Input
 {
 public:
 
 	Input() = default;
-	bool Init( Window* window );
+	bool Init( GLFWwindow* window );
 	void ProcessInput();
 
 	inline static float lastX = WindowData::width / 2.0f;
@@ -15,7 +13,7 @@ public:
 	inline static bool firstMouse = true;
 
 private:
-	Window* m_Window;
+	GLFWwindow* m_Window;
 	float deltaTime;
 	float lastFrame;
 };

@@ -1,8 +1,9 @@
 #include <precomp.h>
 
 #include "Ball.h"
-
 #include "ballDefault.h"
+
+#include <Data/LightData.h>
 
 namespace Entities {    
 
@@ -67,9 +68,10 @@ namespace Entities {
             position += ballDefault::scalarFixer * m_speed * direction;
 
             
-            m_angle += 3*m_speed; m_angle %= 360;                                    
+            m_angle += 3*m_speed; 
+            m_angle = m_angle < 360.f ? m_angle : m_angle - 360.f;
         }
-        else if (glfwGetKey(Window::GetGlfwWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        else if (glfwGetKey(Window::Window::GetGlfwWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         {            
             direction = { CAMERA.GetCameraFront() };
             direction.y = 0.f;
