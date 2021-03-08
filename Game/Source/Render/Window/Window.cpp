@@ -34,8 +34,6 @@ namespace Window {
 		}
 
 
-		// Imgui
-
 		glfwSwapBuffers(m_glfwWindow);
 		glfwPollEvents();
 	}
@@ -45,7 +43,7 @@ namespace Window {
 		return m_glfwWindow;
 	}
 
-	Window::~Window()
+	void Window::Destroy()
 	{
 		glfwDestroyWindow(m_glfwWindow);
 		glfwTerminate();

@@ -8,6 +8,6 @@ void Log::Init()
 {	
 	spdlog::set_pattern("%^[%T] %n: %v%$");
 
-	ms_Logger = std::move(spdlog::stdout_color_mt("LOG"));
+	ms_Logger = spdlog::stdout_color_mt("LOG");	
 	ms_Logger->set_level(spdlog::level::trace);		
 }

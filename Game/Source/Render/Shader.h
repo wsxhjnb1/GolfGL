@@ -36,7 +36,7 @@ namespace Render {
 
 		void setMat4(const std::string& name, const glm::mat4& mat) const;
 
-		inline	static const char* shadersDir = "Resources/Shaders/";
+		inline static const char* shadersDir = "Resources/Shaders/";
 
 	private:
 		unsigned m_ID;

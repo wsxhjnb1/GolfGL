@@ -88,13 +88,17 @@ bool Render::Renderer::IsRunning()
 }
 
 Render::Renderer::~Renderer()
-{           
+{   
+#ifdef _DEBUG        
     m_DebugWindow.Destroy();
+#endif
     delete m_FrameBuff;    
 }
 
 void Render::Renderer::UpdateWindows()
 {
+#ifdef _DEBUG
     m_DebugWindow.Update();
+#endif
     m_Window.Update();
 }

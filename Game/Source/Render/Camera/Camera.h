@@ -24,7 +24,7 @@ public:
 	glm::vec3 GetCameraFront();
 
 
-	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = GL_TRUE);
+	void ProcessMouseMovement(float xoffset, float yoffset);
 	void ProcessMouseScroll(float yoffset);
 
 private:
@@ -37,14 +37,26 @@ private:
 	inline static float cameraSpeed = 0.5f;
 
 	inline static float Yaw = -90.f;
-	inline static float Pitch = 0.f;	
+	inline static float Pitch = 0.f;		
 	inline static float MovementSpeed = 4.5f;
 	inline static float MouseSensitivity = 0.1f;
 	inline static float Zoom = 45.f;
+
+	/* Bounds */
+	inline static const float constrainPitchBound = 89.f;
+	inline static const float zoomLowerBound = 1.f;
+	inline static const float zoomUpperBound = 45.f;
 	
 	Camera() = default;
 
-	void UpdateCameraVectors();
+	void m_UpdateCameraVectors();
+
+	/* Keeping angles in range [lower, upper], to prevent flipping */
+	inline void m_BoundAngleInRange(float& angle, float lower, float upper)
+	{
+		angle = std::max(lower, angle);
+		angle = std::min(angle, upper);
+	}
 };
 
 #define CAMERA Camera::GetCamera()

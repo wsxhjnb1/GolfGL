@@ -80,13 +80,11 @@ file(GLOB_RECURSE GameSrc
   "Game/*.h"
   )
 
-foreach(srcFile ${GameSrc})
-
-   
-  execute_process(COMMAND "clang-format -i" "${srcFile}"
-                  COMMAND_ECHO STDOUT
-                  )
-endforeach()
+# foreach(srcFile ${GameSrc})   
+#   execute_process(COMMAND "clang-format -i" "${srcFile}"
+#                   COMMAND_ECHO STDOUT
+#                   )
+# endforeach()
 
 
 # Game files

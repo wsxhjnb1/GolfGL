@@ -14,7 +14,12 @@ bool Input::Init(GLFWwindow* window)
 
 	m_Window = window;
 
+#ifdef _DEBUG
 	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+#else
+	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif //_DEBUG
+
 	glfwSetCursorPosCallback(m_Window, mouseCallback);
 	glfwSetScrollCallback(m_Window, scrollCallback);
 
@@ -23,13 +28,14 @@ bool Input::Init(GLFWwindow* window)
 
 void Input::ProcessInput()
 {
-	// glfwPollEvents();	
+	// glfwPollEvents();
+		
 	// Esc
 	if (glfwGetKey( m_Window , GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(m_Window, true);
 
 
-	float currentFrame = (float)glfwGetTime();
+	float currentFrame = static_cast<float>(glfwGetTime());
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 	Camera::GetCamera().SetCameraSpeed(deltaTime);
