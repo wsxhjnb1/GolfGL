@@ -8,7 +8,9 @@ namespace Render {
 	class Shader
 	{
 	public:
-		Shader(const std::string& shaderName);	
+		Shader(const std::string& shaderName);
+
+		bool Compile();
 
 		void ActivateShader();
 		
@@ -36,12 +38,13 @@ namespace Render {
 
 		void setMat4(const std::string& name, const glm::mat4& mat) const;
 
-		inline static const char* shadersDir = "Resources/Shaders/";
+		inline	static const char* shadersDir = "Resources/Shaders/";
 
 	private:
 		unsigned m_ID;
-		
-		void checkCompileErrors(unsigned int shader, const char* type) const;
+		std::string m_name;
+				
+		bool checkCompileErrors(unsigned int shader, const char* type) const;
 
 
 		friend Renderer;

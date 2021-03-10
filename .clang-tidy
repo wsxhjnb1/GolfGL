@@ -15,7 +15,7 @@ clang-analyzer-*,
 -readability-convert-member-functions-to-static,
 portability-restrict-system-includes,
 bugprone-suspicious-semicolon,
-google-build-using-namespace,
+google-build-using-namespace
 '
 
 HeaderFilterRegex: '*Game/Source/.*'

@@ -21,7 +21,7 @@
 
 // Global data
 #include "Data/WindowData.h"
-
+#include "Asserts.h"
 
 // classes
 #include <Camera/Camera.h>

@@ -29,8 +29,8 @@ namespace Render {
 		Window::Window m_Window;
 		Window::DebugWindow m_DebugWindow;
 
-		Framebuffer* m_FrameBuff;
-		Entities::EntityManager m_EntryManager;
+		Framebuffer* m_FrameBuff = nullptr;
+		Entities::EntityManager* m_EntryManager = nullptr;
 		
 
 		inline void UpdateWindows();

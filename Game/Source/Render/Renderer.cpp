@@ -13,19 +13,11 @@ bool Render::Renderer::Init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);        
 
+    SMASSERT( m_Window.Init(), "FAILED TO INIT MAIN WINDOW" );    
+
+
+    SMASSERT( gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Glad failed to load gl" );
     
-    if ( !m_Window.Init() )
-    {
-        LOG_ERROR( "FAILED TO INIT MAIN WINDOW" );
-        return false;
-    }
-
-
-    if ( !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) )
-    {
-        LOG_ERROR("Glad failed to load gl");
-        return false;
-    }
 
     glEnable(GL_DEPTH_TEST);
     // glDepthFunc(GL_LESS);
@@ -36,18 +28,17 @@ bool Render::Renderer::Init()
 
     glfwSetFramebufferSizeCallback( m_Window.m_glfwWindow, Window::Window::FrameBufferResizeCallback );
         
-
+#ifdef _DEBUG
     m_DebugWindow.Init();
+#endif
 
     // stbi_set_flip_vertically_on_load(true);
      
     m_FrameBuff = new Framebuffer();
-    m_FrameBuff->Init();
+    SMASSERT( m_FrameBuff->Init(), "Failed to init framebuffer" );
 
-
-    if ( !m_EntryManager.Init() )
-        return false;
-
+    m_EntryManager = new Entities::EntityManager();
+    SMASSERT( m_EntryManager->Init(), "Failed to init Entity Manager" );
     
 
     lastTime = static_cast<float>( glfwGetTime() );
@@ -67,7 +58,7 @@ void Render::Renderer::Update()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_EntryManager.Update(delta);
+    m_EntryManager->Update(delta);
 
     m_FrameBuff->BindSceneEnd();
 
@@ -89,10 +80,13 @@ bool Render::Renderer::IsRunning()
 
 Render::Renderer::~Renderer()
 {   
+    delete m_FrameBuff;
+    delete m_EntryManager;
 #ifdef _DEBUG        
-    m_DebugWindow.Destroy();
-#endif
-    delete m_FrameBuff;    
+    m_DebugWindow.Destroy();    
+#endif          
+    m_Window.Destroy();     
+    glfwTerminate();
 }
 
 void Render::Renderer::UpdateWindows()

@@ -1,57 +1,61 @@
 #include <precomp.h>
 #include "Shader.h"
 
+#define SHADEREXIST( s, path ) SMAASSERT( s, "ERROR: Shader error (path= {} ):\nFile does not exist", path )
 
-Render::Shader::Shader(const std::string& shaderName)
-{		
-	std::string shaderPath{ shadersDir + shaderName };	
-	std::string vertexCode;
-	std::string fragCode;
-	std::ifstream vertexStream;
-	std::ifstream fragStream;
+#define SHADERREAD( s, path ) SMAASSERT( s, "ERROR: Failed to read vertex shader: (path= {}):\n", vShaderPath )
 
-	vertexStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	fragStream.exceptions(std::ifstream::failbit | std::ifstream::badbit);	
+Render::Shader::Shader( const std::string& shaderName ) : m_name(shaderName)
+{
+}
 
-	try
-	{		
-		vertexStream.open( shaderPath + (".vs") );
-		fragStream.open( shaderPath + (".fs") );
-		std::stringstream vertexBuf;
-		vertexBuf << vertexStream.rdbuf();
-		std::stringstream fragBuf;
-		fragBuf << fragStream.rdbuf();
+bool Render::Shader::Compile()
+{    
+	std::string shaderPath{ shadersDir + m_name };	
 
-		vertexCode = vertexBuf.str();
-		fragCode = fragBuf.str();
-	}
-	catch (std::ifstream::failure& e)
-	{
-		// LOG HERE INSTEAD
-		LOG_ERROR("ERROR: Shader error (path= {} ):\n{}", shaderPath, e.what());
-		
-	}
+	auto vShaderPath{ shaderPath + ( ".vs" ) };
+    auto fShaderPath{ shaderPath + ( ".fs" ) };
+
+	std::ifstream vertexStream{ vShaderPath };
+	SHADEREXIST( vertexStream.is_open(), vShaderPath );
+
+    std::ifstream fragStream{ fShaderPath };
+    SHADEREXIST( fragStream.is_open(), fShaderPath );
+	
+
+	std::stringstream vertexBuf;    
+    SHADERREAD( vertexBuf << vertexStream.rdbuf(), vShaderPath);
+    std::stringstream fragBuf;
+    SHADERREAD( fragBuf << fragStream.rdbuf(), fShaderPath );
+
+    std::string vertexCode{ vertexBuf.str() };
+    std::string fragCode{ fragBuf.str() };
+	
+	
 	
 	const char* vShaderCode = vertexCode.c_str();
 	auto vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, nullptr);
 	glCompileShader(vertex);
-	checkCompileErrors(vertex, "VERTEX");
+    SASSERT( checkCompileErrors( vertex, "VERTEX" ) );
 
 	const char* fShaderCode = fragCode.c_str();
 	auto fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, &fShaderCode, nullptr);
 	glCompileShader(fragment);
-	checkCompileErrors(fragment, "FRAGMENT");
+    SASSERT( checkCompileErrors(fragment, "FRAGMENT") );
 
 	m_ID = glCreateProgram();
 	glAttachShader(m_ID, vertex);
 	glAttachShader(m_ID, fragment);
 	glLinkProgram(m_ID);
-	checkCompileErrors(m_ID, "PROGRAM");
+    SASSERT( checkCompileErrors(m_ID, "PROGRAM") );
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+
+
+    return true;
 }
 
 void Render::Shader::ActivateShader()
@@ -118,10 +122,10 @@ void Render::Shader::setMat4(const std::string& name, const glm::mat4& mat) cons
 	glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* type) const
+char infoLog[1024]; // NOLINT
+inline bool Render::Shader::checkCompileErrors(unsigned int shader, const char* type) const
 {
-	int success;
-	char infoLog[1024];
+	int success;	
 	if (std::strcmp(type, "PROGRAM"))
 	{
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -129,6 +133,7 @@ inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* 
 		{
 			glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
 			LOG_ERROR("ERROR::SHADER_COMPILATION_ERROR of type: {} \n{} \n-- -------------------------------------------------- - -- \n", type, infoLog);
+            return false;
 		}
 	}
 	else
@@ -138,6 +143,9 @@ inline void Render::Shader::checkCompileErrors(unsigned int shader, const char* 
 		{
 			glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
 			LOG_ERROR("ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n -- --------------------------------------------------- -- ", type, infoLog);
+            return false;
 		}
 	}
+
+	return true;
 }

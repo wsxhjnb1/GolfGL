@@ -5,12 +5,8 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 bool Input::Init(GLFWwindow* window)
-{
-	if (window == nullptr)
-	{
-		LOG_FATAL("Failed to init window");
-		return false;
-	}
+{	
+	SMASSERT( window != nullptr,  "Failed to init window");
 
 	m_Window = window;
 
@@ -28,8 +24,9 @@ bool Input::Init(GLFWwindow* window)
 
 void Input::ProcessInput()
 {
-	// glfwPollEvents();
-		
+	
+	glfwPollEvents();
+
 	// Esc
 	if (glfwGetKey( m_Window , GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(m_Window, true);

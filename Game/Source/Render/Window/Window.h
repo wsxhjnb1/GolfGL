@@ -17,9 +17,9 @@ namespace Window {
 		bool Init();
 		bool IsRunning();
 		void Update();
-		void Destroy();
 
-		Window() = default;		
+		Window() = default;
+		void Destroy();
 
 		static void FrameBufferResizeCallback(GLFWwindow* glfwWindow, int width, int height);
 

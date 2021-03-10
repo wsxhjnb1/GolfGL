@@ -5,13 +5,7 @@ namespace Window {
 	bool Window::Init()
 	{
 		m_glfwWindow = glfwCreateWindow(WindowData::width, WindowData::height, WindowData::windowTitle, nullptr, nullptr);
-		if (m_glfwWindow == nullptr)
-		{
-			LOG_FATAL("Failed to initialize window");
-			glfwTerminate();
-			return false;
-		}
-
+		SMASSERT(m_glfwWindow != nullptr, "Failed to init glfwWindow");
 
 		glfwMakeContextCurrent(m_glfwWindow);
 
@@ -34,8 +28,7 @@ namespace Window {
 		}
 
 
-		glfwSwapBuffers(m_glfwWindow);
-		glfwPollEvents();
+		glfwSwapBuffers(m_glfwWindow);		
 	}
 
 	GLFWwindow* Window::GetGlfwWindow()
@@ -45,8 +38,8 @@ namespace Window {
 
 	void Window::Destroy()
 	{
-		glfwDestroyWindow(m_glfwWindow);
-		glfwTerminate();
+		glfwDestroyWindow(m_glfwWindow);	
+		m_running = false;		
 		LOG_INFO("Window closed...");
 	}
 
