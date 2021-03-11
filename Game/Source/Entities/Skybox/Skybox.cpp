@@ -52,7 +52,7 @@ unsigned Entities::Skybox::m_LoadCubemap()
     for (unsigned int i = 0; i < skyData.faces.size(); i++)
     {
         unsigned char* data = stbi_load(skyData.faces[i], &width, &height, &nrChannels, 0);
-        if (data)
+        if (data != nullptr)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);

@@ -13,17 +13,8 @@ Entities::EntityManager::~EntityManager()
 
 bool Entities::EntityManager::Init()
 {
-	// Loading initial entities	
-	if( LoadEntity("skybox", std::make_unique<Skybox>()) 
-
-	 &&	LoadEntity("floor",  std::make_unique<Floor>())  
-
-	 && LoadEntity("ball",	 std::make_unique<Ball>()) 	 
-		)
-	return true;
-
-
-	return false;
+    return LoadEntity( "skybox", std::make_unique<Skybox>() ) && LoadEntity( "floor", std::make_unique<Floor>() ) &&
+           LoadEntity( "ball", std::make_unique<Ball>() );	
 }
 
 // void Entities::EntityManager::LoadEntity(const std::string& name, std::unique_ptr<Entity> entity)

@@ -12,6 +12,7 @@ clang-analyzer-*,
 -modernize-use-uncaught-exceptions,
 -performance-no-int-to-ptr,
 -readability-uppercase-literal-suffix,
+-readability-convert-member-functions-to-static,
 portability-restrict-system-includes,
 bugprone-suspicious-semicolon,
 google-build-using-namespace
@@ -37,3 +38,6 @@ CheckOptions:
 
   - key:     readability-magic-numbers.IgnoredIntegerValues
     value:   '1;2;3;4;5;180;360'
+
+  - key:     performance-move-const-arg.CheckTriviallyCopyableMove
+    value:   'false'

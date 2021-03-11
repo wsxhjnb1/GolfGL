@@ -80,13 +80,11 @@ file(GLOB_RECURSE GameSrc
   "Game/*.h"
   )
 
-foreach(srcFile ${GameSrc})
-
-   
-  execute_process(COMMAND "clang-format -i" "${srcFile}"
-                  COMMAND_ECHO STDOUT
-                  )
-endforeach()
+# foreach(srcFile ${GameSrc})   
+#   execute_process(COMMAND "clang-format -i" "${srcFile}"
+#                   COMMAND_ECHO STDOUT
+#                   )
+# endforeach()
 
 
 # Game files
@@ -128,6 +126,7 @@ if(MSVC)
 	
 else()
     if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g")
       target_compile_definitions(${NAME} PUBLIC _DEBUG)
     else()
       target_compile_definitions(${NAME} PUBLIC NDEBUG)

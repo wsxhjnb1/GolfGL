@@ -11,57 +11,37 @@ bool Render::Renderer::Init()
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);    
-    const char* glslVersion = "#version 330";
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);        
 
-    m_Window = new Window;
-    if ( !m_Window->Init() )
-    {
-        LOG_FATAL("Failed to init window!");
-        return false;
-    }
+    SMASSERT( m_Window.Init(), "FAILED TO INIT MAIN WINDOW" );    
 
 
-    if ( !gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) )
-    {
-        LOG_ERROR("Glad failed to load gl");
-        return false;
-    }
+    SMASSERT( gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Glad failed to load gl" );
+    
 
     glEnable(GL_DEPTH_TEST);
     // glDepthFunc(GL_LESS);
     // glEnable(GL_STENCIL_TEST);
 
-    glViewport( 0, 0, WindowData::width, WindowData::height ); 
-
-    glfwSetFramebufferSizeCallback(m_Window->GetGlfwWindow(), Window::FrameBufferResizeCallback);
+    glViewport( 0, 0, WindowData::width, WindowData::height );         
 
 
-    // ImGui part
+    glfwSetFramebufferSizeCallback( m_Window.m_glfwWindow, Window::Window::FrameBufferResizeCallback );
+        
 #ifdef _DEBUG
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();       
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();    
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(m_Window->GetGlfwWindow(), true);
-    ImGui_ImplOpenGL3_Init(glslVersion);
-#endif // _DEBUG    
+    m_DebugWindow.Init();
+#endif
 
     // stbi_set_flip_vertically_on_load(true);
      
     m_FrameBuff = new Framebuffer();
-    m_FrameBuff->Init();
+    SMASSERT( m_FrameBuff->Init(), "Failed to init framebuffer" );
 
+    m_EntryManager = new Entities::EntityManager();
+    SMASSERT( m_EntryManager->Init(), "Failed to init Entity Manager" );
+    
 
-    if (!m_EntryManager.Init())
-        return false;
-
-
-    lastTime = glfwGetTime();
+    lastTime = static_cast<float>( glfwGetTime() );
 
     LOG_INFO("Renderer initialized");
 
@@ -70,8 +50,7 @@ bool Render::Renderer::Init()
 
 void Render::Renderer::Update()
 {   
-
-    float timeValue = glfwGetTime();
+    float timeValue = static_cast<float>( glfwGetTime() );
     float delta = timeValue - lastTime;
     lastTime = timeValue;    
 
@@ -79,27 +58,41 @@ void Render::Renderer::Update()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_EntryManager.Update(delta);
+    m_EntryManager->Update(delta);
 
     m_FrameBuff->BindSceneEnd();
 
-    if (m_Window->IsRunning())
+    if (m_Window.IsRunning())
     {        
-        m_Window->Update();
+        UpdateWindows();
     }        
+}
+
+GLFWwindow* Render::Renderer::GetWindow()
+{
+    return m_Window.m_glfwWindow;
 }
 
 bool Render::Renderer::IsRunning()
 {
-    return m_Window->m_running;
-}
-
-Window* Render::Renderer::GetWindow()
-{
-    return m_Window;
+    return m_Window.m_running;
 }
 
 Render::Renderer::~Renderer()
-{           
-    delete m_Window;
+{   
+    delete m_FrameBuff;
+    delete m_EntryManager;
+#ifdef _DEBUG        
+    m_DebugWindow.Destroy();    
+#endif          
+    m_Window.Destroy();     
+    glfwTerminate();
+}
+
+void Render::Renderer::UpdateWindows()
+{
+#ifdef _DEBUG
+    m_DebugWindow.Update();
+#endif
+    m_Window.Update();
 }

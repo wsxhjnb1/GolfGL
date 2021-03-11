@@ -1,7 +1,7 @@
 #pragma once
 
-class Window;
-
+#include <Window/Window.h>
+#include <Window/DebugWindow.h>
 #include <Entities/EntityManager.h>
 
 namespace Render {	
@@ -19,17 +19,20 @@ namespace Render {
 		void Update();
 		bool IsRunning();
 
-		Window* GetWindow();
+		GLFWwindow* GetWindow();
 
 		Renderer() = default;
 		~Renderer();
 
 	private:
 		float lastTime;
-		Window* m_Window;
-		Framebuffer* m_FrameBuff;
+		Window::Window m_Window;
+		Window::DebugWindow m_DebugWindow;
 
-		Entities::EntityManager m_EntryManager;
+		Framebuffer* m_FrameBuff = nullptr;
+		Entities::EntityManager* m_EntryManager = nullptr;
 		
+
+		inline void UpdateWindows();
 	};
 }

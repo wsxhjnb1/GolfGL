@@ -20,8 +20,8 @@
 #include <stb_image/stb_image.h>
 
 // Global data
-#include <Data.h>
-
+#include "Data/WindowData.h"
+#include "Asserts.h"
 
 // classes
 #include <Camera/Camera.h>

@@ -7,7 +7,7 @@
 
 namespace Render {	
 
-    void Framebuffer::Init()
+    bool Framebuffer::Init()
     {
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -21,6 +21,7 @@ namespace Render {
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
         shader = new Shader("screen");
+        SASSERT( shader->Compile() );
 
         shader->ActivateShader();
         shader->SetValue("screenTexture", 0);
@@ -40,9 +41,11 @@ namespace Render {
         glBindRenderbuffer(GL_RENDERBUFFER, RBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WindowData::width, WindowData::height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            LOG_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+        SMASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
+            "ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        return true;
     }
 
     Framebuffer::~Framebuffer()

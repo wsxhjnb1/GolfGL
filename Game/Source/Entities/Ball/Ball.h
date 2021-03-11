@@ -18,7 +18,7 @@ namespace Entities {
 
 		glm::vec3 position;
 		glm::vec3 direction;			
-		int m_angle;
+		float m_angle;
 		float m_speed;				
 
 		unsigned m_diffuseMap;		

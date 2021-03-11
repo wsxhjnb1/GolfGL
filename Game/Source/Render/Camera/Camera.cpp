@@ -3,7 +3,7 @@
 #include "Camera.h"
 
 void Camera::Init()
-{
+{    
     ms_Camera = std::move( std::unique_ptr<Camera>() );
 }
 
@@ -52,7 +52,7 @@ glm::vec3 Camera::GetCameraFront()
     return cameraFront;
 }
 
-void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
+void Camera::ProcessMouseMovement(float xoffset, float yoffset)
 {
     xoffset *= MouseSensitivity;
     yoffset *= MouseSensitivity;
@@ -60,30 +60,20 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
     Yaw += xoffset;
     Pitch += yoffset;
 
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (constrainPitch)
-    {
-        if (Pitch > 89.0f)
-            Pitch = 89.0f;
-        if (Pitch < -89.0f)
-            Pitch = -89.0f;
-    }
+    m_BoundAngleInRange(Pitch, -constrainPitchBound, constrainPitchBound);    
 
     // update Front, Right and Up Vectors using the updated Euler angles
-    UpdateCameraVectors();
+    m_UpdateCameraVectors();
 }
 
 void Camera::ProcessMouseScroll(float yoffset)
 {
-    Zoom -= (float)yoffset;
-    if (Zoom < 1.0f)
-        Zoom = 1.0f;
-    if (Zoom > 45.0f)
-        Zoom = 45.0f;
+    Zoom -= static_cast<float>(yoffset);
+    m_BoundAngleInRange(Zoom, zoomLowerBound, zoomUpperBound);
 }
 
 
-void Camera::UpdateCameraVectors()
+void Camera::m_UpdateCameraVectors()
 {
     // calculate the new Front vector
     glm::vec3 front;

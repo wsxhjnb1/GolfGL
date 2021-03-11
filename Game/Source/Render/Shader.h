@@ -8,7 +8,9 @@ namespace Render {
 	class Shader
 	{
 	public:
-		Shader(const std::string& shaderName);	
+		Shader(const std::string& shaderName);
+
+		bool Compile();
 
 		void ActivateShader();
 		
@@ -40,8 +42,9 @@ namespace Render {
 
 	private:
 		unsigned m_ID;
-		
-		void checkCompileErrors(unsigned int shader, const char* type) const;
+		std::string m_name;
+				
+		bool checkCompileErrors(unsigned int shader, const char* type) const;
 
 
 		friend Renderer;

@@ -10,7 +10,7 @@ namespace Render {
 	public:		
 		~Framebuffer();
 
-		void Init();
+		bool Init();
 
 		void BindSceneBegin();
 		void BindSceneEnd();

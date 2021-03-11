@@ -10,20 +10,28 @@ namespace Entities {
 	public:
 		virtual void Update(float delta) = 0;
 
+		virtual ~Entity() { glDeleteTextures(1, &texture); }
+
 	protected:
 		Entity(const std::string& shaderName)
 			: shader(shaderName), texture(0)
-		{}
+		{
+			shader.Compile();
+		}
 
 		Entity(const std::string& shaderName, const std::string& texturePath)
 			: shader(shaderName)
 			, texture(Render::Texture::LoadNativeTexture(texturePath))
-		{}
+		{
+			shader.Compile();
+		}
 
 		Entity(const std::string& shaderName, const unsigned textureID)
 			: shader(shaderName)
 			, texture(textureID)
-		{}
+		{
+			shader.Compile();
+		}
 
 		glm::mat4 projection{ 1.f };
 		glm::mat4 view{ 1.f };
