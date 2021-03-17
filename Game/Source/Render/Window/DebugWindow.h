@@ -16,7 +16,7 @@ namespace Window {
 		~DebugWindow() = default;
 
 	private:
-		void DrawMenu();
+		void DrawLightMenu();
 
 		bool m_DebugMenuActive = true;
 		ImVec4 clear_color{ 0.45f, 0.55f, 0.60f, 1.00f };
