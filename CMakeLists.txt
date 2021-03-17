@@ -11,7 +11,7 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 if (NOT MSVC)	
-	list(APPEND CMAKE_CXX_FLAGS " -std=c++17")
+	list(APPEND CMAKE_CXX_FLAGS " ")
 endif()
 
 message(STATUS ${CMAKE_CXX_FLAGS})
@@ -74,18 +74,15 @@ endif(WIN32)
 
 
 set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
-# CLANG-FORMAT
 file(GLOB_RECURSE GameSrc
-  "Game/*.cpp"
-  "Game/*.h"
+  "${CMAKE_SOURCE_DIR}/Game/*.cpp"
+  "${CMAKE_SOURCE_DIR}/Game/*.h"
   )
 
-# foreach(srcFile ${GameSrc})   
-#   execute_process(COMMAND "clang-format -i" "${srcFile}"
-#                   COMMAND_ECHO STDOUT
-#                   )
-# endforeach()
-
+file(GLOB_RECURSE Shaders
+  "${CMAKE_SOURCE_DIR}/Resources/*.vs"
+  "${CMAKE_SOURCE_DIR}/Resources/*.fs"
+  )
 
 # Game files
 set(NAME "GolfGL")
@@ -93,10 +90,8 @@ set(NAME "GolfGL")
 file(
     GLOB_RECURSE _source_list 
     LIST_DIRECTORIES false
-    "${_src_root_path}/*.cpp"
-    "${_src_root_path}/*.h"
-    "${_src_root_path}/*.vs"
-    "${_src_root_path}/*.fs"
+    ${GameSrc}
+	${Shaders}
 )
 
 
@@ -113,10 +108,12 @@ target_link_libraries(${NAME} ${LIBS})
 
 
 if(MSVC)        
-    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Ycprecomp.h /std:c++17")
+    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Yuprecomp.h /std:c++17")
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
     set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	    
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	        
+	set_source_files_properties("${_src_root_path}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h")
+	
        
     # CLANG-TIDY
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
@@ -125,11 +122,13 @@ if(MSVC)
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
 	
 else()
+	target_precompile_headers(${NAME} PUBLIC ${_src_root_path}/Source/precomp.h) 
     if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-      set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g")
+      set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g -std=c++17")
       target_compile_definitions(${NAME} PUBLIC _DEBUG)
     else()
-      target_compile_definitions(${NAME} PUBLIC NDEBUG)
+		set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-std=c++17")
+		target_compile_definitions(${NAME} PUBLIC NDEBUG)
     endif()
 
 
