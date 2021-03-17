@@ -8,7 +8,7 @@ namespace Entities {
     Ball::Ball()
         : Render::Model("Resources/Objects/golfBall/golfBall.obj")
         , Entity("entity"), position(ballDefault::position)
-        , direction(CAMERA.GetCameraFront()), m_angle(ballDefault::angle)  
+        , direction( CAMERA.GetCameraFront() ), m_angle(ballDefault::angle)  
         , m_speed(0.f)
     {        
         // diffuse texture is loaded in parent class    
@@ -56,25 +56,26 @@ namespace Entities {
         shader.SetValue("material.shininess", 255.f);
     }
 
+   
+
     inline void Ball::m_HandleTransformations(float delta)
     {
         updatePV();
 
-        if (m_speed - 0.01f > 0.f)
+        if (m_speed > 0.f)
         {
-            m_speed -= 0.001f;   
+            m_speed -= delta; // Deceleration
             position += ballDefault::scalarFixer * m_speed * direction;
 
-            
-            m_angle += 3*m_speed; 
+            /* Angle is in degrees kept between [0, 360) */
+            m_angle += m_speed; 
             m_angle = m_angle < 360.f ? m_angle : m_angle - 360.f;
         }
-        else if (glfwGetKey(Window::Window::GetGlfwWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+        else if ( m_ShootEvent() )
         {            
-            direction = { CAMERA.GetCameraFront() };
+            direction = CAMERA.GetCameraFront();
             direction.y = 0.f;
             direction = glm::normalize(direction);
-
             m_speed = ballDefault::speed;
         }
 
