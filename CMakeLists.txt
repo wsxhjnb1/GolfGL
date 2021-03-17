@@ -9,11 +9,6 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
-
-if (NOT MSVC)	
-	list(APPEND CMAKE_CXX_FLAGS " ")
-endif()
-
 message(STATUS ${CMAKE_CXX_FLAGS})
 
 
@@ -80,8 +75,8 @@ file(GLOB_RECURSE GameSrc
   )
 
 file(GLOB_RECURSE Shaders
-  "${CMAKE_SOURCE_DIR}/Resources/*.vs"
-  "${CMAKE_SOURCE_DIR}/Resources/*.fs"
+  "${CMAKE_SOURCE_DIR}/Game/Resources/*.vs"
+  "${CMAKE_SOURCE_DIR}/Game/Resources/*.fs"
   )
 
 # Game files
