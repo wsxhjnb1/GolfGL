@@ -17,9 +17,11 @@ namespace Window {
 
 	private:
 		void DrawLightMenu();
+		void DrawGFXSettings();
 
-		bool m_DebugMenuActive = true;
+		bool m_DebugMenuActive = true;		
 		ImVec4 clear_color{ 0.45f, 0.55f, 0.60f, 1.00f };
+		
 	};
 
 } // Window

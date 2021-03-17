@@ -5,7 +5,7 @@ uniform sampler2D screenTexture;
 uniform vec2 frameBufSize;
 in vec2 TexCoords;
 
-
+uniform bool AA;
 
 
 vec3 FXAA()
@@ -68,5 +68,9 @@ vec3 FXAA()
 
 void main()
 {
-    FragColor = vec4(FXAA(), 1);
+    if(AA)
+        FragColor = vec4(FXAA(), 1);
+
+    else
+        FragColor = texture(screenTexture, TexCoords);
 }

@@ -11,6 +11,7 @@ bool Window::DebugWindow::Init()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -32,6 +33,10 @@ bool Window::DebugWindow::Update()
 	ImGui::Begin("Debug Window", &m_DebugMenuActive, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
 
 		DrawLightMenu();
+
+		ImGui::Separator();
+
+		DrawGFXSettings();
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
@@ -74,4 +79,33 @@ void Window::DebugWindow::DrawLightMenu()
 
 	ImGui::EndGroup();
 }
+
+void Window::DebugWindow::DrawGFXSettings()
+{
+	ImGui::Text("Graphics settings:");
+	ImGui::BeginGroup();
+	
+
+		if (ImGui::BeginMenu("Resolution"))
+		{
+			if (ImGui::MenuItem("1280x720"))  { glfwSetWindowSize(Window::GetGlfwWindow(), 1280, 720);   glViewport(0, 0, 1280, 720);  }
+			if (ImGui::MenuItem("1920x1080")) {  glfwSetWindowSize(Window::GetGlfwWindow(), 1920, 1080); glViewport(0, 0, 1920, 1080); }
+
+			ImGui::EndMenu();
+		}
+		
+	
+		if (ImGui::BeginMenu("Anti-Aliasing"))
+		{
+			if (ImGui::MenuItem("None"))	{ WindowData::fxaa = false;}
+			if (ImGui::MenuItem("FXAA"))	{ WindowData::fxaa = true; }			
+
+			ImGui::EndMenu();
+		}
+				
+
+	ImGui::EndGroup();
+}
+
+
 
