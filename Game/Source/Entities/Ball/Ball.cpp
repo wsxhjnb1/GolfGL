@@ -3,8 +3,6 @@
 #include "Ball.h"
 #include "ballDefault.h"
 
-#include <Data/LightData.h>
-
 namespace Entities {    
 
     Ball::Ball()
@@ -18,10 +16,9 @@ namespace Entities {
             , [](Render::Texture& t) {
                 return t.GetType() == TDIFFUSE;
             })).GetID();
-
+            
             shader.ActivateShader();
             shader.SetValue("material.diffuse", 0);
-            
     }
 
 
@@ -33,7 +30,7 @@ namespace Entities {
 
         setUniformPVM();        
 
-
+        
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
 
@@ -47,15 +44,16 @@ namespace Entities {
     {
         shader.ActivateShader();
 
-        shader.setVec3("lightPos", Light::LightPosition);
-        shader.setVec3("viewPos", CAMERA.GetCameraPos());
-        shader.setVec3("light.ambient", Light::Ambient);
-        shader.setVec3("light.diffuse", Light::Diffuse);
+        shader.setVec3("light.position", Light::LightPosition);
+        shader.setVec3("viewPos",        CAMERA.GetCameraPos());
+        shader.setVec3("light.ambient",  Light::Ambient);
+        shader.setVec3("light.diffuse",  Light::Diffuse);
         shader.setVec3("light.specular", Light::Specular);
 
-
+        // shader.setVec3("material.ambient", 1.f, 1.f, 1.f);
+        // shader.setVec3("material.diffuse", 0.8f, 0.8f, 0.8f);
         shader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-        shader.SetValue("material.shininess", 32.f);
+        shader.SetValue("material.shininess", 255.f);
     }
 
     inline void Ball::m_HandleTransformations(float delta)
