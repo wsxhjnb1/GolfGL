@@ -28,7 +28,15 @@ bool Window::DebugWindow::Update()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	
-	DrawMenu();	
+
+	ImGui::Begin("Debug Window", &m_DebugMenuActive, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
+
+		DrawLightMenu();
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+	ImGui::End();
+
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -54,39 +62,16 @@ void Window::DebugWindow::Destroy()
 }
 
 
-/* Not changing anything just for decoration now */
-void Window::DebugWindow::DrawMenu()
-{
-	ImGui::Begin("Debug Window", &m_DebugMenuActive, ImGuiWindowFlags_MenuBar);
-	
+void Window::DebugWindow::DrawLightMenu()
+{				
+	ImGui::BeginGroup();
 
-		ImGui::Text("Graphics settings:");		
-		{
-			ImGui::BeginGroup();
+		ImGui::Text("Light:"); 
+		ImGui::InputFloat3("Light position", &LIGHT.LightPosition[0]);
+		ImGui::InputFloat3("Light ambient",  &LIGHT.Ambient[0]);
+		ImGui::InputFloat3("Light diffuse",  &LIGHT.Diffuse[0]);
+		ImGui::InputFloat3("Light specular", &LIGHT.Specular[0]);
 
-			ImGui::Text("Resolution:"); ImGui::SameLine();
-			if (ImGui::BeginMenu(WindowData::GetResolution().c_str()))
-			{
-
-				if (ImGui::MenuItem("1280x720", "720p")) {  }
-				if (ImGui::MenuItem("1920x1080", "1080p")) {  }
-
-				ImGui::EndMenu();
-			}
-
-			ImGui::Text("Vsync:"); ImGui::SameLine();
-			ImGui::Checkbox("", &WindowData::vsync);
-
-			if (ImGui::Button("Apply"))
-			{
-				// Future work
-			}
-
-			ImGui::EndGroup();
-		} // Graphics settigns group	
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-		ImGui::End();	
+	ImGui::EndGroup();
 }
 

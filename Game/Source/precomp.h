@@ -30,6 +30,7 @@
 #include <Render/Renderer.h>
 #include <Render/Texture.h>
 #include <Window/Window.h>
+#include <Entities/Light.h>
 
 // STL
 #include <exception>
