@@ -20,8 +20,8 @@ bool Render::Renderer::Init()
     
 
     glEnable(GL_DEPTH_TEST);
-    // glDepthFunc(GL_LESS);
-    // glEnable(GL_STENCIL_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_STENCIL_TEST);
 
     glViewport( 0, 0, WindowData::width, WindowData::height );         
 
@@ -32,7 +32,7 @@ bool Render::Renderer::Init()
     m_DebugWindow.Init();
 #endif
 
-    // stbi_set_flip_vertically_on_load(true);
+    
      
     m_FrameBuff = new Framebuffer();
     SMASSERT( m_FrameBuff->Init(), "Failed to init framebuffer" );
@@ -50,6 +50,9 @@ bool Render::Renderer::Init()
 
 void Render::Renderer::Update()
 {   
+    if (!m_Window.IsRunning())
+        return;
+
     float timeValue = static_cast<float>( glfwGetTime() );
     float delta = timeValue - lastTime;
     lastTime = timeValue;    
@@ -62,10 +65,9 @@ void Render::Renderer::Update()
 
     m_FrameBuff->BindSceneEnd();
 
-    if (m_Window.IsRunning())
-    {        
-        UpdateWindows();
-    }        
+           
+    UpdateWindows();
+            
 }
 
 GLFWwindow* Render::Renderer::GetWindow()
