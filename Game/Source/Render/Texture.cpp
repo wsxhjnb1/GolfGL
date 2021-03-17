@@ -2,7 +2,7 @@
 
 #include "Texture.h"
 
-#include <stb_image.h>
+
 
 Render::Texture::Texture(const std::string& name, Render::TextureType type)
 	: m_Name(name.substr( name.find_last_of('/') + 1)), m_Type(type)

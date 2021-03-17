@@ -9,9 +9,6 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
-message(STATUS ${CMAKE_CXX_FLAGS})
-
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
@@ -108,15 +105,16 @@ if(MSVC)
     set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	    
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	        
 	set_source_files_properties("${_src_root_path}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h")
-	
-       
+	       
     # CLANG-TIDY
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "--checks=*")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
+
 	
 else()
+
 	target_precompile_headers(${NAME} PUBLIC ${_src_root_path}/Source/precomp.h) 
     if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
       set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g -std=c++17")
@@ -146,8 +144,10 @@ if(WIN32)
 								"${CMAKE_SOURCE_DIR}/External/assimp/lib/assimp-vc140-mt.dll" $<TARGET_FILE_DIR:${NAME}>)	
 endif(WIN32)
 
-file(GLOB_RECURSE externHeaders ${CMAKE_SOURCE_DIR}/External/*.h)
-set_source_files_properties(${externHeaders} PROPERTIES COMPILE_FLAGS "-w")
+if(CMAKE_COMPILER_IS_GNUCXX)
+    file(GLOB_RECURSE externHeaders ${CMAKE_SOURCE_DIR}/External/*.h)
+    set_source_files_properties(${externHeaders} PROPERTIES COMPILE_FLAGS "-w")
+endif()
 
 include_directories(${ASSIMP_INCLUDE_DIR}
                     ${FREETYPE_INCLUDE_DIR_ft2build}
@@ -155,10 +155,10 @@ include_directories(${ASSIMP_INCLUDE_DIR}
                     ${GLFW3_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}/backends
-					          ${STB_IMAGE_INCLUDE_DIR}
+					${STB_IMAGE_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}/External
                     ${CMAKE_SOURCE_DIR}/Game/Source
-					          ${CMAKE_SOURCE_DIR}/Game/Source/Render
+		            ${CMAKE_SOURCE_DIR}/Game/Source/Render
                    )
 
 
