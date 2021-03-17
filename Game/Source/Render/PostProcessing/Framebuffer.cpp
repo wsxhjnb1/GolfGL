@@ -24,7 +24,7 @@ namespace Render {
         SASSERT( shader->Compile() );
 
         shader->ActivateShader();
-        shader->SetValue("screenTexture", 0);
+        shader->SetValue("screenTexture", 0);        
 
         glGenFramebuffers(1, &nativeFb);
         glBindFramebuffer(GL_FRAMEBUFFER, nativeFb);
@@ -75,6 +75,7 @@ namespace Render {
 
         shader->ActivateShader();
         shader->setVec2("frameBufSize", WindowData::width, WindowData::height);
+        shader->SetValue("AA", WindowData::fxaa);
 
         glBindVertexArray(VAO);
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);        

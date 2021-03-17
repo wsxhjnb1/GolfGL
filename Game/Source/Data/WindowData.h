@@ -6,7 +6,7 @@ struct WindowData
 	inline static int height = 720;
 	inline static const char* windowTitle = "GolfGL";
 	inline static const char* glslVersion = "#version 330";
-	inline static bool vsync = false;
+	inline static bool fxaa = true;
 
 	inline static std::string GetResolution() 
 	{
