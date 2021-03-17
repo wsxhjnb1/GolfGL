@@ -74,6 +74,8 @@ namespace Render {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader->ActivateShader();
+        shader->setVec2("frameBufSize", WindowData::width, WindowData::height);
+
         glBindVertexArray(VAO);
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);        
         glDrawArrays(GL_TRIANGLES, 0, 6);
