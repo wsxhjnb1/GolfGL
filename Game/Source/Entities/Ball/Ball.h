@@ -32,6 +32,11 @@ namespace Entities {
 		{
 			return glm::normalize(glm::vec3{ direction.z, 0.f, -direction.x });
 		}
+
+		inline bool m_ShootEvent()
+		{
+			return glfwGetKey(Window::Window::GetGlfwWindow(), GLFW_KEY_SPACE) == GLFW_PRESS;
+		}
 		
 	};
 }
