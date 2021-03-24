@@ -46,7 +46,7 @@ namespace Entities {
 		inline virtual void updatePV()
 		{
 			projection = glm::perspective(glm::radians(CAMERA.GetCameraZoom())
-				, (float)WindowData::width / (float)WindowData::height, 0.1f, 100.0f);
+				, WindowData::W / WindowData::H, 0.1f, 100.0f);
 
 			view = CAMERA.LookAt();
 		}

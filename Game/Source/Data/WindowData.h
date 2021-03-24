@@ -13,4 +13,9 @@ struct WindowData
 		return std::to_string(width) + "x" + std::to_string(height);
 	}
 	
+
+	// Just to avoid massive number of casting
+    inline static float W = 1280.f;
+    inline static float H = 720.f;
+
 };

@@ -19,7 +19,7 @@ namespace Entities {
 		inline void updatePV() override
 		{
 			projection = glm::perspective(glm::radians(Camera::GetCamera().GetCameraZoom())
-				, (float)WindowData::width / (float)WindowData::height, 0.1f, 100.0f);
+				, WindowData::W / WindowData::H, 0.1f, 100.0f);
 
 			view = glm::mat4(glm::mat3(Camera::GetCamera().LookAt()));			
 		}

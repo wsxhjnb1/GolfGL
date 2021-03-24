@@ -74,7 +74,7 @@ namespace Render {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader->ActivateShader();
-        shader->setVec2("frameBufSize", WindowData::width, WindowData::height);
+        shader->setVec2("frameBufSize", WindowData::W, WindowData::H);
         shader->SetValue("AA", WindowData::fxaa);
 
         glBindVertexArray(VAO);

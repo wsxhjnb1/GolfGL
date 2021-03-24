@@ -8,8 +8,8 @@ public:
 	bool Init( GLFWwindow* window );
 	void ProcessInput();
 
-	inline static float lastX = WindowData::width / 2.0f;
-	inline static float lastY = WindowData::height / 2.0f;
+	inline static float lastX = WindowData::W / 2.0f;
+	inline static float lastY = WindowData::H / 2.0f;
 	inline static bool firstMouse = true;
 
 private:
