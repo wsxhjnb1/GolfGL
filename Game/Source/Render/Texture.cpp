@@ -7,6 +7,14 @@
 Render::Texture::Texture(const std::string& name, Render::TextureType type)
 	: m_Name(name.substr( name.find_last_of('/') + 1)), m_Type(type)
 {	
+    
+    if ( m_Name.empty() )
+    {
+        m_Name = name;
+        m_ID = LoadNativeTexture( std::string{ "Resources/Textures/" }.append( name ) );
+    }
+        
+
 	m_ID = LoadNativeTexture(name);
 }
 
@@ -29,7 +37,6 @@ Render::TextureType Render::Texture::GetType()
 unsigned Render::Texture::GenID( GLenum target )
 {
     unsigned id;
-
     glGenTextures( 1, &id );
     glBindTexture( target, id );
 
@@ -99,6 +106,11 @@ unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum tar
 	if ( rawIm.data == nullptr )
     {
         LOG_ERROR( "Failed to load texture\nTexture: {}", name );
+
+#ifdef _DEBUG
+        LOG_ERROR( "Error code: {}", glGetError() );
+#endif // _DEBUG
+        
         return 0;
     }
 
