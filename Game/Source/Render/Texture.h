@@ -17,18 +17,22 @@ namespace Render {
 
 
 	struct RawImage
-    {
-        unsigned id = 0;
+    {        
         int width, height, nChannels;
         stbi_uc* data = nullptr;
 
-		using Properties = std::tuple<unsigned, int, int, int, stbi_uc*>;
+		using Properties = std::tuple<int, int, int, stbi_uc*>;
         inline Properties Get()
         {
-            return { id, width, height, nChannels, data };
+            return { width, height, nChannels, data };
         }
 
-		
+		inline stbi_uc* Set( const char *path )
+        {
+            stbi_image_free( data );
+            data = stbi_load( path, &width, &height, &nChannels, 0 );
+            return data;
+        }
 		
 		~RawImage()
         {            
@@ -51,7 +55,10 @@ namespace Render {
 		/* Static texture loading functions */
 		// -------------------------------------
         /* Load texture and returns texture ID */
-		static unsigned LoadNativeTexture(const std::string& name, GLenum target = GL_TEXTURE_2D);	
+		static unsigned LoadNativeTexture(const std::string& name, GLenum target = GL_TEXTURE_2D);
+
+		/* Generates ID for texture target */
+        static unsigned GenID( GLenum target = GL_TEXTURE_2D );
 		
 		/* Stores image properties in RAII struct */				
 		static RawImage LoadRawImage( const std::string &name, int desiredChannels = 0 );
@@ -60,17 +67,17 @@ namespace Render {
 		static GLint GetFormat( int nChannels );
 
 		/* Binds to array and specifies texture image to native lib */
-        static void BindTextureImage( GLenum target, RawImage& rawimage );
-        static void BindTextureImage( GLenum target, int id, int width, int height, GLint internalformat,
-                                      const stbi_uc *data, GLenum format = GL_RGB, GLint level = 0, 
-									  GLenum type = GL_UNSIGNED_BYTE, bool genmm = true );
+        static void BindTextureImage( GLenum target, unsigned id, RawImage &rawimage, bool genmm = true );
+        static void BindTextureImage( GLenum target, unsigned id, int width, int height, GLint internalformat,
+                                      const stbi_uc *data, bool genmm = true, GLenum format = GL_RGB, 
+									  GLint level = 0, GLenum type = GL_UNSIGNED_BYTE );
 
 		/* Set texture parameter */
-		template<typename T>
+		template<typename T = int>
         static void SetTexParam( GLenum target, GLenum pname, T param );
         /* Set texture parameters */
-        template <typename T> 
-		static void SetTexParam( GLenum target, GLenum pname, T* param );
+        template <typename T = int> 
+		static void SetTexParam( GLenum target, GLenum pname, const T* param );
 
 
 		/* Texture type parsers */
@@ -125,7 +132,7 @@ inline void Texture::SetTexParam( GLenum target, GLenum pname, T param )
 }
 
 template <typename T> 
-inline void Texture::SetTexParam( GLenum target, GLenum pname, T* param )
+inline void Texture::SetTexParam( GLenum target, GLenum pname, const T* param )
 {
     glTexParameteriv( target, pname, param );
 }

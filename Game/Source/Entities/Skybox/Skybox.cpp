@@ -42,32 +42,36 @@ void Entities::Skybox::Update(float delta)
 }
 
 unsigned Entities::Skybox::m_LoadCubemap()
-{
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+{    
+    using rTex = Render::Texture;
 
-    int width, height, nrChannels;
+    auto id = rTex::GenID( GL_TEXTURE_CUBE_MAP );
+
+    auto &sFaces = skyData.faces;
+    Render::RawImage rawIm{ rTex::LoadRawImage( sFaces[0] ) };    
+
+    glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, rawIm.width, rawIm.height
+                        , 0, GL_RGB, GL_UNSIGNED_BYTE, rawIm.data );
     
-    for (unsigned int i = 0; i < skyData.faces.size(); i++)
-    {
-        unsigned char* data = stbi_load(skyData.faces[i], &width, &height, &nrChannels, 0);
-        if (data != nullptr)
+    for (auto i = 1; i < sFaces.size(); i++)
+    {        
+        if ( rawIm.Set( sFaces[i] ) == nullptr )
         {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            stbi_image_free(data);
+            std::cout << "Cubemap texture failed to load at path: " << sFaces[i] << std::endl;
+            return 0;
         }
-        else
-        {
-            std::cout << "Cubemap texture failed to load at path: " << skyData.faces[i] << std::endl;
-            stbi_image_free(data);
-        }
+        
+        glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, rawIm.width, rawIm.height, 0, GL_RGB,
+                      GL_UNSIGNED_BYTE, rawIm.data );                      
+         
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    return textureID;
+    
+    rTex::SetTexParam(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    rTex::SetTexParam(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    rTex::SetTexParam(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    rTex::SetTexParam(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    rTex::SetTexParam(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return id;
 }

@@ -26,19 +26,23 @@ Render::TextureType Render::Texture::GetType()
 }
 
 
-
-Render::RawImage Render::Texture::LoadRawImage( const std::string &name, int desiredChannels )
-{    
+unsigned Render::Texture::GenID( GLenum target )
+{
     unsigned id;
 
     glGenTextures( 1, &id );
-    glBindTexture( GL_TEXTURE_2D, id );
+    glBindTexture( target, id );
 
+    return id;
+}
+
+Render::RawImage Render::Texture::LoadRawImage( const std::string &name, int desiredChannels )
+{        
     int width, height, nChannels;
 
     unsigned char *data = stbi_load( name.c_str(), &width, &height, &nChannels, desiredChannels );	
 
-	return { id, width, height, nChannels, data };
+	return { width, height, nChannels, data };
 }
 
 GLint Render::Texture::GetFormat( int nChannels )
@@ -56,16 +60,17 @@ GLint Render::Texture::GetFormat( int nChannels )
     }
 }
 
-void Render::Texture::BindTextureImage( GLenum target, RawImage& rawimage )
+void Render::Texture::BindTextureImage( GLenum target, unsigned id, RawImage& rawimage, bool genmm )
 {
-    auto [id, width, height, nChannels, data] = rawimage.Get();
+    auto [width, height, nChannels, data] = rawimage.Get();
+    
     auto iForm = GetFormat( nChannels );
 
-	BindTextureImage( target, id, width, height, iForm, data );
+	BindTextureImage( target, id, width, height, iForm, data, genmm );
 }
 
-void Render::Texture::BindTextureImage( GLenum target, int id, int width, int height, GLint internalformat,
-                                        const stbi_uc *data, GLenum format, GLint level, GLenum type, bool genmm )
+void Render::Texture::BindTextureImage( GLenum target, unsigned id, int width, int height, GLint internalformat,
+                                        const stbi_uc *data, bool genmm, GLenum format, GLint level, GLenum type )
 {
     glBindTexture( GL_TEXTURE_2D, id );
     glTexImage2D( GL_TEXTURE_2D, level, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, data );
@@ -87,6 +92,7 @@ inline void Render::Texture::SetTexParam( GLenum target, GLenum pname, float* pa
 
 unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum target)
 {		
+    auto id = GenID( target );
 	RawImage rawIm{ LoadRawImage( name ) };
 	
 
@@ -96,7 +102,7 @@ unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum tar
         return 0;
     }
 
-    BindTextureImage( target, rawIm );
+    BindTextureImage( target, id, rawIm );
 
 	SetTexParam( target, GL_TEXTURE_WRAP_S, GL_REPEAT );
     SetTexParam( target, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -105,7 +111,8 @@ unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum tar
 
 	LOG_INFO("Loaded texture {}", name);
 	
-	return rawIm.id;
+	return id;
 }
+
 
 
