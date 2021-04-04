@@ -45,23 +45,20 @@ unsigned Entities::Skybox::m_LoadCubemap()
 {    
     using rTex = Render::Texture;
 
-    auto id = rTex::GenID( GL_TEXTURE_CUBE_MAP );
+    unsigned id = rTex::GenID( GL_TEXTURE_CUBE_MAP );    
 
-    auto &sFaces = skyData.faces;
-    Render::RawImage rawIm{ rTex::LoadRawImage( sFaces[0] ) };    
+    unsigned textureXPos = GL_TEXTURE_CUBE_MAP_POSITIVE_X;     
 
-    glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, rawIm.width, rawIm.height
-                        , 0, GL_RGB, GL_UNSIGNED_BYTE, rawIm.data );
-    
-    for (auto i = 1; i < sFaces.size(); i++)
+    for (auto& face : skyData.faces)
     {        
-        if ( rawIm.Set( sFaces[i] ) == nullptr )
+        auto& rawIm =  rTex::LoadRawImage( face );
+        if ( rawIm.data == nullptr )
         {
-            std::cout << "Cubemap texture failed to load at path: " << sFaces[i] << std::endl;
+            std::cout << "Cubemap texture failed to load at path: " << face << std::endl;
             return 0;
         }
         
-        glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, rawIm.width, rawIm.height, 0, GL_RGB,
+        glTexImage2D( textureXPos++, 0, GL_RGB, rawIm.width, rawIm.height, 0, GL_RGB,
                       GL_UNSIGNED_BYTE, rawIm.data );                      
          
     }

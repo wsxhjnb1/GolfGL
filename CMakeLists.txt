@@ -1,6 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
-
 project ("GolfGL")
 
 
@@ -10,14 +9,20 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 17)
 
 
-if(UNIX)
+
+if(UNIX)  
+  cmake_policy(SET CMP0072 NEW)
   find_package(Freetype REQUIRED)
   message(STATUS "Found Freetype in ${FREETYPE_INCLUDE_DIR_ft2build}")
   
   set(GLAD_LIBRARY "${CMAKE_SOURCE_DIR}/External/GLAD/lib/unix/libglad.a")
   set(IMGUI_LIBRARY "${CMAKE_SOURCE_DIR}/External/imgui/lib/unix/libimgui.a")    
+
+  # add_compile_options("--coverage")
+
 endif(UNIX)
 
 if(WIN32)
@@ -65,7 +70,7 @@ else() # UNIX
 endif(WIN32)
 
 
-set(_src_root_path "${CMAKE_SOURCE_DIR}/Game")
+set(Source_Root "${CMAKE_SOURCE_DIR}/Game")
 file(GLOB_RECURSE GameSrc
   "${CMAKE_SOURCE_DIR}/Game/*.cpp"
   "${CMAKE_SOURCE_DIR}/Game/*.h"
@@ -80,73 +85,77 @@ file(GLOB_RECURSE Shaders
 set(NAME "GolfGL")
 
 file(
-    GLOB_RECURSE _source_list 
+    GLOB_RECURSE Source_List 
     LIST_DIRECTORIES false
     ${GameSrc}
-	${Shaders}
+	  ${Shaders}
 )
 
 
-add_executable(${NAME} ${_source_list})
-foreach(_source IN ITEMS ${_source_list})
-    get_filename_component(_source_path "${_source}" PATH)
-    file(RELATIVE_PATH _source_path_rel "${_src_root_path}" "${_source_path}")
-    string(REPLACE "/" "\\" _group_path "${_source_path_rel}")
-    source_group("${_group_path}" FILES "${_source}")
+# Grouping and forming source tree
+add_executable(${NAME} ${Source_List})
+foreach(SRC_file IN ITEMS ${Source_List})
+    get_filename_component(SRC_path "${SRC_file}" PATH)
+    file(RELATIVE_PATH SRC_path_rel "${Source_Root}" "${SRC_path}")
+    string(REPLACE "/" "\\" SRC_Group "${SRC_path_rel}")
+    source_group("${SRC_Group}" FILES "${SRC_file}")
 endforeach()
 
 
 target_link_libraries(${NAME} ${LIBS})
 
-
-if(MSVC)        
-    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Yuprecomp.h /std:c++17")
+if(MSVC)
+                                                            # PCH Use   # inline exp
+    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Yuprecomp.h /Ob1")         
+    set_source_files_properties("${Source_Root}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h") # PCH create
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
-    set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}/Debug")	    
+    set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${Source_Root}")	    
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	        
-	set_source_files_properties("${_src_root_path}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h")
+	  
 	       
-    # CLANG-TIDY
+    # CLANG-TIDY as default code analysis tool in VS
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "--checks=*")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
 
+    
+
 	
 else()
 
-	target_precompile_headers(${NAME} PUBLIC ${_src_root_path}/Source/precomp.h) 
-    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-      set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g -std=c++17")
-      target_compile_definitions(${NAME} PUBLIC _DEBUG)
-    else()
-		set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-std=c++17")
-		target_compile_definitions(${NAME} PUBLIC NDEBUG)
-    endif()
-
-
-    set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
+  target_precompile_headers(${NAME} PUBLIC ${Source_Root}/Source/precomp.h) 
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")      
+    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g")
+    target_compile_definitions(${NAME} PUBLIC _DEBUG)
+  else()		
+    target_compile_definitions(${NAME} PUBLIC NDEBUG)
+  endif() # DEBUG   
+  
+  set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
+  
 	
 endif(MSVC)
 
-
-add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory
-							$<TARGET_FILE_DIR:${NAME}>/Resources)
-add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND
-						${CMAKE_COMMAND} -E copy_directory
-						"${CMAKE_SOURCE_DIR}/Game/Resources"
-						$<TARGET_FILE_DIR:${NAME}>/Resources)
-							
-
 if(WIN32)									
-		add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
-								${CMAKE_COMMAND} -E copy
-								"${CMAKE_SOURCE_DIR}/External/assimp/lib/assimp-vc140-mt.dll" $<TARGET_FILE_DIR:${NAME}>)	
+  add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
+              ${CMAKE_COMMAND} -E copy
+              "${CMAKE_SOURCE_DIR}/External/assimp/lib/assimp-vc140-mt.dll" $<TARGET_FILE_DIR:${NAME}>)
+
+
+# Making symblic link on unix          
+else()
+  add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
+        ${CMAKE_COMMAND} -E create_symlink "${Source_Root}/Resources" 
+        $<TARGET_FILE_DIR:${NAME}>/Resources)
+
 endif(WIN32)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
-    file(GLOB_RECURSE externHeaders ${CMAKE_SOURCE_DIR}/External/*.h)
-    set_source_files_properties(${externHeaders} PROPERTIES COMPILE_FLAGS "-w")
+# Suppressing warnings from external libs
+if(CMAKE_COMPILER_IS_GNUCXX)  
+    file(GLOB_RECURSE externHeaders "${CMAKE_SOURCE_DIR}/External/*.h" "${Source_Root}/Source/precomp.cpp")
+    set_source_files_properties(${externHeaders} PROPERTIES COMPILE_FLAGS 
+    "-Wno-shift-negative-value -Wno-implicit-fallthrough -Wno-unused-but-set-variable -Wno-sign-compare")        
 endif()
 
 include_directories(${ASSIMP_INCLUDE_DIR}
@@ -155,10 +164,10 @@ include_directories(${ASSIMP_INCLUDE_DIR}
                     ${GLFW3_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}/backends
-					${STB_IMAGE_INCLUDE_DIR}
-                    ${CMAKE_SOURCE_DIR}/External
+					          ${STB_IMAGE_INCLUDE_DIR}
+                    ${CMAKE_SOURCE_DIR}/External                    
                     ${CMAKE_SOURCE_DIR}/Game/Source
-		            ${CMAKE_SOURCE_DIR}/Game/Source/Render
+		                ${CMAKE_SOURCE_DIR}/Game/Source/Render
                    )
 
 
