@@ -3,14 +3,11 @@
 #include <utility>
 #include "Shader.h"
 
-#define SHADEREXIST( s, path ) SMAASSERT( s, "ERROR: Shader error (path= {} ):\nFile does not exist", path )
+#define SHADEREXIST(s, path) SMAASSERT(s, "ERROR: Shader error (path= {} ):\nFile does not exist", path)
 
-#define SHADERREAD( s, path ) SMAASSERT( s, "ERROR: Failed to read vertex shader: (path= {}):\n", vShaderPath )
+#define SHADERREAD(s, path) SMAASSERT(s, "ERROR: Failed to read vertex shader: (path= {}):\n", vShaderPath)
 
-Render::Shader::Shader(std::string shaderName) :
-    m_name(std::move(shaderName))
-{
-}
+Render::Shader::Shader(std::string shaderName) : m_name(std::move(shaderName)) {}
 
 bool Render::Shader::Compile()
 {
@@ -34,22 +31,22 @@ bool Render::Shader::Compile()
     std::string fragCode{fragBuf.str()};
 
     const char *vShaderCode = vertexCode.c_str();
-    auto vertex = glCreateShader(GL_VERTEX_SHADER);
+    auto vertex             = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, nullptr);
     glCompileShader(vertex);
-    SASSERT(checkCompileErrors( vertex, "VERTEX" ));
+    SASSERT(checkCompileErrors(vertex, "VERTEX"));
 
     const char *fShaderCode = fragCode.c_str();
-    auto fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    auto fragment           = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fShaderCode, nullptr);
     glCompileShader(fragment);
-    SASSERT(checkCompileErrors( fragment, "FRAGMENT" ));
+    SASSERT(checkCompileErrors(fragment, "FRAGMENT"));
 
     m_ID = glCreateProgram();
     glAttachShader(m_ID, vertex);
     glAttachShader(m_ID, fragment);
     glLinkProgram(m_ID);
-    SASSERT(checkCompileErrors( m_ID, "PROGRAM" ));
+    SASSERT(checkCompileErrors(m_ID, "PROGRAM"));
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
@@ -57,10 +54,7 @@ bool Render::Shader::Compile()
     return true;
 }
 
-void Render::Shader::ActivateShader()
-{
-    glUseProgram(m_ID);
-}
+void Render::Shader::ActivateShader() { glUseProgram(m_ID); }
 
 void Render::Shader::SetValue(const std::string &name, float value) const
 {

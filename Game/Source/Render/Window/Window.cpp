@@ -15,10 +15,7 @@ namespace Window
         return true;
     }
 
-    bool Window::IsRunning()
-    {
-        return m_running;
-    }
+    bool Window::IsRunning() { return m_running; }
 
     void Window::Update()
     {
@@ -31,10 +28,7 @@ namespace Window
         m_running = false;
     }
 
-    GLFWwindow *Window::GetGlfwWindow()
-    {
-        return m_glfwWindow;
-    }
+    GLFWwindow *Window::GetGlfwWindow() { return m_glfwWindow; }
 
     void Window::Destroy()
     {

@@ -11,7 +11,7 @@ bool Render::Renderer::Init()
 
     SMASSERT(m_Window.Init(), "FAILED TO INIT MAIN WINDOW");
 
-    SMASSERT(gladLoadGLLoader( reinterpret_cast<GLADloadproc>(glfwGetProcAddress) ), "Glad failed to load gl");
+    SMASSERT(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Glad failed to load gl");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -40,14 +40,14 @@ bool Render::Renderer::Init()
 
 void Render::Renderer::Update()
 {
-    if (!m_Window.m_running) {
+    if (!m_Window.m_running)
+    {
         return;
-
-}
+    }
 
     float timeValue = static_cast<float>(glfwGetTime());
-    float delta = timeValue - lastTime;
-    lastTime = timeValue;
+    float delta     = timeValue - lastTime;
+    lastTime        = timeValue;
 
     m_FrameBuff->BindSceneBegin();
 
@@ -60,15 +60,9 @@ void Render::Renderer::Update()
     m_UpdateWindows();
 }
 
-GLFWwindow *Render::Renderer::GetWindow()
-{
-    return Window::Window::m_glfwWindow;
-}
+GLFWwindow *Render::Renderer::GetWindow() { return Window::Window::m_glfwWindow; }
 
-bool Render::Renderer::IsRunning()
-{
-    return m_Window.m_running;
-}
+bool Render::Renderer::IsRunning() { return m_Window.m_running; }
 
 Render::Renderer::~Renderer()
 {

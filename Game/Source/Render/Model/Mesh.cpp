@@ -6,9 +6,10 @@
 
 #include "Mesh.h"
 
-Render::Mesh::Mesh(std::vector<Render::Vertex> &_vertices, std::vector<unsigned> &_indices,
-                   std::vector<Render::Texture> &_textures) :
-    vertices(_vertices), indices(_indices), textures(_textures)
+Render::Mesh::Mesh(std::vector<Render::Vertex> &_vertices,
+                   std::vector<unsigned> &_indices,
+                   std::vector<Render::Texture> &_textures)
+    : vertices(_vertices), indices(_indices), textures(_textures)
 {
     m_Init();
 }

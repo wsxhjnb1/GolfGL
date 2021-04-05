@@ -6,10 +6,7 @@
 #include "Floor.h"
 #include "Skybox/Skybox.h"
 
-Entities::EntityManager::~EntityManager()
-{
-    m_Table.clear();
-}
+Entities::EntityManager::~EntityManager() { m_Table.clear(); }
 
 bool Entities::EntityManager::Init()
 {
@@ -33,8 +30,6 @@ bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_pt
 
 void Entities::EntityManager::Update(float delta)
 {
-    std::for_each(m_Table.begin(), m_Table.end(), [=](std::pair<const std::string, std::unique_ptr<Entity>> &p)
-    {
-        p.second->Update(delta);
-    });
+    std::for_each(m_Table.begin(), m_Table.end(),
+                  [=](std::pair<const std::string, std::unique_ptr<Entity>> &p) { p.second->Update(delta); });
 }

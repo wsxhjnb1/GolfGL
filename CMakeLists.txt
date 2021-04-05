@@ -115,16 +115,18 @@ if(MSVC)
     set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Yuprecomp.h /Ob1")         
     set_source_files_properties("${Source_Root}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h") # PCH create
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
+	
+	
     set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${Source_Root}")	    
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "${NAME}")	        
 	  
 	       
     # CLANG-TIDY as default code analysis tool in VS
     if(Clang-Tidy)
-      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "true")
       set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
       set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "clang-tidy")
-      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "true")
     endif()
     
 

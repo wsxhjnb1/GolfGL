@@ -2,32 +2,23 @@
 
 #include "Texture.h"
 
-Render::Texture::Texture(const std::string &name, Render::TextureType type) :
-    m_Name(name.substr(name.find_last_of('/') + 1)), m_Type(type)
+Render::Texture::Texture(const std::string &name, Render::TextureType type)
+    : m_Name(name.substr(name.find_last_of('/') + 1)), m_Type(type)
 {
     if (m_Name.empty())
     {
         m_Name = name;
-        m_ID = LoadNativeTexture(std::string{"Resources/Textures/"}.append(name));
+        m_ID   = LoadNativeTexture(std::string{"Resources/Textures/"}.append(name));
     }
 
     m_ID = LoadNativeTexture(name);
 }
 
-unsigned Render::Texture::GetID()
-{
-    return m_ID;
-}
+unsigned Render::Texture::GetID() { return m_ID; }
 
-std::string Render::Texture::GetName()
-{
-    return m_Name;
-}
+std::string Render::Texture::GetName() { return m_Name; }
 
-Render::TextureType Render::Texture::GetType()
-{
-    return m_Type;
-}
+Render::TextureType Render::Texture::GetType() { return m_Type; }
 
 unsigned Render::Texture::GenID(GLenum target)
 {
@@ -51,14 +42,10 @@ GLint Render::Texture::GetFormat(int nChannels)
 {
     switch (nChannels)
     {
-    case 2:
-        return GL_RG;
-    case 3:
-        return GL_RGB;
-    case 4:
-        return GL_RGBA;
-    default:
-        return GL_RED;
+    case 2: return GL_RG;
+    case 3: return GL_RGB;
+    case 4: return GL_RGBA;
+    default: return GL_RED;
     }
 }
 
@@ -71,15 +58,23 @@ void Render::Texture::BindTextureImage(GLenum target, unsigned id, RawImage &raw
     BindTextureImage(target, id, width, height, iForm, data, genmm);
 }
 
-void Render::Texture::BindTextureImage(GLenum target, unsigned id, int width, int height, GLint internalformat,
-                                       const stbi_uc *data, bool genmm, GLenum format, GLint level, GLenum type)
+void Render::Texture::BindTextureImage(GLenum target,
+                                       unsigned id,
+                                       int width,
+                                       int height,
+                                       GLint internalformat,
+                                       const stbi_uc *data,
+                                       bool genmm,
+                                       GLenum format,
+                                       GLint level,
+                                       GLenum type)
 {
     glBindTexture(GL_TEXTURE_2D, id);
     glTexImage2D(GL_TEXTURE_2D, level, internalformat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    if (genmm) {
+    if (genmm)
+    {
         glGenerateMipmap(GL_TEXTURE_2D);
-
-}
+    }
 }
 
 template <>
@@ -126,17 +121,12 @@ std::string Render::Texture::TypeToString(TextureType type)
 {
     switch (type)
     {
-    case Render::TextureType::DIFFUSE:
-        return std::string{"texture_diffuse"};
-    case Render::TextureType::NORMAL:
-        return std::string{"texture_normal"};
-    case Render::TextureType::SPECULAR:
-        return std::string{"texture_specular"};
-    case Render::TextureType::HEIGHT:
-        return std::string{"texture_height"};
+    case Render::TextureType::DIFFUSE: return std::string{"texture_diffuse"};
+    case Render::TextureType::NORMAL: return std::string{"texture_normal"};
+    case Render::TextureType::SPECULAR: return std::string{"texture_specular"};
+    case Render::TextureType::HEIGHT: return std::string{"texture_height"};
     case Render::TextureType::TEX_ERRORTYPE:
-    default:
-        break;
+    default: break;
     }
 
     return std::string{"ErrorTextureType"};

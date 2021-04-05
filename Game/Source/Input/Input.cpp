@@ -9,7 +9,7 @@ bool Input::Init(GLFWwindow *window)
 #ifdef _DEBUG
     glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 #else
-    glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 #endif //_DEBUG
 
     glfwSetKeyCallback(m_Window, keyCallback);
@@ -21,52 +21,52 @@ bool Input::Init(GLFWwindow *window)
 
 using WWindow = Window::Window;
 
-#define KEY_PRESSED( key ) (glfwGetKey(WWindow::GetGlfwWindow(), key) == GLFW_PRESS)
+#define KEY_PRESSED(key) (glfwGetKey(WWindow::GetGlfwWindow(), key) == GLFW_PRESS)
 
 
 void Input::ProcessInput()
 {
     glfwPollEvents();
 
-    if (KEY_PRESSED(GLFW_KEY_ESCAPE)) {
+    if (KEY_PRESSED(GLFW_KEY_ESCAPE))
+    {
         glfwSetWindowShouldClose(m_Window, 1);
-
-}
+    }
 
     float currentFrame = static_cast<float>(glfwGetTime());
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
+    deltaTime          = currentFrame - lastFrame;
+    lastFrame          = currentFrame;
     CAMERA.SetCameraSpeed(deltaTime);
 
     // W
-    if (KEY_PRESSED(GLFW_KEY_W)) {
+    if (KEY_PRESSED(GLFW_KEY_W))
+    {
         CAMERA.LookUp();
-
-}
+    }
     // S
-    if (KEY_PRESSED(GLFW_KEY_S)) {
+    if (KEY_PRESSED(GLFW_KEY_S))
+    {
         CAMERA.LookDown();
-
-}
+    }
     // D
-    if (KEY_PRESSED(GLFW_KEY_D)) {
+    if (KEY_PRESSED(GLFW_KEY_D))
+    {
         CAMERA.LookRight();
-
-}
+    }
     // A
-    if (KEY_PRESSED(GLFW_KEY_A)) {
+    if (KEY_PRESSED(GLFW_KEY_A))
+    {
         CAMERA.LookLeft();
-
-}
+    }
 }
 
 
 void Input::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, 1);
-
-}
+    }
 }
 
 void Input::mouseCallback(GLFWwindow *window, double xpos, double ypos)
@@ -84,8 +84,8 @@ void Input::mouseCallback(GLFWwindow *window, double xpos, double ypos)
 
     if (Input::firstMouse)
     {
-        Input::lastX = x_pos;
-        Input::lastY = y_pos;
+        Input::lastX      = x_pos;
+        Input::lastY      = y_pos;
         Input::firstMouse = false;
     }
 

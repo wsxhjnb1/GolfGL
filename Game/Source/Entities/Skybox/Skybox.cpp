@@ -3,8 +3,7 @@
 #include "Skybox.h"
 #include "skyboxData.h"
 
-Entities::Skybox::Skybox() :
-    Entity("skybox")
+Entities::Skybox::Skybox() : Entity("skybox")
 {
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
@@ -46,7 +45,7 @@ unsigned Entities::Skybox::m_LoadCubemap()
 {
     using rTex = Render::Texture;
 
-    unsigned id = rTex::GenID(GL_TEXTURE_CUBE_MAP);
+    unsigned id          = rTex::GenID(GL_TEXTURE_CUBE_MAP);
     unsigned textureXPos = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 
     for (auto &face : skyData.faces)

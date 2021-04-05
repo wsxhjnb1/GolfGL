@@ -6,10 +6,10 @@ int main()
     Render::Renderer renderer;
     Input input;
 
-    if (!renderer.Init() || !input.Init(renderer.GetWindow())) {
+    if (!renderer.Init() || !input.Init(renderer.GetWindow()))
+    {
         return 1;
-
-}
+    }
 
     while (renderer.IsRunning())
     {

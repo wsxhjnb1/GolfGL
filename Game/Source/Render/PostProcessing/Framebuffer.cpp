@@ -41,7 +41,7 @@ namespace Render
         glBindRenderbuffer(GL_RENDERBUFFER, RBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WindowData::width, WindowData::height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
-        SMASSERT(glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE,
+        SMASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
                  "ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

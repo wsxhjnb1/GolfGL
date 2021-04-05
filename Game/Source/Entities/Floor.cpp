@@ -4,8 +4,7 @@
 
 namespace Entities
 {
-    Floor::Floor() :
-        Entity("plain", "Resources/Textures/grass.jpg")
+    Floor::Floor() : Entity("plain", "Resources/Textures/grass.jpg")
     {
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);

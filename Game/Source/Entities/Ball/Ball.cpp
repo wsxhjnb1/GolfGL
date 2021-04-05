@@ -5,15 +5,18 @@
 
 namespace Entities
 {
-    Ball::Ball() :
-        Render::Model("Resources/Objects/golfBall/golfBall.obj"), Entity("entity"),
-        position(ballDefault::position), direction(CAMERA.GetCameraFront()), m_angle(ballDefault::angle),
-        m_speed(0.f)
+    Ball::Ball()
+        : Render::Model("Resources/Objects/golfBall/golfBall.obj")
+        , Entity("entity")
+        , position(ballDefault::position)
+        , direction(CAMERA.GetCameraFront())
+        , m_angle(ballDefault::angle)
+        , m_speed(0.f)
     {
         // diffuse texture is loaded in parent class
-        m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end(),
-                                      [](Render::Texture &t) { return t.GetType() == TDIFFUSE; }))
-            .GetID();
+        m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end(), [](Render::Texture &t) {
+                           return t.GetType() == TDIFFUSE;
+                       })).GetID();
 
         shader.ActivateShader();
         shader.SetValue("material.diffuse", 0);
@@ -64,10 +67,10 @@ namespace Entities
         }
         else if (m_ShootEvent())
         {
-            direction = CAMERA.GetCameraFront();
+            direction   = CAMERA.GetCameraFront();
             direction.y = 0.f;
-            direction = glm::normalize(direction);
-            m_speed = ballDefault::speed;
+            direction   = glm::normalize(direction);
+            m_speed     = ballDefault::speed;
         }
 
         model = glm::translate(glm::mat4{1.f}, position);
