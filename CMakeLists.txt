@@ -77,8 +77,8 @@ file(GLOB_RECURSE GameSrc
   )
 
 file(GLOB_RECURSE Shaders
-  "${CMAKE_SOURCE_DIR}/Game/Resources/*.vs"
-  "${CMAKE_SOURCE_DIR}/Game/Resources/*.fs"
+  "${CMAKE_SOURCE_DIR}/Game/Resources/*.vert"
+  "${CMAKE_SOURCE_DIR}/Game/Resources/*.frag"
   )
 
 # Game files
@@ -91,6 +91,8 @@ file(
 	  ${Shaders}
 )
 
+
+# Setting cmake executable
 
 # Grouping and forming source tree
 add_executable(${NAME} ${Source_List})
@@ -116,7 +118,7 @@ if(MSVC)
     # CLANG-TIDY as default code analysis tool in VS
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
-    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "--checks=*")
+    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "clang-tidy")
     set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
 
     
@@ -124,7 +126,7 @@ if(MSVC)
 	
 else()
 
-  target_precompile_headers(${NAME} PUBLIC ${Source_Root}/Source/precomp.h) 
+  target_precompile_headers(${NAME} INTERFACE ${Source_Root}/Source/precomp.h) 
   if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")      
     set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g")
     target_compile_definitions(${NAME} PUBLIC _DEBUG)
