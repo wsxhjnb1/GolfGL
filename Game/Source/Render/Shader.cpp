@@ -13,8 +13,8 @@ bool Render::Shader::Compile()
 {    
 	std::string shaderPath{ shadersDir + m_name };	
 
-	auto vShaderPath{ shaderPath + ( ".vs" ) };
-    auto fShaderPath{ shaderPath + ( ".fs" ) };
+	auto vShaderPath{ shaderPath + ( ".vert" ) };
+    auto fShaderPath{ shaderPath + ( ".frag" ) };
 
 	std::ifstream vertexStream{ vShaderPath };
 	SHADEREXIST( vertexStream.is_open(), vShaderPath );
@@ -56,16 +56,6 @@ bool Render::Shader::Compile()
 
 
     return true;
-}
-
-void Render::Shader::ActivateShader()
-{
-	glUseProgram(m_ID);
-}
-
-void Render::Shader::SetValue(const std::string& name, int value) const
-{
-	glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
 

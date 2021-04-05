@@ -12,9 +12,12 @@ namespace Render {
 
 		bool Compile();
 
-		void ActivateShader();
-		
-		void SetValue(const std::string& name, int value) const;
+		inline void ActivateShader()
+        {
+            glUseProgram( m_ID );
+        }
+		template <typename T = int>
+		void SetValue(const std::string& name, T value) const;
 		
 		void SetValue(const std::string& name, float value) const;
 		
@@ -50,4 +53,9 @@ namespace Render {
 		friend Renderer;
 		friend Mesh;
 	};
-}
+    template <typename T> 
+	inline void Shader::SetValue( const std::string &name, T value ) const
+    {
+        glUniform1i( glGetUniformLocation( m_ID, name.c_str() ), value );
+    }
+} // namespace Render
