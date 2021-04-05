@@ -3,8 +3,8 @@
 #include "Camera.h"
 
 void Camera::Init()
-{    
-    ms_Camera = std::move( std::unique_ptr<Camera>() );
+{
+    ms_Camera = std::move(std::unique_ptr<Camera>());
 }
 
 void Camera::LookUp()
@@ -60,7 +60,7 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset)
     Yaw += xoffset;
     Pitch += yoffset;
 
-    m_BoundAngleInRange(Pitch, -constrainPitchBound, constrainPitchBound);    
+    m_BoundAngleInRange(Pitch, -constrainPitchBound, constrainPitchBound);
 
     // update Front, Right and Up Vectors using the updated Euler angles
     m_UpdateCameraVectors();
@@ -71,7 +71,6 @@ void Camera::ProcessMouseScroll(float yoffset)
     Zoom -= static_cast<float>(yoffset);
     m_BoundAngleInRange(Zoom, zoomLowerBound, zoomUpperBound);
 }
-
 
 void Camera::m_UpdateCameraVectors()
 {

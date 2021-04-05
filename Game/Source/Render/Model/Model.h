@@ -4,36 +4,39 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Mesh.h"
 
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
-namespace Render {
+namespace Render
+{
     class Model
     {
     public:
-        Model(std::string name)
-        {            
+        Model(const std::string &name)
+        {
             loadModel(name);
         }
-        void Draw(Shader* shader);        
+
+        void Draw(Shader *shader);
 
     protected:
         std::vector<Texture> textures_loaded;
+
     private:
-        // model data        
+        // model data
         std::vector<Mesh> meshes;
         std::string directory;
 
-        void loadModel(const std::string& path);
-        void processNode(aiNode* node, const aiScene* scene);
-        Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-            TextureType typeName);
+        void loadModel(const std::string &path);
+        void processNode(aiNode *node, const aiScene *scene);
+        Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+        std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, TextureType typeName);
     };
-} // Redner
+} // namespace Render

@@ -91,11 +91,15 @@ file(
 	  ${Shaders}
 )
 
-
+# Setting clang tidy
+option(Clang-Tidy OFF)
+if(Clang-Tidy)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+endif()
 # Setting cmake executable
+add_executable(${NAME} ${Source_List})
 
 # Grouping and forming source tree
-add_executable(${NAME} ${Source_List})
 foreach(SRC_file IN ITEMS ${Source_List})
     get_filename_component(SRC_path "${SRC_file}" PATH)
     file(RELATIVE_PATH SRC_path_rel "${Source_Root}" "${SRC_path}")
@@ -116,11 +120,12 @@ if(MSVC)
 	  
 	       
     # CLANG-TIDY as default code analysis tool in VS
-    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
-    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
-    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "clang-tidy")
-    set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
-
+    if(Clang-Tidy)
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "false")
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "clang-tidy")
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
+    endif()
     
 
 	

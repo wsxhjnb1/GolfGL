@@ -1,89 +1,104 @@
 #include <precomp.h>
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+bool Input::Init(GLFWwindow *window)
+{
+    SMASSERT(window != nullptr, "Failed to init window");
 
-
-bool Input::Init(GLFWwindow* window)
-{	
-	SMASSERT( window != nullptr,  "Failed to init window");
-
-	m_Window = window;
+    m_Window = window;
 
 #ifdef _DEBUG
-	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 #else
-	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 #endif //_DEBUG
 
-	glfwSetCursorPosCallback(m_Window, mouseCallback);
-	glfwSetScrollCallback(m_Window, scrollCallback);
+    glfwSetKeyCallback(m_Window, keyCallback);
+    glfwSetCursorPosCallback(m_Window, mouseCallback);
+    glfwSetScrollCallback(m_Window, scrollCallback);
 
-	return true;
+    return true;
 }
+
+using WWindow = Window::Window;
+
+#define KEY_PRESSED( key ) (glfwGetKey(WWindow::GetGlfwWindow(), key) == GLFW_PRESS)
+
 
 void Input::ProcessInput()
 {
-	
-	glfwPollEvents();
+    glfwPollEvents();
 
-	// Esc
-	if (glfwGetKey( m_Window , GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(m_Window, true);
-
-
-	float currentFrame = static_cast<float>(glfwGetTime());
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-	Camera::GetCamera().SetCameraSpeed(deltaTime);
-
-	// W
-	if (glfwGetKey(m_Window, GLFW_KEY_W) == GLFW_PRESS)
-		Camera::GetCamera().LookUp();
-	// S
-	if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS)
-		Camera::GetCamera().LookDown();
-	// D
-	if (glfwGetKey(m_Window, GLFW_KEY_D) == GLFW_PRESS)
-		Camera::GetCamera().LookRight();
-	// A
-	if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS)
-		Camera::GetCamera().LookLeft();
-	
+    if (KEY_PRESSED(GLFW_KEY_ESCAPE)) {
+        glfwSetWindowShouldClose(m_Window, 1);
 
 }
 
+    float currentFrame = static_cast<float>(glfwGetTime());
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+    CAMERA.SetCameraSpeed(deltaTime);
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos)
-{	
+    // W
+    if (KEY_PRESSED(GLFW_KEY_W)) {
+        CAMERA.LookUp();
+
+}
+    // S
+    if (KEY_PRESSED(GLFW_KEY_S)) {
+        CAMERA.LookDown();
+
+}
+    // D
+    if (KEY_PRESSED(GLFW_KEY_D)) {
+        CAMERA.LookRight();
+
+}
+    // A
+    if (KEY_PRESSED(GLFW_KEY_A)) {
+        CAMERA.LookLeft();
+
+}
+}
+
+
+void Input::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, 1);
+
+}
+}
+
+void Input::mouseCallback(GLFWwindow *window, double xpos, double ypos)
+{
 #ifdef _DEBUG
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-	{
-		Input::firstMouse = true;
-		return;
-	}
-#endif // _DEBUG	
+    if (KEY_PRESSED(GLFW_KEY_LEFT_CONTROL))
+    {
+        Input::firstMouse = true;
+        return;
+    }
+#endif // _DEBUG
 
-	float x_pos = static_cast<float>( xpos );
-    float y_pos = static_cast<float>( ypos );
+    float x_pos = static_cast<float>(xpos);
+    float y_pos = static_cast<float>(ypos);
 
-	if (Input::firstMouse)
-	{
+    if (Input::firstMouse)
+    {
         Input::lastX = x_pos;
         Input::lastY = y_pos;
-		Input::firstMouse = false;
-	}
+        Input::firstMouse = false;
+    }
 
-	float xoffset = x_pos - Input::lastX;
-	float yoffset = Input::lastY - y_pos; // reversed since y-coordinates go from bottom to top
+    float xoffset = x_pos - Input::lastX;
+    float yoffset = Input::lastY - y_pos; // reversed since y-coordinates go from bottom to top
 
-	Input::lastX = x_pos;
-	Input::lastY = y_pos;
+    Input::lastX = x_pos;
+    Input::lastY = y_pos;
 
-	Camera::GetCamera().ProcessMouseMovement(xoffset, yoffset);
+    CAMERA.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+void Input::scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 {
-	Camera::GetCamera().ProcessMouseScroll( static_cast<float>(yoffset) );
+    CAMERA.ProcessMouseScroll(static_cast<float>(yoffset));
 }

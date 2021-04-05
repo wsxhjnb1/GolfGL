@@ -1,38 +1,40 @@
 #pragma once
 
-#include <Window/Window.h>
-#include <Window/DebugWindow.h>
 #include <Entities/EntityManager.h>
+#include <Window/DebugWindow.h>
+#include <Window/Window.h>
 
-namespace Render {	
+namespace Render
+{
+    class Framebuffer;
 
-	class Framebuffer;
+    class Renderer
+    {
+    public:
+        Renderer(const Renderer &) = delete;
+        Renderer(Renderer &&) = delete;
+        void operator=(const Renderer &) = delete;
 
-	class Renderer
-	{
-	public:
-		Renderer(const Renderer&) = delete;
-		Renderer(Renderer&&) = delete;
-		void operator=(const Renderer&) = delete;
+        bool Init();
+        void Update();
+        bool IsRunning();
 
-		bool Init();
-		void Update();
-		bool IsRunning();
+        GLFWwindow *GetWindow();
 
-		GLFWwindow* GetWindow();
+        Renderer() = default;
+        ~Renderer();
 
-		Renderer() = default;
-		~Renderer();
+    private:
+        float lastTime;
+        Window::Window m_Window;
+        Window::DebugWindow m_DebugWindow;
 
-	private:
-		float lastTime;
-		Window::Window m_Window;
-		Window::DebugWindow m_DebugWindow;
+        Framebuffer *m_FrameBuff = nullptr;
+        Entities::EntityManager *m_EntryManager = nullptr;
 
-		Framebuffer* m_FrameBuff = nullptr;
-		Entities::EntityManager* m_EntryManager = nullptr;
-		
+        inline static float m_clearColorRgba[4] = {0.5f, 0.5f, 0.5f, 1.f};
 
-		inline void UpdateWindows();
-	};
-}
+        inline void m_clearColor();
+        inline void m_UpdateWindows();
+    };
+} // namespace Render
