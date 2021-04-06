@@ -1,25 +1,25 @@
 #pragma once
 #pragma once
 
-namespace Render {
+namespace Render
+{
+    class Shader;
 
-	class Shader;
+    class Framebuffer
+    {
+    public:
+        ~Framebuffer();
 
-	class Framebuffer
-	{
-	public:		
-		~Framebuffer();
+        bool Init();
 
-		bool Init();
+        void BindSceneBegin();
+        void BindSceneEnd();
 
-		void BindSceneBegin();
-		void BindSceneEnd();
+    private:
+        Shader *shader;
 
-	private:
-		Shader* shader;
-
-		unsigned VAO, VBO, RBO;
-		unsigned nativeFb;
-		unsigned textureColorBuffer;		
-	};
-}
+        unsigned VAO, VBO, RBO;
+        unsigned nativeFb;
+        unsigned textureColorBuffer;
+    };
+} // namespace Render

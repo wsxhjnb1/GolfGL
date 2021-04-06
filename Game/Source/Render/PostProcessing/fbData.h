@@ -1,20 +1,17 @@
 #pragma once
 
-namespace Render {
-	class fbData
-	{
-		friend class Framebuffer;
-		inline static float vertices[24] = {
+namespace Render
+{
+    class fbData
+    {
+        friend class Framebuffer;
+        float vertices[24] = {
+            -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
 
-			-1.0f,  1.0f,	0.0f, 1.0f,
-			-1.0f, -1.0f,	0.0f, 0.0f,
-			 1.0f, -1.0f,	1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 
-			-1.0f,  1.0f,	0.0f, 1.0f,
-			 1.0f, -1.0f,	1.0f, 0.0f,
-			 1.0f,  1.0f,	1.0f, 1.0f
-		};
-	};
-}
+        unsigned n_triangles = 6;
+    };
+} // namespace Render
 
-Render::fbData data;
+inline Render::fbData Data;

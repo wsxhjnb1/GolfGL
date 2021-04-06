@@ -4,6 +4,8 @@ performance-*,
 modernize-*,
 readability-*,
 clang-analyzer-*,
+portability-restrict-system-includes,
+bugprone-suspicious-semicolon,
 -modernize-use-trailing-return-type,
 -modernize-avoid-c-arrays,
 -modernize-make-shared,
@@ -11,33 +13,24 @@ clang-analyzer-*,
 -modernize-use-auto,
 -modernize-use-uncaught-exceptions,
 -performance-no-int-to-ptr,
+-readability-make-member-function-const,
+-readability-magic-numbers,
 -readability-uppercase-literal-suffix,
 -readability-convert-member-functions-to-static,
-portability-restrict-system-includes,
-bugprone-suspicious-semicolon,
-google-build-using-namespace
-'
-
+-clang-diagnostic-pessimizing-move'
 HeaderFilterRegex: '*Game/Source/.*'
-
 CheckOptions:
-  - key:     modernize-use-transparent-functors.SafeMode
-    value:   'true'
-
-  - key:     modernize-use-nullptr.NullMacros
-    value:   'NULL'
-
-  - key:     readability-braces-around-state.ShortStatementLines
-    value:   '1'
-
-  - key:     readability-inconsistent-declaration-parameter-name.Strict
-    value:   'true'
-
-  - key:     readability-uniqueptr-delete-release.PreferResetCall 
-    value:   'true'
-
-  - key:     readability-magic-numbers.IgnoredIntegerValues
-    value:   '1;2;3;4;5;180;360'
-
-  - key:     performance-move-const-arg.CheckTriviallyCopyableMove
-    value:   'false'
+  - key:    modernize-use-transparent-functors.SafeMode
+    value:  'true'
+  - key:		modernize-use-nullptr.NullMacros
+    value:	'NULL'
+  - key:		readability-braces-around-state.ShortStatementLines
+    value:	'3'
+  - key:		readability-inconsistent-declaration-parameter-name.Strict
+    value:	'true'
+  - key:		readability-uniqueptr-delete-release.PreferResetCall
+    value:	'true'
+  - key:		performance-move-const-arg.CheckTriviallyCopyableMove
+    value:	'false'
+  - key:		readability-implicit-bool-conversion.AllowIntegerConditions
+    value:	'true'
