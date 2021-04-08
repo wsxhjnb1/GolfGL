@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Entities/EntityManager.h>
-#include <Window/DebugWindow.h>
 #include <Window/Window.h>
+
+#ifdef _DEBUG
+#include <Window/DebugWindow.h>
+#endif
 
 namespace Render
 {
@@ -12,7 +15,7 @@ namespace Render
     {
     public:
         Renderer(const Renderer &) = delete;
-        Renderer(Renderer &&) = delete;
+        Renderer(Renderer &&)      = delete;
         void operator=(const Renderer &) = delete;
 
         bool Init();
@@ -27,9 +30,12 @@ namespace Render
     private:
         float lastTime;
         Window::Window m_Window;
-        Window::DebugWindow m_DebugWindow;
 
-        Framebuffer *m_FrameBuff = nullptr;
+#ifdef _DEBUG
+        Window::DebugWindow m_DebugWindow;
+#endif
+
+        Framebuffer *m_FrameBuff                = nullptr;
         Entities::EntityManager *m_EntryManager = nullptr;
 
         inline static float m_clearColorRgba[4] = {0.5f, 0.5f, 0.5f, 1.f};

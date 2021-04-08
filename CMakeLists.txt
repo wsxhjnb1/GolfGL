@@ -3,15 +3,15 @@
 project ("GolfGL")
 
 
-IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Debug)
-ENDIF(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+  message(STATUS "Defaulting configuration to Debug")
+endif()
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
-
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${CMAKE_PROJECT_NAME})
 
 if(UNIX)  
   cmake_policy(SET CMP0072 NEW)
@@ -19,15 +19,9 @@ if(UNIX)
   message(STATUS "Found Freetype in ${FREETYPE_INCLUDE_DIR_ft2build}")
   
   set(GLAD_LIBRARY "${CMAKE_SOURCE_DIR}/External/GLAD/lib/unix/libglad.a")
-  set(IMGUI_LIBRARY "${CMAKE_SOURCE_DIR}/External/imgui/lib/unix/libimgui.a")    
+  set(IMGUI_LIBRARY "${CMAKE_SOURCE_DIR}/External/imgui/lib/unix/libimgui.a")      
 
-  # add_compile_options("--coverage")
-
-endif(UNIX)
-
-if(WIN32)
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
+else() # WIN32
   link_directories(${CMAKE_SOURCE_DIR}/External/freetype2/win64 
                   ${CMAKE_SOURCE_DIR}/External/GLFW/lib 
                   ${CMAKE_SOURCE_DIR}/External/assimp/lib
@@ -36,7 +30,7 @@ if(WIN32)
                   )
 
   set(FREETYPE_INCLUDE_DIR_ft2build "${CMAKE_SOURCE_DIR}/External/freetype2/include")    
-endif(WIN32)
+endif(UNIX)
 
 # Include paths for External libs
 set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/GLAD")
@@ -72,13 +66,13 @@ endif(WIN32)
 
 set(Source_Root "${CMAKE_SOURCE_DIR}/Game")
 file(GLOB_RECURSE GameSrc
-  "${CMAKE_SOURCE_DIR}/Game/*.cpp"
-  "${CMAKE_SOURCE_DIR}/Game/*.h"
+  "${Source_Root}/*.cpp"
+  "${Source_Root}/*.h"
   )
 
 file(GLOB_RECURSE Shaders
-  "${CMAKE_SOURCE_DIR}/Game/Resources/*.vert"
-  "${CMAKE_SOURCE_DIR}/Game/Resources/*.frag"
+  "${Source_Root}/Resources/*.vert"
+  "${Source_Root}/Resources/*.frag"
   )
 
 # Game files
@@ -88,7 +82,7 @@ file(
     GLOB_RECURSE Source_List 
     LIST_DIRECTORIES false
     ${GameSrc}
-	  ${Shaders}
+	${Shaders}
 )
 
 # Setting clang tidy
@@ -96,6 +90,7 @@ option(Clang-Tidy OFF)
 if(Clang-Tidy)
   set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 endif()
+
 # Setting cmake executable
 add_executable(${NAME} ${Source_List})
 
@@ -108,13 +103,13 @@ foreach(SRC_file IN ITEMS ${Source_List})
 endforeach()
 
 
-target_link_libraries(${NAME} ${LIBS})
+target_link_libraries(${NAME} PRIVATE ${LIBS})
+
 
 if(MSVC)
-                                                            # PCH Use   # inline exp
+                                                          # PCH Use   # inline exp
     set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "/Yuprecomp.h /Ob1")         
-    set_source_files_properties("${Source_Root}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h") # PCH create
-    set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
+    set_source_files_properties("${Source_Root}/Source/precomp.cpp" PROPERTIES COMPILE_FLAGS "/Ycprecomp.h") # PCH create    
 	
 	
     set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${Source_Root}")	    
@@ -126,25 +121,14 @@ if(MSVC)
       set_target_properties(${NAME} PROPERTIES VS_GLOBAL_RunCodeAnalysis "true")
       set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableClangTidyCodeAnalysis "true")
       set_target_properties(${NAME} PROPERTIES VS_GLOBAL_ClangTidyChecks "clang-tidy")
-      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "true")
+      set_target_properties(${NAME} PROPERTIES VS_GLOBAL_EnableMicrosoftCodeAnalysis "false")
     endif()
-    
 
-	
 else()
-
-  target_precompile_headers(${NAME} INTERFACE ${Source_Root}/Source/precomp.h) 
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")      
-    set_target_properties(${NAME} PROPERTIES COMPILE_FLAGS "-g")
-    target_compile_definitions(${NAME} PUBLIC _DEBUG)
-  else()		
-    target_compile_definitions(${NAME} PUBLIC NDEBUG)
-  endif() # DEBUG   
-  
-  set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/${NAME}")
-  
-	
+  target_precompile_headers(${NAME} INTERFACE ${Source_Root}/Source/precomp.h)
+  target_compile_definitions(${NAME} PUBLIC $<IF:$<CONFIG:Debug>,_DEBUG,NDEBUG>)
 endif(MSVC)
+
 
 if(WIN32)									
   add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
@@ -152,13 +136,14 @@ if(WIN32)
               "${CMAKE_SOURCE_DIR}/External/assimp/lib/assimp-vc140-mt.dll" $<TARGET_FILE_DIR:${NAME}>)
 
 
-# Making symblic link on unix          
+# Making symbolic link on unix for Resources
 else()
-  add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
+  add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND 
         ${CMAKE_COMMAND} -E create_symlink "${Source_Root}/Resources" 
-        $<TARGET_FILE_DIR:${NAME}>/Resources)
+        $<TARGET_FILE_DIR:${NAME}>/Resources)        
 
 endif(WIN32)
+
 
 # Suppressing warnings from external libs
 if(CMAKE_COMPILER_IS_GNUCXX)  
@@ -173,10 +158,10 @@ include_directories(${ASSIMP_INCLUDE_DIR}
                     ${GLFW3_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}
                     ${IMGUI_INCLUDE_DIR}/backends
-					          ${STB_IMAGE_INCLUDE_DIR}
+					${STB_IMAGE_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}/External                    
                     ${CMAKE_SOURCE_DIR}/Game/Source
-		                ${CMAKE_SOURCE_DIR}/Game/Source/Render
+		            ${CMAKE_SOURCE_DIR}/Game/Source/Render
                    )
 
 
