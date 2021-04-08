@@ -40,12 +40,14 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ContinuationIndentWidth: 4
 IncludeBlocks: Preserve
 IncludeCategories: 
-  - Regex: '^<.*'
+  - Regex: '<precomp.h>'
     Priority: 1
-  - Regex: '^".*'
+  - Regex: '^<.*'
     Priority: 2
-  - Regex: '.*'
+  - Regex: '^".*'
     Priority: 3
+  - Regex: '.*'
+    Priority: 4
 IncludeIsMainRegex: ''
 IndentCaseLabels: false
 IndentPPDirectives: None
