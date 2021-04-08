@@ -3,9 +3,10 @@
 project ("GolfGL")
 
 
-IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Debug)
-ENDIF(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+  message(STATUS "Defaulting configuration to Debug")
+endif()
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -29,7 +30,7 @@ else() # WIN32
                   )
 
   set(FREETYPE_INCLUDE_DIR_ft2build "${CMAKE_SOURCE_DIR}/External/freetype2/include")    
-endif(WIN32)
+endif(UNIX)
 
 # Include paths for External libs
 set(GLAD_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/External/GLAD")
@@ -137,7 +138,7 @@ if(WIN32)
 
 # Making symbolic link on unix for Resources
 else()
-  add_custom_command(TARGET ${NAME} PRE_LINK COMMAND 
+  add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND 
         ${CMAKE_COMMAND} -E create_symlink "${Source_Root}/Resources" 
         $<TARGET_FILE_DIR:${NAME}>/Resources)        
 
