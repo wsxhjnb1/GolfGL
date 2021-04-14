@@ -17,12 +17,6 @@ namespace Entities
 
         unsigned m_LoadCubemap();
 
-        inline void updatePV() override
-        {
-            projection =
-                glm::perspective(glm::radians(CAMERA.GetCameraZoom()), WindowData::W / WindowData::H, 0.1f, 100.0f);
-
-            view = glm::mat4(glm::mat3(CAMERA.LookAt()));
-        }
+        
     };
 } // namespace Entities

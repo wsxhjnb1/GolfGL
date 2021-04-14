@@ -24,14 +24,14 @@ namespace Entities
 
     void Ball::Update(float delta)
     {
+        shader.ActivateShader();
         m_SetLightUniforms();
 
-        m_HandleTransformations(delta);
-
-        setUniformPVM();
+        m_HandleTransformations(delta);        
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
+        setUniformPVM();
 
         Draw(&shader);
 
@@ -39,8 +39,7 @@ namespace Entities
     }
 
     inline void Ball::m_SetLightUniforms()
-    {
-        shader.ActivateShader();
+    {        
 
         shader.setVec3("light.position", Light::LightPosition);
         shader.setVec3("viewPos", CAMERA.GetCameraPos());
@@ -53,8 +52,7 @@ namespace Entities
     }
 
     inline void Ball::m_HandleTransformations(float delta)
-    {
-        updatePV();
+    {        
 
         if (m_speed > 0.f)
         {

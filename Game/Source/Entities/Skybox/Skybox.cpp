@@ -27,11 +27,14 @@ Entities::Skybox::~Skybox()
 void Entities::Skybox::Update(float delta)
 {
     glDepthFunc(GL_LEQUAL);
-    shader.ActivateShader();
-    updatePV();
 
+    shader.ActivateShader();
     shader.setMat4("projection", projection);
-    shader.setMat4("view", view);
+    shader.setMat4("view", glm::mat4( view[0][0], view[0][1], view[0][2], 0
+                                        , view[1][0], view[1][1], view[1][2], 0
+                                        , view[2][0], view[2][1], view[2][2], 0
+                                        , 0         ,0          ,0           ,1));
+    shader.setMat4("model", model);
 
     glBindVertexArray(m_VAO);
     glActiveTexture(GL_TEXTURE0);
