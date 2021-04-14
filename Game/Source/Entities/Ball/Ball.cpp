@@ -27,7 +27,7 @@ namespace Entities
         shader.ActivateShader();
         m_SetLightUniforms();
 
-        m_HandleTransformations(delta);        
+        m_HandleTransformations(delta);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
@@ -39,7 +39,7 @@ namespace Entities
     }
 
     inline void Ball::m_SetLightUniforms()
-    {        
+    {
 
         shader.setVec3("light.position", Light::LightPosition);
         shader.setVec3("viewPos", CAMERA.GetCameraPos());
@@ -52,16 +52,17 @@ namespace Entities
     }
 
     inline void Ball::m_HandleTransformations(float delta)
-    {        
+    {
 
         if (m_speed > 0.f)
         {
-            m_speed -= delta; // Deceleration
-            position += ballDefault::scalarFixer * m_speed * direction;
+            position += delta * m_speed * direction;
 
             /* Angle is in degrees kept between [0, 360) */
-            m_angle += m_speed;
-            m_angle = m_angle < 360 ? m_angle : m_angle - 360;
+            m_angle += m_speed * delta * ballDefault::rotationFixer;
+            m_angle = m_angle < 360.f ? m_angle : m_angle - 360.f;
+
+            m_speed -= ballDefault::accel * delta; // Deceleration
         }
         else if (m_ShootEvent())
         {
