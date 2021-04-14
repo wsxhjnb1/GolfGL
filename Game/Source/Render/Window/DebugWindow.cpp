@@ -115,4 +115,9 @@ void Window::DebugWindow::DrawGFXSettings()
     }
 
     ImGui::EndGroup();
+
+    if (ImGui::Checkbox("VSync", &m_vsync))
+    {
+        glfwSwapInterval(m_vsync ? 1 : 0);
+    }
 }
