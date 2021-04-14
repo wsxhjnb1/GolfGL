@@ -30,6 +30,7 @@ bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_pt
 
 void Entities::EntityManager::Update(float delta)
 {
+    Entity::UpdatePV();
     std::for_each(m_Table.begin(), m_Table.end(),
                   [=](std::pair<const std::string, std::unique_ptr<Entity>> &p) { p.second->Update(delta); });
 }

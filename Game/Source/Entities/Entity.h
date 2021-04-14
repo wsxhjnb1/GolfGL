@@ -8,8 +8,19 @@ namespace Entities
 {
     class Entity
     {
-    public:
+    public:        
+
         virtual void Update(float delta) = 0;
+
+        inline static void UpdatePV()
+        {
+            projection = std::move(
+                glm::perspective(glm::radians(CAMERA.GetCameraZoom()), WindowData::W / WindowData::H, 0.1f, 100.0f)
+                );
+
+            view = std::move(CAMERA.LookAt());
+                    
+        }
 
         virtual ~Entity()
         {
@@ -34,26 +45,19 @@ namespace Entities
         {
             shader.Compile();
         }
+        
+        
 
-        glm::mat4 projection{1.f};
-        glm::mat4 view{1.f};
+        inline static glm::mat4 projection{1.f};
+        inline static glm::mat4 view{1.f};
         glm::mat4 model{1.f};
         glm::vec3 position{0.f};
 
         Render::Shader shader;
-        unsigned texture;
-
-        // inlined methods
-        inline virtual void updatePV()
-        {
-            projection =
-                glm::perspective(glm::radians(CAMERA.GetCameraZoom()), WindowData::W / WindowData::H, 0.1f, 100.0f);
-
-            view = CAMERA.LookAt();
-        }
+        unsigned texture;      
 
         inline void setUniformPVM()
-        {
+        {            
             shader.setMat4("projection", projection);
             shader.setMat4("view", view);
             shader.setMat4("model", model);
