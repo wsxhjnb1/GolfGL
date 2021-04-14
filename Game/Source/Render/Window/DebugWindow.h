@@ -20,5 +20,7 @@ namespace Window
 
         bool m_DebugMenuActive = true;
         bool m_ViewportsEnable = false;
+
+        bool m_vsync = false;
     };
 } // namespace Window
