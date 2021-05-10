@@ -10,8 +10,7 @@ COPY . /usr/src/docker-image
 
 WORKDIR /usr/src/docker-image	
 
-RUN cmake -P configure.cmake && \
-	make -C build
+RUN mkdir build && cd build && cmake .. && make
 
 
 
