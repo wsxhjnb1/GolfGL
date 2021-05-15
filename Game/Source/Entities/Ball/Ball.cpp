@@ -20,18 +20,19 @@ namespace Entities
 
         shader.ActivateShader();
         shader.SetValue("material.diffuse", 0);
+        setUniformPVM();
     }
 
     void Ball::Update(float delta)
     {
         shader.ActivateShader();
-        m_SetLightUniforms();
-
         m_HandleTransformations(delta);
+        m_SetLightUniforms();
+        setUniformPVM();
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
-        setUniformPVM();
+
 
         Draw(&shader);
 
@@ -50,6 +51,9 @@ namespace Entities
 
         shader.setVec3("material.specular", ballDefault::material_specular);
         shader.SetValue("material.shininess", ballDefault::material_shininess);
+
+        shader.setMat4("view", view);
+        shader.setMat4("model", model);
     }
 
     inline void Ball::m_HandleTransformations(float delta)
@@ -61,7 +65,7 @@ namespace Entities
 
             /* Angle is in degrees kept between [0, 360) */
             m_angle += m_speed * delta * ballDefault::rotationFixer;
-            m_angle = fmod( m_angle, 360.f );
+            m_angle = fmod(m_angle, 360.f);
 
             m_speed -= ballDefault::accel * delta; // Deceleration
         }
@@ -70,7 +74,7 @@ namespace Entities
             m_direction   = CAMERA.GetCameraFront();
             m_direction.y = 0.f;
             m_direction   = glm::normalize(m_direction);
-            m_speed     = ballDefault::speed;
+            m_speed       = ballDefault::speed;
         }
 
         model = glm::translate(glm::mat4{1.f}, m_position);

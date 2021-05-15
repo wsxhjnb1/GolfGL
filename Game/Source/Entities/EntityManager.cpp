@@ -3,14 +3,14 @@
 #include "EntityManager.h"
 
 #include "Ball/Ball.h"
-#include "Floor.h"
 #include "Skybox/Skybox.h"
+#include "Terrain/Terrain.h"
 
 Entities::EntityManager::~EntityManager() { m_Table.clear(); }
 
 bool Entities::EntityManager::Init()
 {
-    return LoadEntity("skybox", std::make_unique<Skybox>()) && LoadEntity("floor", std::make_unique<Floor>()) &&
+    return LoadEntity("skybox", std::make_unique<Skybox>()) && LoadEntity("floor", std::make_unique<Terrain>()) &&
         LoadEntity("ball", std::make_unique<Ball>());
 }
 
@@ -28,10 +28,7 @@ bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_pt
     return true;
 }
 
-Entities::Entity* Entities::EntityManager::GetEntity( const std::string& name )
-{
-	return m_Table[name].get();
-}
+Entities::Entity *Entities::EntityManager::GetEntity(const std::string &name) { return m_Table[name].get(); }
 
 void Entities::EntityManager::Update(float delta)
 {
