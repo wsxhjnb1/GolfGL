@@ -6,10 +6,16 @@
 #include "DebugWindow.h"
 
 #include <Window/Window.h>
+#include <Entities/EntityManager.h>
+
+#include <Entities/Ball/Ball.h>
+#include <Entities/Ball/ballDefault.h>
 
 /* Initialize after setting up native opengl viewport */
-bool Window::DebugWindow::Init()
+bool Window::DebugWindow::Init(EntMan* entityManager) 
 {
+    m_EntityManager = entityManager;
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -30,12 +36,16 @@ bool Window::DebugWindow::Update()
 
     ImGui::Begin("Debug Window", &m_DebugMenuActive, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
 
-    DrawLightMenu();
-
-    ImGui::Separator();
-
-    DrawGFXSettings();
-
+#ifdef _DEBUG
+    m_DrawLightMenu();
+    //-------------------------------
+    m_DrawGFXSettings();
+    //-------------------------------
+    if(m_EntityManager != nullptr)
+    {
+        m_DrawBallMenu();
+    }
+#endif
     float frametime = 1000.f / ImGui::GetIO().Framerate;
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", frametime, ImGui::GetIO().Framerate);
 
@@ -66,7 +76,8 @@ void Window::DebugWindow::Destroy()
     m_DebugMenuActive = false;
 }
 
-void Window::DebugWindow::DrawLightMenu()
+#ifdef _DEBUG
+void Window::DebugWindow::m_DrawLightMenu() const
 {
     ImGui::BeginGroup();
 
@@ -77,9 +88,10 @@ void Window::DebugWindow::DrawLightMenu()
     ImGui::InputFloat3("Light specular", &LIGHT.Specular[0]);
 
     ImGui::EndGroup();
+    ImGui::Separator();
 }
 
-void Window::DebugWindow::DrawGFXSettings()
+void Window::DebugWindow::m_DrawGFXSettings() const
 {
     ImGui::Text("Graphics settings:");
     ImGui::BeginGroup();
@@ -116,8 +128,26 @@ void Window::DebugWindow::DrawGFXSettings()
 
     ImGui::EndGroup();
 
-    if (ImGui::Checkbox("VSync", &m_vsync))
-    {
-        glfwSwapInterval(m_vsync ? 1 : 0);
-    }
+    if (ImGui::Checkbox("VSync", &WindowData::vsync)) {}    
+    ImGui::Separator();
 }
+
+void Window::DebugWindow::m_DrawBallMenu() const
+{
+    ImGui::Text("Ball:");
+    ImGui::BeginGroup();        
+    auto* ball = static_cast<Entities::Ball *>(m_EntityManager->GetEntity("ball"));
+
+    ImGui::InputFloat3("",						&Entities::ballDefault::position[0]);
+    ImGui::SliderFloat("Speed",					&Entities::ballDefault::speed, 0.f, 40.f);
+    ImGui::SliderFloat("Deacceleration",		&Entities::ballDefault::accel, 0.f, 5.f);
+    ImGui::SliderFloat("Rotation Fixer",		&Entities::ballDefault::rotationFixer, 0.f, 100.f);
+    ImGui::InputFloat3("Material - specular",  &Entities::ballDefault::material_specular[0]);
+    ImGui::SliderFloat("Material - shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
+
+    if( ImGui::Button("Restart Ball") ) { ball->position = Entities::ballDefault::position; }
+    ImGui::EndGroup();
+
+    ImGui::Separator();
+}
+#endif

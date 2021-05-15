@@ -15,6 +15,7 @@ namespace Entities
 
         void Update(float delta);
         bool LoadEntity(const std::string &name, std::unique_ptr<Entity> &&entity);
+        Entity* GetEntity(const std::string &name);
 
     private:
         std::unordered_map<std::string, std::unique_ptr<Entity>> m_Table;

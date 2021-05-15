@@ -17,7 +17,7 @@ namespace Window
         static GLFWwindow *GetGlfwWindow();
 
         bool Init();
-        bool IsRunning();
+        bool IsRunning() const;
         void Update();
 
         Window() = default;

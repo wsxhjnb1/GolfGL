@@ -28,9 +28,14 @@ bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_pt
     return true;
 }
 
+Entities::Entity* Entities::EntityManager::GetEntity( const std::string& name )
+{
+	return m_Table[name].get();
+}
+
 void Entities::EntityManager::Update(float delta)
 {
-    Entity::UpdatePV();
+    Entity::view = CAMERA.LookAt();
     std::for_each(m_Table.begin(), m_Table.end(),
                   [=](std::pair<const std::string, std::unique_ptr<Entity>> &p) { p.second->Update(delta); });
 }
