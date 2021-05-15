@@ -9,16 +9,19 @@ namespace Window
         SMASSERT(m_glfwWindow != nullptr, "Failed to init glfwWindow");
 
         glfwMakeContextCurrent(m_glfwWindow);
+        glfwSwapInterval(WindowData::vsync ? 1 : 0);
 
         m_running = true;
 
         return true;
     }
 
-    bool Window::IsRunning() { return m_running; }
+    bool Window::IsRunning() const { return m_running; }
 
     void Window::Update()
     {
+        glfwSwapInterval(WindowData::vsync ? 1 : 0);
+
         if (glfwWindowShouldClose(m_glfwWindow) == 0)
         {
             glfwSwapBuffers(m_glfwWindow);
