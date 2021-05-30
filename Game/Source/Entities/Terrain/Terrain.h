@@ -14,14 +14,19 @@ namespace Entities
         inline static float m_HeightFunction(float h) { return h / 255.f * 100.f - 50.f; }
 
     public:
-        Terrain(float scale = 2.f);
+        Terrain(float scale = 1.f);
 
         ~Terrain() override;
 
         void Update(float delta) override;
 
+        [[nodiscard]] glm::vec3 GetGradient(float x, float z) const;
+
+        [[nodiscard]] float GetHeight(float x, float z) const;
+        void CorrectPosition(float &x, float &z) const;
 
     private:
+        [[nodiscard]] float m_GetHeightRaw(int x, int z) const;
         void m_UpdateModelMatrix();
 
 
@@ -50,5 +55,7 @@ namespace Entities
                     const std::vector<float> &normal,
                     const std::vector<float> &textCoords,
                     const std::vector<unsigned> &indices);
+
+        inline static float ms_gValue = 0.3f;
     };
 } // namespace Entities

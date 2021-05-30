@@ -60,6 +60,57 @@ namespace Entities
     }
 
 
+    glm::vec3 Terrain::GetGradient(float x, float z) const
+    {
+        float h = GetHeight(x, z);
+
+        constexpr static glm::vec2 positions[9] = {glm::vec2{0, 0},  glm::vec2{0, -1}, glm::vec2{1, -1},
+                                                   glm::vec2{1, 0},  glm::vec2{1, 1},  glm::vec2{0, 1},
+                                                   glm::vec2{-1, 1}, glm::vec2{-1, 0}, glm::vec2{-1, -1}};
+
+        auto it = std::min_element(positions, positions + 9, [&](const glm::vec2 &e1, const glm::vec2 &e2) {
+            return GetHeight(x + e1[0], z + e1[1]) < GetHeight(x + e2[0], z + e2[1]);
+        });
+
+        float deltaH = h - GetHeight(x + it->x, z + it->y);
+
+        if (deltaH < ms_gValue)
+            return glm::vec3{0.f, 0.f, 0.f};
+
+        return glm::normalize(glm::vec3{it->x, -deltaH, it->y});
+    }
+
+
+    float Terrain::m_GetHeightRaw(const int x, const int z) const
+    {
+        if (x < 0 || x >= m_size || z < 0 || z >= m_size)
+            return 0;
+        return m_heightMap[z][x];
+    }
+
+    /* Calculating height as mean value of four adjacent points */
+    float Terrain::GetHeight(float x, float z) const
+    {
+        // translate back to model world
+        x += m_halfSize;
+        z += m_halfSize;
+        x /= m_scale;
+        z /= m_scale;
+
+        int x1 = static_cast<int>(x);
+        int x2 = static_cast<int>(x + 0.5f);
+        int z1 = static_cast<int>(z);
+        int z2 = static_cast<int>(z + 0.5f);
+
+        float y1 = m_GetHeightRaw(x1, z1);
+        float y2 = m_GetHeightRaw(x2, z1);
+        float y3 = m_GetHeightRaw(x1, z2);
+        float y4 = m_GetHeightRaw(x2, z2);
+
+        return (y1 + y2 + y3 + y4) / 4.0f;
+    }
+
+
     void Terrain::m_LoadHeightMap(const char *path)
     {
         auto &[width, height, channels, data] = Render::Texture::LoadRawImage(path, STBI_grey);
@@ -85,7 +136,7 @@ namespace Entities
         }
 
         /* Smoothing terrain surface using Gaussian blur */
-        m_heightMap = Math::GaussianSmoothing(m_heightMap);
+        m_heightMap = std::move(Math::GaussianSmoothing(m_heightMap));
         m_size      = std::min(m_heightMap.size(), m_heightMap[0].size()); // Keeping map squared
 
         std::vector<float> position;
@@ -185,6 +236,15 @@ namespace Entities
     {
         model = std::move(glm::mat4(m_scale, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, m_scale, 0.0f,
                                     -1.0f * m_halfSize, 0.0f, -1.0 * m_halfSize, 1.0f));
+    }
+
+    void Terrain::CorrectPosition(float &x, float &z) const
+    {
+        static const float fHalfSize = static_cast<float>(m_halfSize);
+        x                            = std::max(x, -fHalfSize + 10);
+        x                            = std::min(x, fHalfSize - 10);
+        z                            = std::max(z, -fHalfSize + 10);
+        z                            = std::min(z, fHalfSize - 10);
     }
 
 } // namespace Entities

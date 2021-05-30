@@ -11,7 +11,7 @@ Entities::Skybox::Skybox() : Entity("skybox")
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyData.Vertices), &skyData.Vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
     texture = m_LoadCubemap();
     shader.ActivateShader();
@@ -31,12 +31,11 @@ void Entities::Skybox::Update(float delta)
     glDepthFunc(GL_LEQUAL);
 
     shader.ActivateShader();
-    
-    shader.setMat4("view", glm::mat4( view[0][0], view[0][1], view[0][2], 0
-                                        , view[1][0], view[1][1], view[1][2], 0
-                                        , view[2][0], view[2][1], view[2][2], 0
-                                        , 0         ,0          ,0           ,1));
-    
+
+    shader.setMat4("view",
+                   glm::mat4(view[0][0], view[0][1], view[0][2], 0, view[1][0], view[1][1], view[1][2], 0, view[2][0],
+                             view[2][1], view[2][2], 0, 0, 0, 0, 1));
+
 
     glBindVertexArray(m_VAO);
     glActiveTexture(GL_TEXTURE0);
@@ -66,8 +65,8 @@ unsigned Entities::Skybox::m_LoadCubemap() const
         glTexImage2D(textureXPos++, 0, GL_RGB, rawIm.width, rawIm.height, 0, GL_RGB, GL_UNSIGNED_BYTE, rawIm.data);
     }
 
-    rTex::SetTexParam(GL_TEXTURE_MIN_FILTER, GL_LINEAR,  GL_TEXTURE_CUBE_MAP);
-    rTex::SetTexParam(GL_TEXTURE_MAG_FILTER, GL_LINEAR,  GL_TEXTURE_CUBE_MAP);
+    rTex::SetTexParam(GL_TEXTURE_MIN_FILTER, GL_LINEAR, GL_TEXTURE_CUBE_MAP);
+    rTex::SetTexParam(GL_TEXTURE_MAG_FILTER, GL_LINEAR, GL_TEXTURE_CUBE_MAP);
     rTex::SetTexParam(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP);
     rTex::SetTexParam(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP);
     rTex::SetTexParam(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP);
