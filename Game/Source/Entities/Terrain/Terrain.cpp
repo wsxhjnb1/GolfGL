@@ -1,5 +1,5 @@
-#include "Terrain.h"
 #include <precomp.h>
+#include "Terrain.h"
 
 #include "Math.hpp"
 
@@ -15,11 +15,9 @@ namespace Entities
         m_textures.push_back(texture);
         m_textures.push_back(Render::Texture::LoadNativeTexture("Resources/Textures/terrain/mud.png"));
 
-        m_UpdateModelMatrix();
+        m_SetModelMatrix();
         shader.ActivateShader();
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
-        shader.setMat4("model", model);
+        setUniformPVM();
         shader.SetValue("texture1", 0);
         shader.SetValue("texture2", 1);
         glUseProgram(0);
@@ -29,7 +27,7 @@ namespace Entities
     {
         glDeleteBuffers(1, &m_EBO);
         glDeleteBuffers(1, &m_normalVBO);
-        glDeleteBuffers(1, &m_textCoordsVBO);
+        glDeleteBuffers(1, &m_texCoordsVBO);
         glDeleteBuffers(1, &m_positionVBO);
         glDeleteVertexArrays(1, &m_VAO);
     }
@@ -39,7 +37,12 @@ namespace Entities
     {
         shader.ActivateShader();
 
-        shader.setMat4("view", CAMERA.LookAt());
+        shader.setMat4("view", view);
+        shader.setVec3("light.position", LIGHT.LightPosition);
+        shader.setVec3("light.ambient", LIGHT.Ambient);
+        shader.setVec3("light.diffuse", LIGHT.Diffuse);
+        shader.setVec3("light.specular", LIGHT.Specular);
+        shader.setVec3("light.direction", glm::vec3{0.f});        
 
         glBindVertexArray(m_VAO);
         for (int i = 0; i < m_textures.size(); ++i)
@@ -58,8 +61,7 @@ namespace Entities
 
         glUseProgram(0);
     }
-
-
+    
     glm::vec3 Terrain::GetGradient(float x, float z) const
     {
         float h = GetHeight(x, z);
@@ -68,7 +70,8 @@ namespace Entities
                                                    glm::vec2{1, 0},  glm::vec2{1, 1},  glm::vec2{0, 1},
                                                    glm::vec2{-1, 1}, glm::vec2{-1, 0}, glm::vec2{-1, -1}};
 
-        auto it = std::min_element(positions, positions + 9, [&](const glm::vec2 &e1, const glm::vec2 &e2) {
+        auto it = std::min_element(positions, positions + 9, 
+            [&](const glm::vec2 &e1, const glm::vec2 &e2) {
             return GetHeight(x + e1[0], z + e1[1]) < GetHeight(x + e2[0], z + e2[1]);
         });
 
@@ -113,7 +116,7 @@ namespace Entities
 
     void Terrain::m_LoadHeightMap(const char *path)
     {
-        auto &[width, height, channels, data] = Render::Texture::LoadRawImage(path, STBI_grey);
+        auto [width, height, channels, data] = Render::Texture::LoadRawImage(path, STBI_grey);
 
         if (width != height)
         {
@@ -141,7 +144,7 @@ namespace Entities
 
         std::vector<float> position;
         std::vector<float> normal;
-        std::vector<float> textCoords;
+        std::vector<float> texCoords;
         std::vector<unsigned> indices;
 
         for (int z = 0; z < m_size; ++z)
@@ -157,8 +160,8 @@ namespace Entities
                 normal.push_back(temp.y);
                 normal.push_back(temp.z);
 
-                textCoords.push_back(x / 50.0f);
-                textCoords.push_back(z / 50.0f);
+                texCoords.push_back(x / 50.0f);
+                texCoords.push_back(z / 50.0f);
             }
         }
 
@@ -181,15 +184,15 @@ namespace Entities
         }
         m_indicesNum = indices.size();
 
-        m_UpdateModelMatrix();
+        m_SetModelMatrix();
 
-        m_Init(position, normal, textCoords, indices);
+        m_Init(position, normal, texCoords, indices);
     }
 
 
     void Terrain::m_Init(const std::vector<float> &position,
                          const std::vector<float> &normal,
-                         const std::vector<float> &textCoords,
+                         const std::vector<float> &texCoords,
                          const std::vector<unsigned> &indices)
     {
         glGenVertexArrays(1, &m_VAO);
@@ -201,9 +204,9 @@ namespace Entities
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-        glGenBuffers(1, &m_textCoordsVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, m_textCoordsVBO);
-        glBufferData(GL_ARRAY_BUFFER, textCoords.size() * sizeof(float), textCoords.data(), GL_STATIC_DRAW);
+        glGenBuffers(1, &m_texCoordsVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
+        glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
@@ -232,19 +235,22 @@ namespace Entities
         return glm::normalize(normal);
     }
 
-    void Terrain::m_UpdateModelMatrix()
+    void Terrain::m_SetModelMatrix()
     {
-        model = std::move(glm::mat4(m_scale, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, m_scale, 0.0f,
-                                    -1.0f * m_halfSize, 0.0f, -1.0 * m_halfSize, 1.0f));
+        model = glm::mat4(m_scale,            0.0f,   0.0f,              0.0f, 
+                          0.0f,               1.0f,   0.0f,              0.0f, 
+                          0.0f,               0.0f,   m_scale,           0.0f,
+                          -1.0f * m_halfSize, 0.0f,   -1.0 * m_halfSize, 1.0f);        
     }
 
     void Terrain::CorrectPosition(float &x, float &z) const
     {
         static const float fHalfSize = static_cast<float>(m_halfSize);
-        x                            = std::max(x, -fHalfSize + 10);
-        x                            = std::min(x, fHalfSize - 10);
-        z                            = std::max(z, -fHalfSize + 10);
-        z                            = std::min(z, fHalfSize - 10);
+
+        x = std::max(x, -fHalfSize + 10);
+        x = std::min(x, fHalfSize - 10);
+        z = std::max(z, -fHalfSize + 10);
+        z = std::min(z, fHalfSize - 10);
     }
 
 } // namespace Entities

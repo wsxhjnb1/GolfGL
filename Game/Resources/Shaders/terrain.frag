@@ -1,29 +1,71 @@
 #version 330 core
 
-in vec3 Normal;
-in vec3 FragPos;
-in vec2 TextCoords;
+layout(location = 0) out vec4 FragColor;
 
-in float frag;
+in VERT_OUT
+{
+	vec3 FragPos;
+	vec3 Normal;
+	vec2 TexCoords;
+	float texH;
+} fragIn;
 
-layout(location = 0) out vec4 color;
-layout(location = 1) out vec4 brightColor;
+struct Light
+{
+	vec3 position;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	vec3 direction;
+}; 
 
-in vec2 worldxz;
-
+uniform Light light;
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 
+
+/* Light calculations */
+
+vec3 DirectionalLight(Light light, vec3 normal, vec3 textureColor)
+{
+	vec3 ambient = light.ambient * textureColor;
+
+	vec3 toLight = normalize(-light.direction);
+
+	float diffuseFactor = max(dot(toLight, normal), 0.0);
+	vec3 diffuse = light.diffuse * diffuseFactor * textureColor;
+
+	return ambient + diffuse;
+}
+
+#define CONSTANT (1.0)
+#define LINEAR (0.007)
+#define QUADRATIC (0.0002)
+
+vec3 PointLight(Light light, vec3 normal, vec3 textureColor)
+{	
+	vec3 toLight = normalize(light.position - fragIn.FragPos);
+
+	float distanceToViewer = length(light.position - fragIn.FragPos);
+	float attenuation = 1.0f / (CONSTANT + LINEAR*distanceToViewer + QUADRATIC*(distanceToViewer*distanceToViewer));
+
+	vec3 ambient = light.ambient * textureColor * attenuation;
+
+	float diffuseFactor = max(dot(toLight, normal), 0.0);
+	vec3 diffuse = light.diffuse * diffuseFactor * textureColor * attenuation;
+
+	return ambient + diffuse;
+}
+
+
 void main()
 {
-	vec3 normal = normalize(Normal);
+	vec3 normal = normalize(fragIn.Normal);
+	vec3 textureColor = mix(texture(texture2, fragIn.TexCoords), texture(texture1, fragIn.TexCoords), fragIn.texH).rgb;	
+	
+	// vec3 result = PointLight(light, normal, textureColor);	
+	vec3 result = DirectionalLight(light, normal, textureColor);
 
-	vec4 textureColor = mix(texture(texture2, TextCoords), texture(texture1, TextCoords), frag);	
-
-	vec3 res = vec3(textureColor);
-
-	color = vec4(res, 1.0f);
-
-	brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+	FragColor = vec4(result, 1.0f);
 }
 

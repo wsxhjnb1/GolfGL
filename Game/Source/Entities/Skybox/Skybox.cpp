@@ -17,6 +17,7 @@ Entities::Skybox::Skybox() : Entity("skybox")
     shader.ActivateShader();
     shader.SetValue("skybox", 0);
     shader.setMat4("projection", projection);
+    m_SetViewMatrix();
     shader.setMat4("model", model);
 }
 
@@ -31,11 +32,8 @@ void Entities::Skybox::Update(float delta)
     glDepthFunc(GL_LEQUAL);
 
     shader.ActivateShader();
-
-    shader.setMat4("view",
-                   glm::mat4(view[0][0], view[0][1], view[0][2], 0, view[1][0], view[1][1], view[1][2], 0, view[2][0],
-                             view[2][1], view[2][2], 0, 0, 0, 0, 1));
-
+    
+    m_SetViewMatrix();    
 
     glBindVertexArray(m_VAO);
     glActiveTexture(GL_TEXTURE0);
@@ -72,4 +70,13 @@ unsigned Entities::Skybox::m_LoadCubemap() const
     rTex::SetTexParam(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE, GL_TEXTURE_CUBE_MAP);
 
     return id;
+}
+
+void Entities::Skybox::m_SetViewMatrix() const
+{
+    shader.setMat4("view",
+                   glm::mat4(view[0][0], view[0][1], view[0][2], 0, 
+                             view[1][0], view[1][1], view[1][2], 0,
+                             view[2][0], view[2][1], view[2][2], 0, 
+                             0, 0, 0, 0));
 }

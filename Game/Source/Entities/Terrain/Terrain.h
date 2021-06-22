@@ -11,7 +11,7 @@ namespace Entities
 {
     class Terrain : public Entity
     {
-        inline static float m_HeightFunction(float h) { return h / 255.f * 100.f - 50.f; }
+        inline static float m_HeightFunction(float h) { return h / 255.f * 50.f - 25.f; }
 
     public:
         Terrain(float scale = 1.f);
@@ -20,6 +20,16 @@ namespace Entities
 
         void Update(float delta) override;
 
+        /**
+         * Calculates gradient in point (x,z).
+         *
+         * Finds biggest descent from all possible moves
+         *
+         * @param x float
+         * @param z float
+         *
+         * @return gradient 3-dim vector
+         */
         [[nodiscard]] glm::vec3 GetGradient(float x, float z) const;
 
         [[nodiscard]] float GetHeight(float x, float z) const;
@@ -27,12 +37,12 @@ namespace Entities
 
     private:
         [[nodiscard]] float m_GetHeightRaw(int x, int z) const;
-        void m_UpdateModelMatrix();
+        void m_SetModelMatrix();
 
 
         GLuint m_VAO           = 0;
         GLuint m_positionVBO   = 0;
-        GLuint m_textCoordsVBO = 0;
+        GLuint m_texCoordsVBO  = 0;
         GLuint m_normalVBO     = 0;
         GLuint m_EBO           = 0;
 
@@ -53,7 +63,7 @@ namespace Entities
 
         void m_Init(const std::vector<float> &position,
                     const std::vector<float> &normal,
-                    const std::vector<float> &textCoords,
+                    const std::vector<float> &texCoords,
                     const std::vector<unsigned> &indices);
 
         inline static float ms_gValue = 0.3f;

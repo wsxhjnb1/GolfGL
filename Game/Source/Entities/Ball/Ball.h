@@ -18,8 +18,10 @@ namespace Entities
         glm::vec3 m_direction;
         float m_frictionFactor;
         float m_angle;
-        float m_scale;
-        glm::vec3 m_friction{0.f};
+        glm::vec3 m_friction{0.f};        
+
+        glm::mat4 m_rotationMatrix{1.f};
+        glm::mat4 m_scaleMatrix;
 
         unsigned m_diffuseMap;
 
@@ -28,7 +30,7 @@ namespace Entities
 
         [[nodiscard]] glm::vec3 m_NormalOnVec(const glm::vec3 &direction) const
         {
-            return glm::normalize(glm::cross(m_speed, {0.f, 1.f, 0.f}));
+            return glm::normalize(glm::cross(direction, {0.f, 1.f, 0.f}));
         }
 
         inline static bool m_ShootEvent()

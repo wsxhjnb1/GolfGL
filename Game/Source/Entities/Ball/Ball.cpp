@@ -13,11 +13,12 @@ namespace Entities
         , m_direction(0.f)
         , m_frictionFactor(ballDefault::frictionFactor)
         , m_angle(ballDefault::angle)
-        , m_scale(ballDefault::scale)
+        , m_scaleMatrix(glm::scale(glm::mat4{1.f}, ballDefault::scale * glm::vec3(1.f,1.f,1.f)))
+        // , m_prevPos(ballDefault::position)
     {
         this->position = ballDefault::position;
         model          = glm::translate(glm::mat4{1.f}, position);
-        model          = glm::scale(model, m_scale * glm::vec3{1.f, 1.f, 1.f});
+        model         *= m_scaleMatrix;
 
         // diffuse texture is loaded in parent class
         m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end(), [](Render::Texture &t) {
@@ -66,23 +67,15 @@ namespace Entities
     {
         if (m_speed != glm::vec3{0.f})
         {
-            auto rot = m_NormalOnVec(m_speed);
-            if (glm::length(rot) < 0.2f)
-                rot = glm::vec3{0.f};
-            else
-                m_angle += 5.f * delta * glm::length(m_speed);
-            // m_angle = fmod(m_angle, 360.f);
+            auto rot = m_NormalOnVec(m_speed);            
+            m_angle = (delta / 3.14f)* glm::length(m_speed);            
 
-            model = glm::translate(glm::mat4{1.f}, position);
-            model = glm::rotate(model, -m_angle, rot);
-
-            model = glm::scale(model, ballDefault::scale * glm::vec3{1.f, 1.f, 1.f});
-            // m_friction = std::move( m_frictionFactor * m_speed );
-            // m_friction = m_frictionFactor * m_speed;
+            m_rotationMatrix = glm::rotate(glm::mat4{1.f}, -m_angle, rot) * m_rotationMatrix;
+            model = glm::translate(glm::mat4{1.f}, position) * m_rotationMatrix * m_scaleMatrix;                        
         }
         else if (m_ShootEvent())
         {
-            m_speed = 2.f * glm::normalize(CAMERA.GetCameraFront());
+            m_speed = ballDefault::shootSpeed * glm::normalize(CAMERA.GetCameraFront());
         }
     }
 } // namespace Entities

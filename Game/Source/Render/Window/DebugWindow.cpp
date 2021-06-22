@@ -140,8 +140,7 @@ void Window::DebugWindow::m_DrawBallMenu() const
     ImGui::BeginGroup();
     auto *ball = static_cast<Entities::Ball *>(m_EntityManager->GetEntity("ball"));
 
-    ImGui::InputFloat3("", &Entities::ballDefault::position[0]);
-    ImGui::SliderFloat("Rotation Fixer", &Entities::ballDefault::rotationFixer, 0.f, 100.f);
+    ImGui::InputFloat3("Position", &ball->position[0]);
     ImGui::InputFloat3("Material - specular", &Entities::ballDefault::material_specular[0]);
     ImGui::SliderFloat("Material - shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
 

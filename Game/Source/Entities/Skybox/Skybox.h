@@ -17,6 +17,8 @@ namespace Entities
 
         [[nodiscard]] unsigned m_LoadCubemap() const;
 
+        // Must activate shader before usage
+        void m_SetViewMatrix() const;
         
     };
 } // namespace Entities

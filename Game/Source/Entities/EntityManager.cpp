@@ -10,7 +10,7 @@ Entities::EntityManager::~EntityManager() { m_Table.clear(); }
 
 bool Entities::EntityManager::Init()
 {
-    return LoadEntity("skybox", std::make_unique<Skybox>()) && LoadEntity("terrain", std::make_unique<Terrain>(2.f)) &&
+    return LoadEntity("skybox", std::make_unique<Skybox>()) && LoadEntity("terrain", std::make_unique<Terrain>()) &&
         LoadEntity("ball", std::make_unique<Ball>());
 }
 
@@ -37,22 +37,20 @@ void Entities::EntityManager::Update(float delta)
 
 
     glm::vec3 friction{ball->m_frictionFactor * ball->m_speed};
-    auto gradient = terrain->GetGradient(ball->position.x, ball->position.z) * 0.2f;
-
-    // ball->m_acceleration = ball->m_direction + gradient + friction;
+    auto gradient{ terrain->GetGradient(ball->position.x, ball->position.z) };
+    
     ball->m_acceleration = gradient + friction;
-    ball->m_speed += delta * ball->m_acceleration;
+    ball->m_speed += 0.5f * delta * ball->m_acceleration;
 
-    if (glm::length(ball->m_speed) <= 0.03f)
-        ball->m_speed = glm::vec3{0.f, 0.f, 0.f};
+    if (glm::length(ball->m_speed) < 0.2f)
+        ball->m_speed = glm::vec3{0.f};
 
-    ball->position += 10.f * delta * ball->m_speed;
-
-    float x          = ball->position.x;
-    float z          = ball->position.z;
-    ball->position.y = 2.5f + terrain->GetHeight(x, z);
+    ball->position += delta * ball->m_speed;
+    
+    ball->position.y = 3.5f + terrain->GetHeight(ball->position.x, ball->position.z);    
     terrain->CorrectPosition(ball->position.x, ball->position.z);
 
+        
 
     Entity::view = CAMERA.LookAt();
     std::for_each(m_Table.begin(), m_Table.end(),
