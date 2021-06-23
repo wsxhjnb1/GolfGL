@@ -19,6 +19,7 @@
 // Global data
 #include "Asserts.h"
 #include "Data/WindowData.h"
+#include "Math.hpp"
 
 // classes
 #include <Camera/Camera.h>

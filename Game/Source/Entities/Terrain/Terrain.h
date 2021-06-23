@@ -9,8 +9,19 @@
 #include <Entities/Entity.h>
 namespace Entities
 {
+
     class Terrain : public Entity
     {
+        struct TerrainMesh
+        {        
+            std::vector<float>    position;
+            std::vector<float>    normal;
+            std::vector<float>    texCoords;
+            std::vector<float>    tangent;
+            std::vector<float>    bitangent;
+            std::vector<unsigned> indices;
+        };
+
         inline static float m_HeightFunction(float h) { return h / 255.f * 50.f - 25.f; }
 
     public:
@@ -42,8 +53,11 @@ namespace Entities
 
         GLuint m_VAO           = 0;
         GLuint m_positionVBO   = 0;
-        GLuint m_texCoordsVBO  = 0;
         GLuint m_normalVBO     = 0;
+        GLuint m_texCoordsVBO  = 0;
+        GLuint m_tangentVBO    = 0;
+        GLuint m_bitangentVBO  = 0;
+        
         GLuint m_EBO           = 0;
 
         GLuint m_indicesNum;
@@ -60,12 +74,12 @@ namespace Entities
 
         void m_LoadHeightMap(const char *path);
         [[nodiscard]] glm::vec3 m_CalculateNormal(int x, int z);
-
-        void m_Init(const std::vector<float> &position,
-                    const std::vector<float> &normal,
-                    const std::vector<float> &texCoords,
-                    const std::vector<unsigned> &indices);
+        
+        void Terrain::m_Init(const TerrainMesh& mesh);
 
         inline static float ms_gValue = 0.3f;
+
+        // terrain height interval is [-absH, absH]
+        inline static float ms_absH = 25.f;
     };
 } // namespace Entities

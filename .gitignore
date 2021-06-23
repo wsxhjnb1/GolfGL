@@ -356,4 +356,4 @@ log.*
 .ccls*
 .vscode*
 imgui.ini
-Game/Resources/test
+Game/Resources/[Tt][Ee][Ss][Tt].*
