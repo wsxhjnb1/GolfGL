@@ -142,9 +142,9 @@ namespace Entities
 
     void Terrain::m_LoadPNT(TerrainMesh &mesh, int x, int z) const
     {
-        mesh.position.push_back(x);
+        mesh.position.push_back(static_cast<float>(x));
         mesh.position.push_back(m_heightMap[z][x]);
-        mesh.position.push_back(z);
+        mesh.position.push_back(static_cast<float>(z));
 
         glm::vec3 normal{m_CalculateNormal(x, z)};
         mesh.normal.push_back(normal.x);
@@ -253,7 +253,7 @@ namespace Entities
         }
 
         m_size     = width;
-        m_halfSize = m_scale * m_size / 2; // Recalculate middle
+        m_halfSize = static_cast<int>(m_scale * m_size / 2); // Recalculate middle
 
         m_heightMap = Math::Matrix<float>(m_size, Math::Array<float>(m_size, 0));
 

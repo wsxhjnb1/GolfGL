@@ -70,7 +70,7 @@ namespace Entities
         std::vector<unsigned> m_textures;
         std::vector<std::vector<float>> m_heightMap;
 
-        void Terrain::m_Init();
+        void m_Init();
         [[nodiscard]] TerrainMesh m_LoadMesh();
         void m_LoadHeightMap(const char *path);
 
