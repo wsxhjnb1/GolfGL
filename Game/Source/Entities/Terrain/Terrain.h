@@ -9,7 +9,6 @@
 #include <Entities/Entity.h>
 namespace Entities
 {
-
     class Terrain : public Entity
     {
         struct TerrainMesh
@@ -71,15 +70,24 @@ namespace Entities
         std::vector<unsigned> m_textures;
         std::vector<std::vector<float>> m_heightMap;
 
-
+        void Terrain::m_Init();
+        [[nodiscard]] TerrainMesh m_LoadMesh();
         void m_LoadHeightMap(const char *path);
-        [[nodiscard]] glm::vec3 m_CalculateNormal(int x, int z);
+
+        /* Helper methods for loading mesh */
+        // Loading Position, Normal, TexCoords into mesh
+        void m_LoadPNT(TerrainMesh& mesh, int x, int z) const;
+        // Calculating and loading Tangent and Bitanget into mesh
+        void m_LoadTangents(TerrainMesh& mesh, int x, int z) const;
+        // Loading indices
+        void m_LoadIndices(TerrainMesh& mesh, int x, int z) const;
+
+        [[nodiscard]] glm::vec3 m_CalculateNormal(int x, int z) const;
         
-        void Terrain::m_Init(const TerrainMesh& mesh);
-
-        inline static float ms_gValue = 0.3f;
-
+        /* Constants */
+        // gradient tolerance
+        inline const static float ms_gValue = 0.3f;
         // terrain height interval is [-absH, absH]
-        inline static float ms_absH = 25.f;
+        inline const static float ms_absH = 25.f;
     };
 } // namespace Entities

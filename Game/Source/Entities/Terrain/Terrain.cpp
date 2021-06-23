@@ -4,7 +4,6 @@
 float _defaultHeightFunction(float h) { return h; }
 namespace Entities
 {
-
     Terrain::Terrain(float scale) /* This texture will be on higher points */
         : Entity("terrain", "Resources/Textures/terrain/grass/diffuse.png"), m_scale(scale)
     {
@@ -118,6 +117,131 @@ namespace Entities
     }
 
 
+    Terrain::TerrainMesh Terrain::m_LoadMesh()
+    {
+        TerrainMesh mesh; // result                        
+
+        for (int z = 0; z < m_size - 1; ++z)
+        {
+            for (int x = 0; x < m_size - 1; ++x) 
+            {                
+                m_LoadPNT(mesh, x, z);
+                m_LoadTangents(mesh, x, z);
+                m_LoadIndices(mesh, x, z);                                                
+            }
+            m_LoadPNT(mesh, m_size-1, z);
+        }
+
+        for(int x = 0; x < m_size; x++)
+            m_LoadPNT(mesh, x, m_size - 1);
+
+        m_indicesNum = mesh.indices.size();
+
+        return mesh;
+    }
+
+    void Terrain::m_LoadPNT(TerrainMesh &mesh, int x, int z) const
+    {
+        mesh.position.push_back(x);
+        mesh.position.push_back(m_heightMap[z][x]);
+        mesh.position.push_back(z);
+
+        glm::vec3 normal{m_CalculateNormal(x, z)};
+        mesh.normal.push_back(normal.x);
+        mesh.normal.push_back(normal.y);
+        mesh.normal.push_back(normal.z);
+
+        mesh.texCoords.push_back(x / ms_absH);
+        mesh.texCoords.push_back(z / ms_absH);
+    }
+
+    void Terrain::m_LoadTangents(TerrainMesh &mesh, int x, int z) const
+    {
+        // positions
+        glm::vec3 pos1(x, m_heightMap[z][x], z);
+        glm::vec3 pos2(x, m_heightMap[z+1][x], z+1);
+        glm::vec3 pos3(x+1, m_heightMap[z+1][x+1], z+1);
+        glm::vec3 pos4(x+1, m_heightMap[z][x+1], z);
+
+        // texture coordinates
+        glm::vec2 uv1(x / ms_absH, z / ms_absH);
+        glm::vec2 uv2(x / ms_absH, (z+1) / ms_absH);
+        glm::vec2 uv3((x+1) / ms_absH, (z+1) / ms_absH);
+        glm::vec2 uv4((x+1) / ms_absH, z / ms_absH);
+        
+        
+        // calculate tangent/bitangent vectors of both triangles
+        glm::vec3 tangent1, bitangent1;
+        glm::vec3 tangent2, bitangent2;
+        // triangle 1
+        // ----------
+        glm::vec3 edge1 = pos2 - pos1;
+        glm::vec3 edge2 = pos3 - pos1;
+        glm::vec2 deltaUV1 = uv2 - uv1;
+        glm::vec2 deltaUV2 = uv3 - uv1;
+
+        float f = 1.f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);            
+
+        tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent1 = glm::normalize(tangent1);
+
+        mesh.tangent.push_back(tangent1.x);
+        mesh.tangent.push_back(tangent1.y);
+        mesh.tangent.push_back(tangent1.z);
+
+        bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent1 = glm::normalize(bitangent1);
+
+        mesh.bitangent.push_back(bitangent1.x);
+        mesh.bitangent.push_back(bitangent1.y);
+        mesh.bitangent.push_back(bitangent1.z);
+
+        // triangle 2
+        // ----------
+        edge1 = pos3 - pos1;
+        edge2 = pos4 - pos1;
+        deltaUV1 = uv3 - uv1;
+        deltaUV2 = uv4 - uv1;
+
+        f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent2 = glm::normalize(tangent2);
+
+        mesh.tangent.push_back(tangent2.x);
+        mesh.tangent.push_back(tangent2.y);
+        mesh.tangent.push_back(tangent2.z);
+
+        bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent2 = glm::normalize(bitangent2);
+
+        mesh.bitangent.push_back(bitangent2.x);
+        mesh.bitangent.push_back(bitangent2.y);
+        mesh.bitangent.push_back(bitangent2.z);
+    }
+
+    void Terrain::m_LoadIndices(TerrainMesh &mesh, int x, int z) const
+    {
+        int topLeft     = z * m_size + x;
+        int topRight    = topLeft + 1;
+        int bottomLeft  = topLeft + m_size;
+        int bottomRight = bottomLeft + 1;
+        mesh.indices.push_back(topLeft);
+        mesh.indices.push_back(bottomLeft);
+        mesh.indices.push_back(topRight);
+        mesh.indices.push_back(topRight);
+        mesh.indices.push_back(bottomLeft);
+        mesh.indices.push_back(bottomRight);
+    }
+
     void Terrain::m_LoadHeightMap(const char *path)
     {
         auto [width, height, channels, data] = Render::Texture::LoadRawImage(path, STBI_grey);
@@ -146,125 +270,16 @@ namespace Entities
         m_heightMap = std::move(Math::GaussianSmoothing(m_heightMap));
         m_size      = std::min(m_heightMap.size(), m_heightMap[0].size()); // Keeping map squared
         
-        TerrainMesh mesh;
-
-        for (int z = 0; z < m_size; ++z)
-        {
-            for (int x = 0; x < m_size; ++x)
-            {
-                mesh.position.push_back(x);
-                mesh.position.push_back(m_heightMap[z][x]);
-                mesh.position.push_back(z);
-
-                glm::vec3 temp = std::move(m_CalculateNormal(x, z));
-                mesh.normal.push_back(temp.x);
-                mesh.normal.push_back(temp.y);
-                mesh.normal.push_back(temp.z);
-
-                mesh.texCoords.push_back(x / ms_absH);
-                mesh.texCoords.push_back(z / ms_absH);
-            }
-        }
-
-
-
-
-        for (int z = 0; z < m_size - 5; ++z)
-        {
-            for (int x = 0; x < m_size - 5; ++x)
-            {
-                int topLeft     = z * m_size + x;
-                int topRight    = topLeft + 1;
-                int bottomLeft  = topLeft + m_size;
-                int bottomRight = bottomLeft + 1;
-                mesh.indices.push_back(topLeft);
-                mesh.indices.push_back(bottomLeft);
-                mesh.indices.push_back(topRight);
-                mesh.indices.push_back(topRight);
-                mesh.indices.push_back(bottomLeft);
-                mesh.indices.push_back(bottomRight);
-
-                // positions
-                glm::vec3 pos1(x, m_heightMap[z][x], z);
-                glm::vec3 pos2(x, m_heightMap[z+1][x], z+1);
-                glm::vec3 pos3(x+1, m_heightMap[z+1][x+1], z+1);
-                glm::vec3 pos4(x+1, m_heightMap[z][x+1], z);
-
-                // texture coordinates
-                glm::vec2 uv1(x / ms_absH, z / ms_absH);
-                glm::vec2 uv2(x / ms_absH, (z+1) / ms_absH);
-                glm::vec2 uv3((x+1) / ms_absH, (z+1) / ms_absH);
-                glm::vec2 uv4((x+1) / ms_absH, z / ms_absH);
                 
-                
-                // calculate tangent/bitangent vectors of both triangles
-                glm::vec3 tangent1, bitangent1;
-                glm::vec3 tangent2, bitangent2;
-                // triangle 1
-                // ----------
-                glm::vec3 edge1 = pos2 - pos1;
-                glm::vec3 edge2 = pos3 - pos1;
-                glm::vec2 deltaUV1 = uv2 - uv1;
-                glm::vec2 deltaUV2 = uv3 - uv1;
-
-                float f = 1.f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);            
-
-                tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-                tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-                tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-                tangent1 = glm::normalize(tangent1);
-
-                mesh.tangent.push_back(tangent1.x);
-                mesh.tangent.push_back(tangent1.y);
-                mesh.tangent.push_back(tangent1.z);
-
-                bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-                bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-                bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-                bitangent1 = glm::normalize(bitangent1);
-
-                mesh.bitangent.push_back(bitangent1.x);
-                mesh.bitangent.push_back(bitangent1.y);
-                mesh.bitangent.push_back(bitangent1.z);
-
-                // triangle 2
-                // ----------
-                edge1 = pos3 - pos1;
-                edge2 = pos4 - pos1;
-                deltaUV1 = uv3 - uv1;
-                deltaUV2 = uv4 - uv1;
-
-                f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-                tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-                tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-                tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-                tangent2 = glm::normalize(tangent2);
-
-                mesh.tangent.push_back(tangent2.x);
-                mesh.tangent.push_back(tangent2.y);
-                mesh.tangent.push_back(tangent2.z);
-
-                bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-                bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-                bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-                bitangent2 = glm::normalize(bitangent2);
-
-                mesh.bitangent.push_back(bitangent2.x);
-                mesh.bitangent.push_back(bitangent2.y);
-                mesh.bitangent.push_back(bitangent2.z);
-            }
-        }
-        m_indicesNum = mesh.indices.size();
-
         m_SetModelMatrix();
 
-        m_Init(mesh);
+        m_Init();
     }
 
 
-    void Terrain::m_Init(const TerrainMesh& mesh)
+    void Terrain::m_Init()
     {
+        const TerrainMesh mesh{m_LoadMesh()};
         glGenVertexArrays(1, &m_VAO);
         glBindVertexArray(m_VAO);
 
@@ -273,35 +288,35 @@ namespace Entities
         glBindBuffer(GL_ARRAY_BUFFER, m_positionVBO);
         glBufferData(GL_ARRAY_BUFFER, mesh.position.size() * sizeof(float), mesh.position.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         // Normal
         glGenBuffers(1, &m_normalVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_normalVBO);
         glBufferData(GL_ARRAY_BUFFER, mesh.normal.size() * sizeof(float), mesh.normal.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         // TexCoords
         glGenBuffers(1, &m_texCoordsVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
         glBufferData(GL_ARRAY_BUFFER, mesh.texCoords.size() * sizeof(float), mesh.texCoords.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         
         // Tangent
         glGenBuffers(1, &m_tangentVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_tangentVBO);
         glBufferData(GL_ARRAY_BUFFER, mesh.tangent.size() * sizeof(float), mesh.tangent.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         // Bitangent
         glGenBuffers(1, &m_bitangentVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_bitangentVBO);
         glBufferData(GL_ARRAY_BUFFER, mesh.bitangent.size() * sizeof(float), mesh.bitangent.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);        
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, nullptr);        
 
         // Indices
         glGenBuffers(1, &m_EBO);
@@ -312,7 +327,7 @@ namespace Entities
     }
 
 
-    glm::vec3 Terrain::m_CalculateNormal(int x, int z)
+    glm::vec3 Terrain::m_CalculateNormal(int x, int z) const
     {
         float heightL = x - 1 >= 0 ? m_heightMap[z][x - 1] : 0;
         float heightR = x + 1 < m_size ? m_heightMap[z][x + 1] : 0;
