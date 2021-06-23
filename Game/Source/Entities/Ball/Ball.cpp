@@ -8,11 +8,18 @@ namespace Entities
     Ball::Ball()
         : Render::Model("Resources/Objects/golfBall/golfBall.obj")
         , Entity("entity")
-        , m_position(ballDefault::position)
-        , m_direction(CAMERA.GetCameraFront())
+        , m_speed(ballDefault::speed)
+        , m_acceleration(0.f)
+        , m_direction(0.f)
+        , m_frictionFactor(ballDefault::frictionFactor)
         , m_angle(ballDefault::angle)
-        , m_speed(0.f)
+        , m_scaleMatrix(glm::scale(glm::mat4{1.f}, ballDefault::scale * glm::vec3(1.f,1.f,1.f)))
+        // , m_prevPos(ballDefault::position)
     {
+        this->position = ballDefault::position;
+        model          = glm::translate(glm::mat4{1.f}, position);
+        model         *= m_scaleMatrix;
+
         // diffuse texture is loaded in parent class
         m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end(), [](Render::Texture &t) {
                            return t.GetType() == TDIFFUSE;
@@ -20,18 +27,19 @@ namespace Entities
 
         shader.ActivateShader();
         shader.SetValue("material.diffuse", 0);
+        setUniformPVM();
     }
 
     void Ball::Update(float delta)
     {
         shader.ActivateShader();
-        m_SetLightUniforms();
-
         m_HandleTransformations(delta);
+        m_SetLightUniforms();
+        setUniformPVM();
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
-        setUniformPVM();
+
 
         Draw(&shader);
 
@@ -50,30 +58,24 @@ namespace Entities
 
         shader.setVec3("material.specular", ballDefault::material_specular);
         shader.SetValue("material.shininess", ballDefault::material_shininess);
+
+        shader.setMat4("view", view);
+        shader.setMat4("model", model);
     }
 
     inline void Ball::m_HandleTransformations(float delta)
     {
-
-        if (m_speed > 0.f)
+        if (m_speed != glm::vec3{0.f})
         {
-            m_position += delta * m_speed * m_direction;
+            auto rot = m_NormalOnVec(m_speed);            
+            m_angle = (delta / 3.14f)* glm::length(m_speed);            
 
-            /* Angle is in degrees kept between [0, 360) */
-            m_angle += m_speed * delta * ballDefault::rotationFixer;
-            m_angle = fmod( m_angle, 360.f );
-
-            m_speed -= ballDefault::accel * delta; // Deceleration
+            m_rotationMatrix = glm::rotate(glm::mat4{1.f}, -m_angle, rot) * m_rotationMatrix;
+            model = glm::translate(glm::mat4{1.f}, position) * m_rotationMatrix * m_scaleMatrix;                        
         }
         else if (m_ShootEvent())
         {
-            m_direction   = CAMERA.GetCameraFront();
-            m_direction.y = 0.f;
-            m_direction   = glm::normalize(m_direction);
-            m_speed     = ballDefault::speed;
+            m_speed = ballDefault::shootSpeed * glm::normalize(CAMERA.GetCameraFront());
         }
-
-        model = glm::translate(glm::mat4{1.f}, m_position);
-        model = glm::rotate(model, glm::radians(m_angle), m_NormalOnVec(m_direction));
     }
 } // namespace Entities

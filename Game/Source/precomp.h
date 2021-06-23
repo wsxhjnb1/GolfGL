@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 #define SPDLOG_NO_EXCEPTIONS
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
@@ -18,6 +19,7 @@
 // Global data
 #include "Asserts.h"
 #include "Data/WindowData.h"
+#include "Math.hpp"
 
 // classes
 #include <Camera/Camera.h>

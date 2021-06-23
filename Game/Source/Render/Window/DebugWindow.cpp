@@ -5,14 +5,14 @@
 
 #include "DebugWindow.h"
 
-#include <Window/Window.h>
 #include <Entities/EntityManager.h>
+#include <Window/Window.h>
 
 #include <Entities/Ball/Ball.h>
 #include <Entities/Ball/ballDefault.h>
 
 /* Initialize after setting up native opengl viewport */
-bool Window::DebugWindow::Init(EntMan* entityManager) 
+bool Window::DebugWindow::Init(EntMan *entityManager)
 {
     m_EntityManager = entityManager;
 
@@ -41,7 +41,7 @@ bool Window::DebugWindow::Update()
     //-------------------------------
     m_DrawGFXSettings();
     //-------------------------------
-    if(m_EntityManager != nullptr)
+    if (m_EntityManager != nullptr)
     {
         m_DrawBallMenu();
     }
@@ -128,24 +128,27 @@ void Window::DebugWindow::m_DrawGFXSettings() const
 
     ImGui::EndGroup();
 
-    if (ImGui::Checkbox("VSync", &WindowData::vsync)) {}    
+    if (ImGui::Checkbox("VSync", &WindowData::vsync))
+    {
+    }
     ImGui::Separator();
 }
 
 void Window::DebugWindow::m_DrawBallMenu() const
 {
     ImGui::Text("Ball:");
-    ImGui::BeginGroup();        
-    auto* ball = static_cast<Entities::Ball *>(m_EntityManager->GetEntity("ball"));
+    ImGui::BeginGroup();
+    auto *ball = static_cast<Entities::Ball *>(m_EntityManager->GetEntity("ball"));
 
-    ImGui::InputFloat3("",						&Entities::ballDefault::position[0]);
-    ImGui::SliderFloat("Speed",					&Entities::ballDefault::speed, 0.f, 40.f);
-    ImGui::SliderFloat("Deacceleration",		&Entities::ballDefault::accel, 0.f, 5.f);
-    ImGui::SliderFloat("Rotation Fixer",		&Entities::ballDefault::rotationFixer, 0.f, 100.f);
-    ImGui::InputFloat3("Material - specular",  &Entities::ballDefault::material_specular[0]);
+    ImGui::InputFloat3("Position", &ball->position[0]);
+    ImGui::InputFloat3("Material - specular", &Entities::ballDefault::material_specular[0]);
     ImGui::SliderFloat("Material - shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
 
-    if( ImGui::Button("Restart Ball") ) { ball->position = Entities::ballDefault::position; }
+    if (ImGui::Button("Restart Ball"))
+    {
+        ball->position = Entities::ballDefault::position;
+        ball->m_speed  = glm::vec3{0.f};
+    }
     ImGui::EndGroup();
 
     ImGui::Separator();
