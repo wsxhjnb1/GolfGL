@@ -30,7 +30,7 @@ bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_pt
 
 Entities::Entity *Entities::EntityManager::GetEntity(const std::string &name) { return m_Table[name].get(); }
 
-void Entities::EntityManager::Update(float delta)
+void Entities::EntityManager::m_UpdateTransformations(float delta)
 {
     auto *terrain = static_cast<Terrain *>(m_Table["terrain"].get());
     auto *ball    = static_cast<Ball *>(m_Table["ball"].get());
@@ -43,14 +43,20 @@ void Entities::EntityManager::Update(float delta)
     ball->m_speed += 0.5f * delta * ball->m_acceleration;
 
     if (glm::length(ball->m_speed) < 0.2f)
+    {
         ball->m_speed = glm::vec3{0.f};
+        return;
+    }
 
     ball->position += delta * ball->m_speed;
     
     ball->position.y = 3.5f + terrain->GetHeight(ball->position.x, ball->position.z);    
     terrain->CorrectPosition(ball->position.x, ball->position.z);
+}
 
-        
+void Entities::EntityManager::Update(float delta)
+{
+    m_UpdateTransformations(delta);        
 
     Entity::view = CAMERA.LookAt();
     std::for_each(m_Table.begin(), m_Table.end(),

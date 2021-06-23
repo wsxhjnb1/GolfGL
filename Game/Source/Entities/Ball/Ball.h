@@ -26,6 +26,7 @@ namespace Entities
         unsigned m_diffuseMap;
 
         void m_SetLightUniforms() const;
+        void m_UpdateModelMatrix();
         void m_HandleTransformations(float delta);
 
         [[nodiscard]] glm::vec3 m_NormalOnVec(const glm::vec3 &direction) const

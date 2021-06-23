@@ -4,6 +4,10 @@
 #include <Render/Shader.h>
 #include <Render/Texture.h>
 
+#ifdef _DEBUG
+namespace Window { class DebugWindow;}
+#endif
+
 namespace Entities
 {
     class EntityManager;
@@ -48,5 +52,9 @@ namespace Entities
         }
 
         friend EntityManager;
+#ifdef _DEBUG
+        friend Window::DebugWindow;
+#endif
+
     };
 } // namespace Entities

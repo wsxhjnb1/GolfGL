@@ -63,6 +63,11 @@ namespace Entities
         shader.setMat4("model", model);
     }
 
+    void Ball::m_UpdateModelMatrix()
+    {
+        model = glm::translate(glm::mat4{1.f}, position) * m_rotationMatrix * m_scaleMatrix;
+    }
+
     inline void Ball::m_HandleTransformations(float delta)
     {
         if (m_speed != glm::vec3{0.f})
@@ -71,7 +76,7 @@ namespace Entities
             m_angle = (delta / 3.14f)* glm::length(m_speed);            
 
             m_rotationMatrix = glm::rotate(glm::mat4{1.f}, -m_angle, rot) * m_rotationMatrix;
-            model = glm::translate(glm::mat4{1.f}, position) * m_rotationMatrix * m_scaleMatrix;                        
+            m_UpdateModelMatrix();
         }
         else if (m_ShootEvent())
         {

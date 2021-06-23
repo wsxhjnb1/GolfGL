@@ -10,6 +10,7 @@
 
 #include <Entities/Ball/Ball.h>
 #include <Entities/Ball/ballDefault.h>
+#include <Entities/Terrain/Terrain.h>
 
 /* Initialize after setting up native opengl viewport */
 bool Window::DebugWindow::Init(EntMan *entityManager)
@@ -37,14 +38,17 @@ bool Window::DebugWindow::Update()
     ImGui::Begin("Debug Window", &m_DebugMenuActive, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
 
 #ifdef _DEBUG
-    m_DrawLightMenu();
-    //-------------------------------
     m_DrawGFXSettings();
+    //-------------------------------
+    m_DrawCameraMenu();
+    //-------------------------------
+    m_DrawLightMenu();
     //-------------------------------
     if (m_EntityManager != nullptr)
     {
         m_DrawBallMenu();
     }
+    //-------------------------------
 #endif
     float frametime = 1000.f / ImGui::GetIO().Framerate;
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", frametime, ImGui::GetIO().Framerate);
@@ -134,23 +138,57 @@ void Window::DebugWindow::m_DrawGFXSettings() const
     ImGui::Separator();
 }
 
+void Window::DebugWindow::m_DrawCameraMenu() const
+{
+    ImGui::Text("Camera:");
+    ImGui::BeginGroup();
+
+    auto& pos = CAMERA.GetCameraPos();
+    ImGui::Text("Position: (%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
+    ImGui::SliderFloat("Movement speed", &CAMERA.MovementSpeed, 0.f, 50.f);
+    ImGui::SliderFloat("Sensitivity", &CAMERA.MouseSensitivity, 0.f, 1.f);
+
+    ImGui::EndGroup();
+    ImGui::Separator();
+}
+
 void Window::DebugWindow::m_DrawBallMenu() const
 {
     ImGui::Text("Ball:");
     ImGui::BeginGroup();
-    auto *ball = static_cast<Entities::Ball *>(m_EntityManager->GetEntity("ball"));
-
-    ImGui::InputFloat3("Position", &ball->position[0]);
-    ImGui::InputFloat3("Material - specular", &Entities::ballDefault::material_specular[0]);
-    ImGui::SliderFloat("Material - shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
-
-    if (ImGui::Button("Restart Ball"))
+    auto* ball = static_cast<Entities::Ball*>(m_EntityManager->GetEntity("ball"));
+    static bool attach = true;
+    
+    ImGui::Text("Position: %s", glm::to_string(ball->position).c_str()+4);
+    if( ImGui::InputFloat3("Set position", &Entities::ballDefault::position[0]) )
     {
         ball->position = Entities::ballDefault::position;
+        if(attach)
+        {
+            m_CorrectPosition(ball);
+        }
+        ball->m_UpdateModelMatrix();
         ball->m_speed  = glm::vec3{0.f};
     }
+    ImGui::SameLine();
+    if( ImGui::Checkbox("Attach to terrain", &attach) )
+    {
+        m_CorrectPosition(ball);
+        ball->m_UpdateModelMatrix();
+    }
+
+    ImGui::InputFloat3("Material - specular", &Entities::ballDefault::material_specular[0]);
+    ImGui::SliderFloat("Material - shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
+    
     ImGui::EndGroup();
 
     ImGui::Separator();
+}
+
+void Window::DebugWindow::m_CorrectPosition(Entities::Entity* entity) const
+{
+    auto* terrain = static_cast<Entities::Terrain*>(m_EntityManager->GetEntity("terrain"));
+    terrain->CorrectPosition(entity->position.x, entity->position.z);
+    entity->position.y = 3.5f + terrain->GetHeight(entity->position.x, entity->position.z);
 }
 #endif

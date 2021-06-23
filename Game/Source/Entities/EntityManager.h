@@ -19,5 +19,6 @@ namespace Entities
 
     private:
         std::unordered_map<std::string, std::unique_ptr<Entity>> m_Table;
+        void m_UpdateTransformations(float delta);
     };
 } // namespace Entities

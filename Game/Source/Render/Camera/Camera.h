@@ -2,6 +2,10 @@
 
 #include <precomp.h>
 
+#ifdef _DEBUG
+    namespace Window { class DebugWindow; }
+#endif
+
 class Camera
 {
 public:
@@ -31,7 +35,7 @@ private:
 
 	inline static std::unique_ptr<Camera> ms_Camera;	
 
-	inline static glm::vec3 cameraPos {0.f, 0.f, 3.f};
+	inline static glm::vec3 cameraPos {12.6f, -1.5f, 20.f};
 	inline static glm::vec3 cameraFront { 0.f, 0.f, -1.f };
 	inline static glm::vec3 cameraUp{ 0.f, 1.f, 0.f };
 	inline static float cameraSpeed = 0.5f;
@@ -57,6 +61,10 @@ private:
 		angle = std::max(lower, angle);
 		angle = std::min(angle, upper);
 	}
+
+#ifdef _DEBUG
+	friend Window::DebugWindow;
+#endif
 };
 
 #define CAMERA Camera::GetCamera()
