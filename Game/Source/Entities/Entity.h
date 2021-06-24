@@ -37,8 +37,8 @@ namespace Entities
 
         inline static glm::mat4 projection{
             glm::perspective(glm::radians(CAMERA.GetCameraZoom()), WindowData::W / WindowData::H, 0.1f, 2000.0f)};
-        inline static glm::mat4 view{1.f};
-        glm::mat4 model{1.f};
+        inline static glm::mat4 view{Math::I4};
+        glm::mat4 model;
         glm::vec3 position{0.f};
 
         Render::Shader shader;

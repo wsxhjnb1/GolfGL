@@ -12,7 +12,7 @@ namespace Entities
         friend Window::DebugWindow;
 #endif
         friend class Ball;
-        inline static glm::vec3 position{5.f, -1.7f, -5.f};
+        inline static glm::vec3 position{14.f, -5.5f, 3.5f};
         inline static glm::vec3 speed{0.f};
         inline static float scale = 1.f;
         inline static float frictionFactor = -0.2f;

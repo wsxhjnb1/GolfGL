@@ -20,12 +20,23 @@ namespace Entities
         float m_angle;
         glm::vec3 m_friction{0.f};        
 
-        glm::mat4 m_rotationMatrix{1.f};
-        glm::mat4 m_scaleMatrix;
+        glm::mat4 m_rotationMatrix{Math::I4};
+        glm::mat4 m_scaleMatrix{Math::I4};
 
         unsigned m_diffuseMap;
 
         void m_SetLightUniforms() const;
+
+        /**
+         * \brief Model matrix recalculation
+         *                    
+         * Model = T * R * S         
+         * \par Where:
+         * T: translation matrix\n
+         * R: rotation matrix\n
+         * S: scale matrix\n
+         *         
+         */
         void m_UpdateModelMatrix();
         void m_HandleTransformations(float delta);
 

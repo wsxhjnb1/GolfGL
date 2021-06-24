@@ -4,14 +4,16 @@
 
 namespace Math
 {
-
+    /* Types */
     template <typename T = float>
     using Array = std::vector<T>;
     template <typename T = float>
     using Matrix = std::vector<Array<T>>;
     using Image  = std::vector<std::vector<float>>;
 
+    /* Constants */
     constexpr double Pi = 3.14159265359;
+    constexpr glm::mat4 I4{1.f};
 
     template <typename T>
     double Gaussian(T x, T y, double sigma)

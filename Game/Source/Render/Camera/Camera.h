@@ -35,7 +35,7 @@ private:
 
 	inline static std::unique_ptr<Camera> ms_Camera;	
 
-	inline static glm::vec3 cameraPos {12.6f, -1.5f, 20.f};
+	inline static glm::vec3 cameraPos {11.4f, -1.7f, 25.f};
 	inline static glm::vec3 cameraFront { 0.f, 0.f, -1.f };
 	inline static glm::vec3 cameraUp{ 0.f, 1.f, 0.f };
 	inline static float cameraSpeed = 0.5f;

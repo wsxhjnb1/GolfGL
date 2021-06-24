@@ -83,21 +83,26 @@ void Window::DebugWindow::Destroy()
 #ifdef _DEBUG
 void Window::DebugWindow::m_DrawLightMenu() const
 {
+    ImGui::Text("Light");
+
+    ImGui::Indent(10.f);
     ImGui::BeginGroup();
 
-    ImGui::Text("Light:");
     ImGui::InputFloat3("Light position", &LIGHT.LightPosition[0]);
     ImGui::InputFloat3("Light ambient", &LIGHT.Ambient[0]);
     ImGui::InputFloat3("Light diffuse", &LIGHT.Diffuse[0]);
     ImGui::InputFloat3("Light specular", &LIGHT.Specular[0]);
 
     ImGui::EndGroup();
+    ImGui::Indent(-10.f);
     ImGui::Separator();
 }
 
 void Window::DebugWindow::m_DrawGFXSettings() const
 {
-    ImGui::Text("Graphics settings:");
+    ImGui::Text("Graphics settings");
+
+    ImGui::Indent(10.f);
     ImGui::BeginGroup();
 
     if (ImGui::BeginMenu("Resolution"))
@@ -135,12 +140,15 @@ void Window::DebugWindow::m_DrawGFXSettings() const
     if (ImGui::Checkbox("VSync", &WindowData::vsync))
     {
     }
+    ImGui::Indent(-10.f);
     ImGui::Separator();
 }
 
 void Window::DebugWindow::m_DrawCameraMenu() const
 {
-    ImGui::Text("Camera:");
+    ImGui::Text("Camera");
+
+    ImGui::Indent(10.f);
     ImGui::BeginGroup();
 
     auto& pos = CAMERA.GetCameraPos();
@@ -149,12 +157,15 @@ void Window::DebugWindow::m_DrawCameraMenu() const
     ImGui::SliderFloat("Sensitivity", &CAMERA.MouseSensitivity, 0.f, 1.f);
 
     ImGui::EndGroup();
+    ImGui::Indent(-10.f);
     ImGui::Separator();
 }
 
 void Window::DebugWindow::m_DrawBallMenu() const
 {
-    ImGui::Text("Ball:");
+    ImGui::Text("Ball");
+
+    ImGui::Indent(10.f);
     ImGui::BeginGroup();
     auto* ball = static_cast<Entities::Ball*>(m_EntityManager->GetEntity("ball"));
     static bool attach = true;
@@ -176,12 +187,15 @@ void Window::DebugWindow::m_DrawBallMenu() const
         m_CorrectPosition(ball);
         ball->m_UpdateModelMatrix();
     }
-
-    ImGui::InputFloat3("Material - specular", &Entities::ballDefault::material_specular[0]);
-    ImGui::SliderFloat("Material - shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
     
+    ImGui::BeginGroup();
+        ImGui::Text("Material:");
+        ImGui::InputFloat3("specular", &Entities::ballDefault::material_specular[0]);
+        ImGui::SliderFloat("shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
     ImGui::EndGroup();
 
+    ImGui::EndGroup();
+    ImGui::Indent(-10.f);
     ImGui::Separator();
 }
 

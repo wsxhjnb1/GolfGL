@@ -12,13 +12,12 @@ namespace Entities
         , m_acceleration(0.f)
         , m_direction(0.f)
         , m_frictionFactor(ballDefault::frictionFactor)
-        , m_angle(ballDefault::angle)
-        , m_scaleMatrix(glm::scale(glm::mat4{1.f}, ballDefault::scale * glm::vec3(1.f,1.f,1.f)))
-        // , m_prevPos(ballDefault::position)
+        , m_angle(ballDefault::angle)        
     {
         this->position = ballDefault::position;
-        model          = glm::translate(glm::mat4{1.f}, position);
-        model         *= m_scaleMatrix;
+        m_scaleMatrix *= ballDefault::scale;
+        model          = glm::translate(Math::I4, position);
+        m_UpdateModelMatrix();
 
         // diffuse texture is loaded in parent class
         m_diffuseMap = (*std::find_if(textures_loaded.begin(), textures_loaded.end(), [](Render::Texture &t) {
@@ -65,7 +64,7 @@ namespace Entities
 
     void Ball::m_UpdateModelMatrix()
     {
-        model = glm::translate(glm::mat4{1.f}, position) * m_rotationMatrix * m_scaleMatrix;
+        model = glm::translate(Math::I4, position) * m_rotationMatrix * m_scaleMatrix;
     }
 
     inline void Ball::m_HandleTransformations(float delta)
@@ -75,7 +74,7 @@ namespace Entities
             auto rot = m_NormalOnVec(m_speed);            
             m_angle = (delta / 3.14f)* glm::length(m_speed);            
 
-            m_rotationMatrix = glm::rotate(glm::mat4{1.f}, -m_angle, rot) * m_rotationMatrix;
+            m_rotationMatrix = glm::rotate(Math::I4, -m_angle, rot) * m_rotationMatrix;
             m_UpdateModelMatrix();
         }
         else if (m_ShootEvent())

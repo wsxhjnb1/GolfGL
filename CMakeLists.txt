@@ -67,6 +67,7 @@ endif(WIN32)
 set(Source_Root "${CMAKE_SOURCE_DIR}/Game")
 file(GLOB_RECURSE GameSrc
   "${Source_Root}/*.cpp"
+  "${Source_Root}/*.hpp"
   "${Source_Root}/*.h"
   )
 
