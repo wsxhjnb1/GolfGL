@@ -51,18 +51,18 @@ namespace Material
         : Material(shader)
         , m_albedo(PNG(directory, "albedo"))
         , m_normal(PNG(directory, "normal"))
-        , m_ao(PNG(directory, "ao"))
+        , m_ao    (PNG(directory, "ao"))
     {
         shader.ActivateShader();
         shader.SetValue("material.albedo",    0);
         shader.SetValue("material.normal",    1);        
-        shader.SetValue("material.ao",        3);
+        shader.SetValue("material.ao",        2);
         shader.DeactivateShader();
     }
 
     PBR::~PBR()
     {
-        glDeleteTextures(5, &m_albedo);
+        glDeleteTextures(3, &m_albedo);
     }
 
     int PBR::Activate(int index)

@@ -62,9 +62,7 @@ namespace Material
      * @brief Physically based rendering
      * \par Texture maps:     
      * - Albedo
-     * - Normal
-     * - Metallic
-     * - Smoothness
+     * - Normal     
      * - Ambient Occlusion
      *
      * @param shader     Reference to entity's shader

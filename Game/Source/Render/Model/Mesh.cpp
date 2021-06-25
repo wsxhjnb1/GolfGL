@@ -15,40 +15,11 @@ Render::Mesh::Mesh(std::vector<Render::Vertex> &_vertices,
 }
 
 void Render::Mesh::Draw(Render::Shader *shader)
-{
-    // shader->ActivateShader();
-
-    // bind appropriate textures
-    /*
-    for (unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-        // retrieve texture number
-
-        // TextureType type = textures[i].GetType();
-
-        // now set the sampler to the correct texture unit
-        // auto uni{m_TypeCounter.TextureNameFactory(textures[i].GetType())};
-        // LOG_TRACE("Setting texture type: {}", uni);
-        // shader->SetValue(uni, (int)i);
-
-        // and finally bind the texture
-        glBindTexture(GL_TEXTURE_2D, textures[i].GetID());
-    }
-    */
+{    
     // draw mesh
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, nullptr);
-    glBindVertexArray(0);
-    /*
-    // always good practice to set everything back to defaults once configured.
-    for (unsigned int i = 0; i < textures.size(); i++)
-    {
-        glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    */
-    // glUseProgram(0);
+    glBindVertexArray(0);    
 }
 
 void Render::Mesh::m_Init()

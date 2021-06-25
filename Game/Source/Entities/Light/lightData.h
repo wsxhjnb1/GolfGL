@@ -9,43 +9,6 @@ struct PhongLight
     glm::vec3 Color;
 };
 
-
-/* Macro definition for direct loading */
-
-/*
-#define allLights {        \
-PhongLight{                \
- {1.2f, 5.f, -2.0f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.5f, 0.5f, 0.5f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.3f, 0.3f, 0.3f},       \
- },                        \
-PhongLight{                \
- {1.2f, 5.f, -2.0f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.5f, 0.5f, 0.5f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.3f, 0.3f, 0.3f},       \
- },                        \
-PhongLight{                \
- {1.2f, 5.f, -2.0f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.5f, 0.5f, 0.5f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.3f, 0.3f, 0.3f},       \
- },                        \
-PhongLight{                \
- {1.2f, 5.f, -2.0f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.5f, 0.5f, 0.5f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.3f, 0.3f, 0.3f},       \
- }                         \
-}                          \                           
-*/
-
-
 #define allLights {        \
 PhongLight{                \
  {1.2f, 5.f, -2.0f},       \

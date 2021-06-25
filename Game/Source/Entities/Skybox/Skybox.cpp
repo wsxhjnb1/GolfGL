@@ -42,7 +42,7 @@ void Entities::Skybox::Update(float delta)
     glDrawArrays(GL_TRIANGLES, 0, skyData.n_triangles);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
-    glUseProgram(0);
+    shader.DeactivateShader();
 }
 
 unsigned Entities::Skybox::m_LoadCubemap() const
