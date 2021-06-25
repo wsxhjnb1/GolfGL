@@ -5,8 +5,7 @@
  * Singleton logger with static access
  * Wrapper for spdlog
  *
- * \see ![Official](https://github.com/gabime/spdlog)
- *
+ * @see https://github.com/gabime/spdlog 
 */
 class Log
 {

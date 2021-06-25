@@ -4,14 +4,9 @@
 
 
 
-Render::Texture::Texture(const std::string& name, Render::TextureType type, GLenum target)
+Render::Texture::Texture(const std::string& name, Render::TextureType type, GLenum target, int channels)
 	: m_name(name.substr( name.find_last_of('/') + 1)), m_type(type)
-{
-    int channels = 0;
-    /*
-    if(type == TNORMAL || type == THEIGHT)
-        channels = 1;
-    */
+{    
     if ( m_name.empty() )
     {
         m_name = name;
@@ -115,13 +110,13 @@ std::string Render::Texture::TypeToString(TextureType type)
 template<typename T>
 void Render::Texture::SetTexParam( GLenum pname, T param, GLenum target )
 {
-    glTexParameterf( target, pname, param );
+    glTexParameteri( target, pname, param );
 }
 
 template<typename T>
 void Render::Texture::SetTexParam( GLenum pname, const T* param, GLenum target )
 {
-    glTexParameterfv( target, pname, param );
+    glTexParameteriv( target, pname, param );
 }
 
 unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum target, int desiredChannels)
@@ -132,10 +127,10 @@ unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum tar
 
 	if ( rawIm.data == nullptr )
     {
-        LOG_ERROR( "Failed to load texture\nTexture: {}", name );
+        LOG_WARN( "Failed to load texture\nTexture: {}", name );
 
 #ifdef _DEBUG
-        LOG_ERROR( "Error code: {}", glGetError() );
+        LOG_WARN( "Error code: {}", glGetError() );
 #endif // _DEBUG
         
         return 0;

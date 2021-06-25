@@ -22,7 +22,7 @@ namespace Entities
         shader.SetValue("texture1.normal",  1);
         shader.SetValue("texture2.diffuse", 2);
         shader.SetValue("texture2.normal",  3);
-        glUseProgram(0);
+        shader.DeactivateShader();
     }
 
     Terrain::~Terrain()
@@ -56,7 +56,7 @@ namespace Entities
 
         Material::UnbindTextures(index);
 
-        glUseProgram(0);
+        shader.DeactivateShader();
     }
     
     glm::vec3 Terrain::GetGradient(float x, float z) const
