@@ -13,7 +13,7 @@ Entities::Skybox::Skybox() : Entity("skybox")
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-    texture = m_LoadCubemap();
+    m_textureID = m_LoadCubemap();
     shader.ActivateShader();
     shader.SetValue("skybox", 0);
     shader.setMat4("projection", projection);
@@ -23,6 +23,7 @@ Entities::Skybox::Skybox() : Entity("skybox")
 
 Entities::Skybox::~Skybox()
 {
+    glDeleteTextures(1, &m_textureID);
     glDeleteVertexArrays(1, &m_VAO);
     glDeleteBuffers(1, &m_VBO);
 }
@@ -37,7 +38,7 @@ void Entities::Skybox::Update(float delta)
 
     glBindVertexArray(m_VAO);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureID);
     glDrawArrays(GL_TRIANGLES, 0, skyData.n_triangles);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
@@ -56,7 +57,7 @@ unsigned Entities::Skybox::m_LoadCubemap() const
         auto rawIm{rTex::LoadRawImage(face)};
         if (rawIm.data == nullptr)
         {
-            std::cout << "Cubemap texture failed to load at path: " << face << std::endl;
+            std::cout << "Cubemap m_textureID failed to load at path: " << face << std::endl;
             return 0;
         }
 

@@ -87,11 +87,12 @@ void Window::DebugWindow::m_DrawLightMenu() const
 
     ImGui::Indent(10.f);
     ImGui::BeginGroup();
-
-    ImGui::InputFloat3("Light position", &LIGHT.LightPosition[0]);
-    ImGui::InputFloat3("Light ambient", &LIGHT.Ambient[0]);
-    ImGui::InputFloat3("Light diffuse", &LIGHT.Diffuse[0]);
-    ImGui::InputFloat3("Light specular", &LIGHT.Specular[0]);
+    static int idx = 0;
+    ImGui::SliderInt("", &idx, 0, 3);
+    ImGui::InputFloat3("Light position", &LIGHT[idx].Position[0]);
+    ImGui::InputFloat3("Light ambient",  &LIGHT[idx].Ambient[0]);
+    ImGui::InputFloat3("Light diffuse",  &LIGHT[idx].Diffuse[0]);
+    ImGui::InputFloat3("Light specular", &LIGHT[idx].Specular[0]);
 
     ImGui::EndGroup();
     ImGui::Indent(-10.f);
@@ -187,10 +188,16 @@ void Window::DebugWindow::m_DrawBallMenu() const
         m_CorrectPosition(ball);
         ball->m_UpdateModelMatrix();
     }
+
+    if( ImGui::InputFloat("Scale", &Entities::ballDefault::scale) )
+    {
+        float s = Entities::ballDefault::scale;
+        ball->m_scaleMatrix = glm::scale(Math::I4, glm::vec3{s,s,s});
+        ball->m_UpdateModelMatrix();
+    }
     
     ImGui::BeginGroup();
-        ImGui::Text("Material:");
-        ImGui::InputFloat3("specular", &Entities::ballDefault::material_specular[0]);
+        ImGui::Text("Material:");        
         ImGui::SliderFloat("shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
     ImGui::EndGroup();
 

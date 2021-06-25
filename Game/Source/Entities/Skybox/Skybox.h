@@ -14,6 +14,7 @@ namespace Entities
 
     private:
         unsigned m_VAO, m_VBO;
+        unsigned m_textureID;
 
         [[nodiscard]] unsigned m_LoadCubemap() const;
 

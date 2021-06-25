@@ -1,18 +1,19 @@
 #include <precomp.h>
+#include "terrainData.h"
+#include <Entities/Material.h>
+
 #include "Terrain.h"
 
 float _defaultHeightFunction(float h) { return h; }
 namespace Entities
 {
     Terrain::Terrain(float scale) /* This texture will be on higher points */
-        : Entity("terrain", "Resources/Textures/terrain/grass/diffuse.png"), m_scale(scale)
+        : Entity("terrain"),
+        m_scale(scale),
+        m_grass(shader, terrainData::grassDir),
+        m_mud(shader, terrainData::mudDir)
     {
-        m_LoadHeightMap("Resources/Textures/terrain/height_map.jpg");        
-
-        m_textures.push_back(texture);
-        m_textures.push_back(Render::Texture::LoadNativeTexture("Resources/Textures/terrain/grass/normal.png"));        
-        m_textures.push_back(Render::Texture::LoadNativeTexture("Resources/Textures/terrain/mud/diffuse.png"));
-        m_textures.push_back(Render::Texture::LoadNativeTexture("Resources/Textures/terrain/mud/normal.png"));
+        m_LoadHeightMap(terrainData::heightMapPath);
 
         shader.ActivateShader();
         m_SetModelMatrix();
@@ -41,26 +42,19 @@ namespace Entities
         shader.ActivateShader();
 
         shader.setMat4("view", view);
-        shader.setVec3("lightPos", LIGHT.LightPosition);
-        shader.setVec3("light.ambient", LIGHT.Ambient);
-        shader.setVec3("light.diffuse", LIGHT.Diffuse);
-        shader.setVec3("light.specular", LIGHT.Specular);
+        shader.setVec3("lightPos", LIGHT[0].Position);
+        shader.setVec3("light.ambient", LIGHT[0].Ambient);
+        shader.setVec3("light.diffuse", LIGHT[0].Diffuse);
+        shader.setVec3("light.specular", LIGHT[0].Specular);
         shader.setVec3("viewPos", CAMERA.GetCameraPos());
 
         glBindVertexArray(m_VAO);
-        for (int i = 0; i < m_textures.size(); ++i)
-        {
-            glActiveTexture(GL_TEXTURE0 + i);
-            glBindTexture(GL_TEXTURE_2D, m_textures[i]);
-        }
+        int index = m_grass.Activate(GL_TEXTURE0);
+        index = m_mud.Activate(index);
 
         glDrawElements(GL_TRIANGLES, m_indicesNum, GL_UNSIGNED_INT, nullptr);
 
-        for (int i = 0; i < m_textures.size(); ++i)
-        {
-            glActiveTexture(GL_TEXTURE0 + i);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
+        Material::UnbindTextures(index);
 
         glUseProgram(0);
     }
@@ -117,7 +111,7 @@ namespace Entities
     }
 
 
-    Terrain::TerrainMesh Terrain::m_LoadMesh()
+    TerrainMesh Terrain::m_LoadMesh()
     {
         TerrainMesh mesh; // result                        
 
@@ -262,7 +256,7 @@ namespace Entities
         {
             for (int j = 0; j < m_size; ++j)
             {
-                m_heightMap[i][j] = m_HeightFunction(data[i * m_size + j]);
+                m_heightMap[i][j] = terrainData::HeightFunction(data[i * m_size + j]);
             }
         }
 
@@ -279,49 +273,55 @@ namespace Entities
 
     void Terrain::m_Init()
     {
-        const TerrainMesh mesh{m_LoadMesh()};
+        const auto& [position, 
+                    normal, 
+                    texCoords, 
+                    tangent, 
+                    bitangent, 
+                    indices] {m_LoadMesh()};
+
         glGenVertexArrays(1, &m_VAO);
         glBindVertexArray(m_VAO);
 
         // Position
         glGenBuffers(1, &m_positionVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_positionVBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh.position.size() * sizeof(float), mesh.position.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, position.size() * sizeof(float), position.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         // Normal
         glGenBuffers(1, &m_normalVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_normalVBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh.normal.size() * sizeof(float), mesh.normal.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, normal.size() * sizeof(float), normal.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         // TexCoords
         glGenBuffers(1, &m_texCoordsVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_texCoordsVBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh.texCoords.size() * sizeof(float), mesh.texCoords.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), texCoords.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         
         // Tangent
         glGenBuffers(1, &m_tangentVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_tangentVBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh.tangent.size() * sizeof(float), mesh.tangent.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, tangent.size() * sizeof(float), tangent.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         // Bitangent
         glGenBuffers(1, &m_bitangentVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_bitangentVBO);
-        glBufferData(GL_ARRAY_BUFFER, mesh.bitangent.size() * sizeof(float), mesh.bitangent.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, bitangent.size() * sizeof(float), bitangent.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, nullptr);        
 
         // Indices
         glGenBuffers(1, &m_EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(unsigned int), mesh.indices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
         glBindVertexArray(0);
     }
