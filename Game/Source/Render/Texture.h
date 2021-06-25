@@ -44,7 +44,7 @@ namespace Render {
 	{
 	public:	
 
-		Texture(const std::string& name, TextureType type = TextureType::DIFFUSE, GLenum target = GL_TEXTURE_2D);
+		Texture(const std::string& name, TextureType type = TextureType::DIFFUSE, GLenum target = GL_TEXTURE_2D, int channels = 0);
 
 		unsigned GetID() const;
 		std::string GetName() const;		
