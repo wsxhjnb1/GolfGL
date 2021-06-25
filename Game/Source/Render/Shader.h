@@ -14,6 +14,8 @@ namespace Render
 
         void ActivateShader();
 
+        void DeactivateShader();
+
         template <typename T = int>
         void SetValue(const std::string &name, T value) const;
 

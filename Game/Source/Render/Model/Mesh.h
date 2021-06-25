@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <precomp.h>
-
 #include <Render/Shader.h>
 #include <Render/Texture.h>
 
@@ -61,7 +59,7 @@ namespace Render
 
             inline std::string TextureNameFactory(TextureType type)
             {
-                return Texture::TypeToStringN(type, ++counterArray[(unsigned)type]);
+                return std::string{"material."}.append(Texture::TypeToString(type));
             }
         } m_TypeCounter;
     };

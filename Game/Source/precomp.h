@@ -16,22 +16,21 @@
 #include <spdlog/spdlog.h>
 #include <stb_image.h>
 
-// Global data
+// Global data and utils
 #include "Asserts.h"
 #include "Data/WindowData.h"
 #include "Math.hpp"
 
 // classes
 #include <Camera/Camera.h>
-#include <Entities/Light.h>
+#include <Entities/Light/Light.h>
 #include <Input/Input.h>
-#include <Logger/Log.h>
 #include <Render/Renderer.h>
 #include <Render/Texture.h>
 #include <Window/Window.h>
+#include <Logger/Log.h>
 
 // STL
-#include <exception>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -39,3 +38,4 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include <string>

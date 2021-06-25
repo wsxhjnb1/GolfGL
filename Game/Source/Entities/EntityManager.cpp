@@ -10,8 +10,10 @@ Entities::EntityManager::~EntityManager() { m_Table.clear(); }
 
 bool Entities::EntityManager::Init()
 {
-    return LoadEntity("skybox", std::make_unique<Skybox>()) && LoadEntity("terrain", std::make_unique<Terrain>()) &&
-        LoadEntity("ball", std::make_unique<Ball>());
+    return LoadEntity("skybox", std::make_unique<Skybox>())
+        && LoadEntity("terrain", std::make_unique<Terrain>())
+        && LoadEntity("ball", std::make_unique<Ball>())
+    ;
 }
 
 bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_ptr<Entity> &&entity)
@@ -25,6 +27,7 @@ bool Entities::EntityManager::LoadEntity(const std::string &name, std::unique_pt
     }
 
     LOG_INFO("{} loaded", name);
+    // std::cout << name << "loaded\n";
     return true;
 }
 
@@ -50,7 +53,7 @@ void Entities::EntityManager::m_UpdateTransformations(float delta)
 
     ball->position += delta * ball->m_speed;
     
-    ball->position.y = 3.5f + terrain->GetHeight(ball->position.x, ball->position.z);    
+    ball->position.y = ball->m_scale * 4.f + terrain->GetHeight(ball->position.x, ball->position.z);    
     terrain->CorrectPosition(ball->position.x, ball->position.z);
 }
 

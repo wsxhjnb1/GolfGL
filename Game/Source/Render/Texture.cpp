@@ -8,9 +8,10 @@ Render::Texture::Texture(const std::string& name, Render::TextureType type, GLen
 	: m_name(name.substr( name.find_last_of('/') + 1)), m_type(type)
 {
     int channels = 0;
+    /*
     if(type == TNORMAL || type == THEIGHT)
         channels = 1;
-
+    */
     if ( m_name.empty() )
     {
         m_name = name;
@@ -93,13 +94,17 @@ std::string Render::Texture::TypeToString(TextureType type)
     switch (type)
     {
     case TextureType::DIFFUSE:
-        return std::string{"texture_diffuse"};
+        return std::string{"diffuse"};
+        // return std::string{"texture_diffuse"};
     case TextureType::NORMAL:
-        return std::string{"texture_normal"};
+        return std::string{"normal"};
+        // return std::string{"texture_normal"};
     case TextureType::SPECULAR:
-        return std::string{"texture_specular"};
+        return std::string{"specular"};
+        // return std::string{"texture_specular"};
     case TextureType::HEIGHT:
         return std::string{"texture_height"};
+        // return std::string{"texture_height"};
     case TextureType::TEX_ERRORTYPE: default:
         break;
     }
@@ -138,10 +143,10 @@ unsigned Render::Texture::LoadNativeTexture( const std::string &name, GLenum tar
 
     BindTextureImage( id, rawIm, target );
 
-    SetTexParam( GL_TEXTURE_MIN_FILTER, GL_LINEAR, target );
-    SetTexParam( GL_TEXTURE_MAG_FILTER, GL_LINEAR, target );
 	SetTexParam( GL_TEXTURE_WRAP_S,     GL_REPEAT, target );
     SetTexParam( GL_TEXTURE_WRAP_T,     GL_REPEAT, target );    
+    SetTexParam( GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR, target );
+    SetTexParam( GL_TEXTURE_MAG_FILTER, GL_LINEAR, target );
 
 	LOG_INFO("Loaded texture {}", name);
     glBindTexture(target, 0);

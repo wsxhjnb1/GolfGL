@@ -56,6 +56,8 @@ bool Render::Shader::Compile()
 
 void Render::Shader::ActivateShader() { glUseProgram(m_ID); }
 
+void Render::Shader::DeactivateShader() { glUseProgram(0); }
+
 void Render::Shader::SetValue(const std::string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);

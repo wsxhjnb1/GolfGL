@@ -3,6 +3,7 @@
 int main()
 {
     Log::Init();
+    Light::Init();
     Render::Renderer renderer;
     Input input;
 

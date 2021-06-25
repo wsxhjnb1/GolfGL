@@ -5,7 +5,7 @@
 
 namespace Entities
 {
-    class Ball : public Render::Model, public Entity
+    class Ball : public Entity
     {
     public:
         Ball();
@@ -13,19 +13,22 @@ namespace Entities
         void Update(float delta) override;
 
     private:
-        glm::vec3 m_speed;
+        // Light & material
+        Material::PBR m_material;
+        void m_SetLightUniforms() const;
+
+        // Transformations
+        Render::Model m_model;
+        glm::vec3 m_speed;        
         glm::vec3 m_acceleration;
         glm::vec3 m_direction;
+        float m_scale;
         float m_frictionFactor;
         float m_angle;
-        glm::vec3 m_friction{0.f};        
-
+        glm::vec3 m_friction{0.f};
         glm::mat4 m_rotationMatrix{Math::I4};
-        glm::mat4 m_scaleMatrix{Math::I4};
+        glm::mat4 m_scaleMatrix;
 
-        unsigned m_diffuseMap;
-
-        void m_SetLightUniforms() const;
 
         /**
          * \brief Model matrix recalculation

@@ -7,22 +7,12 @@
  * Multitexture height based terrain
  */
 #include <Entities/Entity.h>
+
 namespace Entities
 {
+    class TerrainMesh;
     class Terrain : public Entity
     {
-        struct TerrainMesh
-        {        
-            std::vector<float>    position;
-            std::vector<float>    normal;
-            std::vector<float>    texCoords;
-            std::vector<float>    tangent;
-            std::vector<float>    bitangent;
-            std::vector<unsigned> indices;
-        };
-
-        inline static float m_HeightFunction(float h) { return h / 255.f * 50.f - 25.f; }
-
     public:
         Terrain(float scale = 1.f);
 
@@ -55,8 +45,7 @@ namespace Entities
         GLuint m_normalVBO     = 0;
         GLuint m_texCoordsVBO  = 0;
         GLuint m_tangentVBO    = 0;
-        GLuint m_bitangentVBO  = 0;
-        
+        GLuint m_bitangentVBO  = 0;        
         GLuint m_EBO           = 0;
 
         GLuint m_indicesNum;
@@ -67,7 +56,8 @@ namespace Entities
         float m_scale = 1.0f;
 
 
-        std::vector<unsigned> m_textures;
+        // std::vector<unsigned> m_textures;
+        Material::BlinnPhong m_grass, m_mud;
         std::vector<std::vector<float>> m_heightMap;
 
         void m_Init();
