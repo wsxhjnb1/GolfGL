@@ -22,11 +22,5 @@ namespace Entities
         inline static float shootSpeed     = 10.f;
         inline static float timeout        = 0.2f;
         inline static float angle          = 5.f;
-
-        // Material
-        inline static glm::vec3 material_ambient{1.f, 1.f, 1.f};
-        inline static glm::vec3 material_diffuse{0.8f, 0.8f, 0.8f};
-        inline static glm::vec3 material_specular{0.5f, 0.5f, 0.5f};
-        inline static float material_shininess = 255.f;
     };
 } // namespace Entities

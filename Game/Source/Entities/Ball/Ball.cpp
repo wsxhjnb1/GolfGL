@@ -8,9 +8,7 @@ namespace Entities
         : Entity("pbr")
         , m_material(shader, ballDefault::modelDir)
         , m_model(ballDefault::modelPath)
-        , m_speed(ballDefault::speed)
-        , m_acceleration(0.f)
-        , m_direction(0.f)
+        , m_speed(ballDefault::speed)                
         , m_scale(ballDefault::scale)
         , m_frictionFactor(ballDefault::frictionFactor)
         , m_angle(ballDefault::angle)        
@@ -42,22 +40,24 @@ namespace Entities
         shader.DeactivateShader();
     }
 
+    inline void setOneLight(const Render::Shader& shader, const PhongLight& light, int i)
+    {
+        shader.setVec3("light[" + std::to_string(i) + "].position", light.Position);
+        shader.setVec3("light[" + std::to_string(i) + "].color", 250.f * light.Color);
+    }
     inline void Ball::m_SetLightUniforms() const
     {
-        for(int i = 0; i < 4; i++)
+        int i = 0;
+        for(int l = 0; l < LIGHT.Size(); l++)
         {
-            shader.setVec3("light[" + std::to_string(i) + "].position", LIGHT[i].Position);
-            shader.setVec3("light[" + std::to_string(i) + "].color", LIGHT[i].Color);            
-        }
-        shader.setVec3("viewPos", CAMERA.GetCameraPos());
+            if(LIGHT[l].Type == LightType::DISABLED)
+                continue;
 
-        /*
-        shader.setVec3("light.ambient", Light::Ambient);
-        shader.setVec3("light.diffuse", Light::Diffuse);
-        shader.setVec3("light.specular", Light::Specular);
-        */
-        // shader.setVec3("material.specular", ballDefault::material_specular);
-        // shader.SetValue("material.shininess", ballDefault::material_shininess);
+            setOneLight(shader, LIGHT[l], i++);
+        }
+        if(LIGHT.Flashlight) { setOneLight(shader, LIGHT.GetFlashlight(), i++); }
+        shader.SetValue("numLights", i);
+        shader.setVec3("viewPos", CAMERA.GetCameraPos());        
     }
 
     void Ball::m_UpdateModelMatrix()

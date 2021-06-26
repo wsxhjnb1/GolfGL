@@ -59,7 +59,7 @@ void Entities::EntityManager::m_UpdateTransformations(float delta)
 
 void Entities::EntityManager::Update(float delta)
 {
-    m_UpdateTransformations(delta);        
+    m_UpdateTransformations(delta);
 
     Entity::view = CAMERA.LookAt();
     std::for_each(m_Table.begin(), m_Table.end(),

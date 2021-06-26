@@ -21,7 +21,7 @@ struct Material
 };
 
 // lights
-#define NUM_LIGHTS 4
+#define MAX_LIGHTS 4
 struct Light
 {
     vec3 position;
@@ -30,7 +30,8 @@ struct Light
 
 /* Uniforms */
 uniform Material material;
-uniform Light light[NUM_LIGHTS];
+uniform Light light[MAX_LIGHTS];
+uniform int numLights;
 uniform vec3 viewPos;
 
 const float PI = 3.14159265359;
@@ -109,7 +110,7 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < NUM_LIGHTS; ++i)
+    for(int i = 0; i < numLights; ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(light[i].position - fragIn.WorldPos);

@@ -17,7 +17,8 @@ namespace Entities
 
         shader.ActivateShader();
         m_SetModelMatrix();
-        setUniformPVM();
+        setUniformPVM();        
+        LIGHT.SetAllLights(shader);
         shader.SetValue("texture1.diffuse", 0);
         shader.SetValue("texture1.normal",  1);
         shader.SetValue("texture2.diffuse", 2);
@@ -36,16 +37,16 @@ namespace Entities
         glDeleteVertexArrays(1, &m_VAO);
     }
 
+    
 
     void Terrain::Update(float delta)
     {
         shader.ActivateShader();
 
-        shader.setMat4("view", view);
-        shader.setVec3("lightPos", LIGHT[0].Position);
-        shader.setVec3("light.ambient", LIGHT[0].Ambient);
-        shader.setVec3("light.diffuse", LIGHT[0].Diffuse);
-        shader.setVec3("light.specular", LIGHT[0].Specular);
+        shader.setMat4("PV", projection*view);
+        
+        LIGHT.SetAllLights(shader);
+        
         shader.setVec3("viewPos", CAMERA.GetCameraPos());
 
         glBindVertexArray(m_VAO);

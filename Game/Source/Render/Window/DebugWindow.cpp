@@ -81,18 +81,73 @@ void Window::DebugWindow::Destroy()
 }
 
 #ifdef _DEBUG
+
+inline std::string GetLightType(LightType type)
+{
+    switch (type)
+    {
+    case LightType::DIRECTIONAL: return "Directional";
+    case LightType::POINT:       return "Point";
+    case LightType::SPOT:        return "Spot";
+    case LightType::DISABLED:    return "Disabled";
+    default: return "";
+    }    
+}
+
+
 void Window::DebugWindow::m_DrawLightMenu() const
 {
     ImGui::Text("Light");
 
     ImGui::Indent(10.f);
-    ImGui::BeginGroup();
+    ImGui::BeginGroup();    
     static int idx = 0;
-    ImGui::SliderInt("", &idx, 0, 3);
-    ImGui::InputFloat3("Light position", &LIGHT[idx].Position[0]);
-    ImGui::InputFloat3("Light ambient",  &LIGHT[idx].Ambient[0]);
-    ImGui::InputFloat3("Light diffuse",  &LIGHT[idx].Diffuse[0]);
-    ImGui::InputFloat3("Light specular", &LIGHT[idx].Specular[0]);
+    static int size = LIGHT.Size();
+    ImGui::SliderInt("", &idx, 0, size, (idx < size ? "%d" : "Flashlight"));
+    if(idx == size) { ImGui::SameLine(); ImGui::Checkbox("Flashlight", &LIGHT.Flashlight); }    
+
+    ImGui::InputFloat3("Position", &LIGHT[idx].Position[0]);
+    ImGui::InputFloat3("Ambient",  &LIGHT[idx].Ambient[0]);
+    ImGui::InputFloat3("Diffuse",  &LIGHT[idx].Diffuse[0]);
+    ImGui::InputFloat3("Specular", &LIGHT[idx].Specular[0]);
+    ImGui::InputFloat3("Color",    &LIGHT[idx].Color[0]);
+
+    if(LIGHT[idx].Type == LightType::POINT || LIGHT[idx].Type == LightType::SPOT)
+    {
+        static constexpr float eps = 2.597113f;
+        float _linear = LIGHT[idx].linear;
+        
+        if( ImGui::SliderFloat("Linear", &_linear, 0.007f, 0.7f, "%.3f") )
+        {
+            LIGHT[idx].quadratic += eps * (_linear - LIGHT[idx].linear);
+            LIGHT[idx].linear = _linear;
+        }
+
+        float _quad = LIGHT[idx].quadratic;
+        if( ImGui::SliderFloat("Quadratic", &_quad, 0.0002f, 1.8f, "%.5") )
+        {
+            LIGHT[idx].linear += (_quad - LIGHT[idx].quadratic) / eps;
+            LIGHT[idx].quadratic = _quad;
+        }
+
+        if(LIGHT[idx].Type == LightType::SPOT)
+        {
+            ImGui::InputFloat3("Direction",    &LIGHT[idx].Direction[0]);
+            ImGui::SliderFloat("Angle", &LIGHT[idx].CutoffAngle, 0.f, 90.f);
+        }
+    }
+
+
+    
+    if(idx != size && ImGui::BeginMenu(GetLightType(LIGHT[idx].Type).c_str()) )
+    {
+        if( ImGui::MenuItem("Directional") ) { LIGHT[idx].Type = LightType::DIRECTIONAL; }
+        if( ImGui::MenuItem("Point") )       { LIGHT[idx].Type = LightType::POINT; }
+        if( ImGui::MenuItem("Spot") )        { LIGHT[idx].Type = LightType::SPOT; }        
+        if( ImGui::MenuItem("Disabled") )    { LIGHT[idx].Type = LightType::DISABLED; }
+        ImGui::EndMenu();        
+    }
+
 
     ImGui::EndGroup();
     ImGui::Indent(-10.f);
@@ -194,12 +249,7 @@ void Window::DebugWindow::m_DrawBallMenu() const
         float s = Entities::ballDefault::scale;
         ball->m_scaleMatrix = glm::scale(Math::I4, glm::vec3{s,s,s});
         ball->m_UpdateModelMatrix();
-    }
-    
-    ImGui::BeginGroup();
-        ImGui::Text("Material:");        
-        ImGui::SliderFloat("shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
-    ImGui::EndGroup();
+    }    
 
     ImGui::EndGroup();
     ImGui::Indent(-10.f);
