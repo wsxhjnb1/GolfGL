@@ -17,12 +17,14 @@ namespace Material
     {
     public:
         // Shader must be activated before calling function
+        virtual bool Init(Render::Shader* _shader, const std::string& dir) = 0;
         virtual int Activate(int index) = 0;
         virtual ~Material() = default;
     protected:
-        explicit Material(Render::Shader& shader);
+        explicit Material(const std::string& name);
+        std::string name;
         static void BindTexture(int& index, unsigned texID);
-        Render::Shader& shader;
+        Render::Shader* shader = nullptr;
     };
 
     inline void UnbindTextures(int& index)
@@ -36,11 +38,11 @@ namespace Material
 
     /** @class BlinnPhong
      *
-     * @brief Physically based rendering
+     * @brief Blinn-Phong shading model material
      * \par Texture maps:     
      * - Diffuse
      * - Normal
-     * - Specular
+     * - Specular    
      *
      * @param shader     Reference to entity's shader
      * @param directory  Directory where maps are
@@ -48,13 +50,18 @@ namespace Material
      */
     class BlinnPhong : Material
     {
-        unsigned m_diffuse;
-        unsigned m_normal;
-        unsigned m_specular;
+        unsigned m_diffuse = 0;
+        unsigned m_normal = 0;
+        unsigned m_specular = 0;
+        float    m_shininess = 256.f;
     public:
-        BlinnPhong(Render::Shader& shader, const std::string& directory);
+        explicit BlinnPhong(const std::string& name);
+        bool Init(Render::Shader* _shader, const std::string& dir) override;
+        bool Init(Render::Shader* _shader, const std::string& dir, float shininess);
+        bool Bind(int start = 0) const;
         ~BlinnPhong() override;
-        int Activate(int index = GL_TEXTURE0) override;    
+        int Activate(int index = GL_TEXTURE0) override;
+        bool SetShininess(float shininess);
     };
 
     /** @class PBR
@@ -71,12 +78,14 @@ namespace Material
      */
     class PBR : Material
     {
-        unsigned m_albedo;
-        unsigned m_normal;
-        unsigned m_ao;
+        unsigned m_albedo = 0;
+        unsigned m_normal = 0;
+        unsigned m_ao = 0;
     public:
-        PBR(Render::Shader& shader, const std::string& directory);
+        explicit PBR(const std::string& name);
         ~PBR() override;
+        bool Init(Render::Shader* _shader, const std::string& directory) override;
+        bool Bind(int start = 0) const;
         int Activate(int index = GL_TEXTURE0) override;    
     };
 }

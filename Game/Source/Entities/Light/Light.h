@@ -22,7 +22,7 @@ struct PhongLight
     glm::vec3 Diffuse;
     glm::vec3 Specular;
     glm::vec3 Color;
-    LightType Type;
+    LightType Type = LightType::DISABLED;
 
     glm::vec3 Direction{0.f};
     float CutoffAngle = 30.f;
@@ -72,6 +72,10 @@ private:
     static PhongLight ms_Flashlight;    
 
     Light() = default;
+
+#ifdef _DEBUG
+    friend class Window::DebugWindow;
+#endif
 };
 
 #define LIGHT Light::Get()

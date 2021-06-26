@@ -41,9 +41,9 @@ void main()
 	vertOut.TexCoords = TexCoords;
 	vertOut.numLights = numLights;	
 		
-	vec3 T = normalize(vec3(model * vec4(Tangent, 0.f)));
-	vec3 B = normalize(vec3(model * vec4(Bitangent, 0.f)));
-	vec3 N = normalize(vec3(model * vec4(Normal, 0.f)));
+	vec3 T =   normalize(vec3(model * vec4(Tangent, 0.f)));
+	vec3 B =   normalize(vec3(model * vec4(Bitangent, 0.f)));
+	vec3 N =   normalize(vec3(model * vec4(Normal, 0.f)));
 	mat3 TBN = transpose(mat3(T,B,N));
 		
 	vertOut.FragPos = TBN * vertOut.FragPos;
@@ -54,7 +54,7 @@ void main()
 	}
 	vertOut.ViewPos = TBN * viewPos;
 
-	vertOut.texH = (Position.y + 25.f) / 25.f;
+	vertOut.texH = (Position.y + 25.f) / 50.f;
 
 	gl_Position = PV * worldPosition;
 }

@@ -66,6 +66,8 @@ namespace Entities
         void m_LoadHeightMap(const char *path);
 
         /* Helper methods for loading mesh */
+        // Using Gaussian blur
+        void m_Smooth();
         // Loading Position, Normal, TexCoords into mesh
         void m_LoadPNT(TerrainMesh& mesh, int x, int z) const;
         // Calculating and loading Tangent and Bitanget into mesh

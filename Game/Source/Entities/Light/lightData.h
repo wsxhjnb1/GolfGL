@@ -15,12 +15,12 @@ PhongLight{                \
 
 #define allLights {        \
 PhongLight{                \
- {20.f, -1.f, 8.f},       \
+ {20.f, -1.f, 8.f},        \
  {0.1f, 0.1f, 0.1f},       \
  {0.5f, 0.5f, 0.5f},       \
  {0.3f, 0.3f, 0.3f},       \
  {0.65f, 0.65f, 0.65f},    \
- LightType::DISABLED,	   \
+ LightType::POINT,	       \
  {38.f, -5.f, 4.3f},       \
  30.f					   \
  },                        \
@@ -54,7 +54,7 @@ PhongLight{                \
  {0.5f, 0.5f, 0.5f},       \
  {0.3f, 0.3f, 0.3f},       \
  {0.3f, 0.3f, 0.3f},       \
- LightType::DISABLED,          \
+ LightType::DISABLED,      \
  {51.2f, -15.f, 20.0f},    \
  15.f					   \
  }                         \

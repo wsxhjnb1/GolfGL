@@ -26,7 +26,6 @@ const uint DIRECTIONAL = 0u;
 const uint POINT	   = 1u;
 const uint SPOT		   = 2u;
 const uint DISABLED	   = 3u;
-const float shininess  = 32.f;
 
 struct Light
 {	
@@ -44,21 +43,23 @@ struct Light
 	float outerCutoff;
 }; 
 
-struct Texture
+struct Material
 {
 	sampler2D diffuse;
 	sampler2D normal;
+	sampler2D specular;
+	float shininess;
 };
 
 // Uniforms
 uniform Light light[MAX_LIGHTS];
-uniform Texture texture1; // grass
-uniform Texture texture2; // mud
+uniform Material material1; // grass (higher)
+uniform Material material2; // mud (lower)
 
 
 /* Light calculations */
 
-vec3 DirectionalLight(Light light, int i, vec3 normal, vec3 textureColor)
+vec3 DirectionalLight(Light light, int i, vec3 normal, vec3 textureColor, vec3 specularColor, float shininess)
 {
 	vec3 result = light.ambient * textureColor;
 
@@ -69,13 +70,13 @@ vec3 DirectionalLight(Light light, int i, vec3 normal, vec3 textureColor)
 
 	vec3 halfwayDir = normalize(toLight + normalize(fragIn.ViewPos - fragIn.FragPos));
 	float spec = pow(max(dot(normal, halfwayDir), 0.f), shininess);
-	result += spec * light.specular;
+	result += spec * light.specular * specularColor;
 
 	return result;
 }
 
 
-vec3 PointLight(Light light, int i, vec3 normal, vec3 textureColor)
+vec3 PointLight(Light light, int i, vec3 normal, vec3 textureColor, vec3 specularColor, float shininess)
 {	
 	vec3 toLight = normalize(fragIn.LightPos[i] - fragIn.FragPos);
 
@@ -93,16 +94,17 @@ vec3 PointLight(Light light, int i, vec3 normal, vec3 textureColor)
 	vec3 halfwayDir = normalize(toLight + viewDir);
 	float spec = pow(max(dot(normal, halfwayDir), 0.f), shininess);
 
-	return ambient + diffuse + spec * light.specular * light.color;
+	return ambient + diffuse + spec * light.specular * specularColor;
 }
 
 #define outerCutoff(theta) theta
-vec3 SpotLight(Light light, int i, vec3 normal, vec3 textureColor)
+vec3 SpotLight(Light light, int i, vec3 normal, vec3 textureColor, vec3 specularColor, float shininess)
 {	
 	vec3 toLight = normalize(fragIn.LightPos[i] - fragIn.FragPos);	
 	float theta = dot(-toLight, fragIn.LightDir[i]);
 
-	vec3 result = light.ambient * textureColor; // ambient	
+	// ambient
+	vec3 result = light.ambient * textureColor;
 	
 	// diffuse
     float diff = max(dot(normal, toLight), 0.0);
@@ -111,8 +113,8 @@ vec3 SpotLight(Light light, int i, vec3 normal, vec3 textureColor)
     // specular
     vec3 viewDir = normalize(fragIn.ViewPos - fragIn.FragPos);
     vec3 halfwayDir = normalize(toLight + viewDir); 
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), shininess);
-    vec3 specular = light.specular * spec * textureColor;
+	float spec =	pow(max(dot(normal, halfwayDir), 0.0), shininess);
+    vec3 specular = light.specular * spec * specularColor;
         
     // smoothing
     float d = length(fragIn.LightPos[i] - fragIn.FragPos);		
@@ -124,25 +126,25 @@ vec3 SpotLight(Light light, int i, vec3 normal, vec3 textureColor)
     result += S * diffuse;
     result += S * specular;
             
-    return result;
-		
+    return result;		
 }
 
 void main()
 {				
-	vec3 normal = mix(texture(texture2.normal, fragIn.TexCoords), texture(texture1.normal, fragIn.TexCoords), fragIn.texH).rgb;
+	vec3 normal = mix(texture(material2.normal, fragIn.TexCoords), texture(material1.normal, fragIn.TexCoords), fragIn.texH).rgb;
 	normal = normalize(normal * 2.f - 1.f);
-	vec3 textureColor = mix(texture(texture2.diffuse, fragIn.TexCoords), texture(texture1.diffuse, fragIn.TexCoords), fragIn.texH).rgb;	
-	vec3 result = vec3(0.f);
+	vec3 textureColor = mix(texture(material2.diffuse, fragIn.TexCoords),  texture(material1.diffuse, fragIn.TexCoords), fragIn.texH).rgb;	
+	vec3 specularColor = mix(texture(material2.diffuse, fragIn.TexCoords), texture(material1.diffuse, fragIn.TexCoords), fragIn.texH).rgb;
+	float shininess = fragIn.texH * material1.shininess + (1.f - fragIn.texH) * material2.shininess;
 
-	for(int i = 0; i < fragIn.numLights; i++)
-	// for(int i = 0; i < numLightsOut; i++)
+	vec3 result = vec3(0.f);
+	for(int i = 0; i < fragIn.numLights; i++)	
 	{		
 		switch(light[i].type)
 		{
-			case DIRECTIONAL: { result += DirectionalLight(light[i], i, normal, textureColor); break; }
-			case POINT:		  { result += PointLight(light[i], i, normal, textureColor); break; }
-			case SPOT:		  { result += SpotLight(light[i], i, normal, textureColor); break; } 
+			case DIRECTIONAL: { result += DirectionalLight(light[i], i, normal, textureColor, specularColor, shininess); break; }
+			case POINT:		  { result += PointLight(light[i], i, normal, textureColor, specularColor, shininess);		 break; }
+			case SPOT:		  { result += SpotLight( light[i], i, normal, textureColor, specularColor, shininess);		 break; } 
 			default: break;
 		}
 	}

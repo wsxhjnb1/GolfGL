@@ -4,7 +4,7 @@
 using Tex = Render::Texture;
 namespace Material
 {    
-    Material::Material(Render::Shader& shader) : shader(shader) {}
+    Material::Material(const std::string& name) : name(name) {}
 
     void Material::BindTexture(int& index, const unsigned texID)
     {
@@ -15,24 +15,44 @@ namespace Material
     }
     
 
+    BlinnPhong::BlinnPhong(const std::string& name) : Material(name)        
+    {
+    }
 
 #define JPG(directory, map) Tex::LoadNativeTexture(directory + '/' + map + ".jpg")
 #define PNG(directory, map) Tex::LoadNativeTexture(directory + '/' + map + ".png")
 
 
-    BlinnPhong::BlinnPhong(Render::Shader &shader, const std::string& directory)
-        : Material(shader),
-        m_diffuse (PNG(directory, "diffuse" )),
-        m_normal  (PNG(directory, "normal"  )),
-        m_specular(PNG(directory, "specular"))
+    bool BlinnPhong::Init(Render::Shader* _shader, const std::string& dir)
     {
-        shader.ActivateShader();
-        shader.SetValue("material.diffuse",  0);
-        shader.SetValue("material.normal",   1);
-        shader.SetValue("material.specular", 2);
-        shader.DeactivateShader();
-    }                        
-                             
+        if(_shader == nullptr)
+            return false;
+        shader     = _shader;
+        m_diffuse  = PNG(dir, "diffuse" );
+        m_normal   = PNG(dir, "normal"  );
+        m_specular = PNG(dir, "specular");
+        return true;
+    }
+
+    bool BlinnPhong::Init(Render::Shader *_shader, const std::string &dir, float shininess)
+    {
+        m_shininess = shininess;
+        return Init(_shader, dir);
+    }
+
+    bool BlinnPhong::Bind(int start) const
+    {
+        if(shader == nullptr)
+            return false;
+        // shader->ActivateShader();
+        if(m_diffuse != 0)  shader->SetValue(name + ".diffuse",  start++);
+        if(m_normal != 0)   shader->SetValue(name + ".normal",   start++);
+        if(m_specular != 0) shader->SetValue(name + ".specular", start);
+        shader->SetValue(name + ".shininess", m_shininess);
+        // shader->DeactivateShader();
+        return true;
+    }
+
     BlinnPhong::~BlinnPhong()
     {
         glDeleteTextures(3, &m_diffuse);
@@ -47,23 +67,53 @@ namespace Material
         return index;
     }
 
-    PBR::PBR(Render::Shader& shader, const std::string& directory)
-        : Material(shader)
-        , m_albedo(PNG(directory, "albedo"))
-        , m_normal(PNG(directory, "normal"))
-        , m_ao    (PNG(directory, "ao"))
+    bool BlinnPhong::SetShininess(float shininess)
     {
-        shader.ActivateShader();
-        shader.SetValue("material.albedo",    0);
-        shader.SetValue("material.normal",    1);        
-        shader.SetValue("material.ao",        2);
-        shader.DeactivateShader();
+        m_shininess = shininess;
+        if(shader == nullptr)
+            return false;
+
+        shader->SetValue(name + ".shininess", shininess);
+        return true;
+    }
+
+
+    // -----------------    PBR    ----------------- //
+
+
+    PBR::PBR(const std::string& name) : Material(name) {}
+
+    bool PBR::Init(Render::Shader* _shader, const std::string& directory)
+    {
+        if(_shader == nullptr)
+            return false;
+        shader = _shader;
+        m_albedo = PNG(directory, "albedo");
+        m_normal = PNG(directory, "normal");
+        m_ao     = PNG(directory, "ao");        
+
+        return true;
+    }
+
+    bool PBR::Bind(int start) const
+    {
+        if(shader == nullptr)
+            return false;
+        shader->ActivateShader();
+        if(m_albedo) shader->SetValue( name + ".albedo", start++);
+        if(m_normal) shader->SetValue( name + ".normal", start++);        
+        if(m_ao)     shader->SetValue( name + ".ao",     start);
+        shader->DeactivateShader();
+        return true;
     }
 
     PBR::~PBR()
     {
-        glDeleteTextures(3, &m_albedo);
+        if(m_albedo != 0) glDeleteTextures(1, &m_albedo);
+        if(m_normal != 0) glDeleteTextures(1, &m_normal);
+        if(m_ao     != 0) glDeleteTextures(1, &m_ao);
     }
+    
 
     int PBR::Activate(int index)
     {

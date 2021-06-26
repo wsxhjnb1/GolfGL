@@ -47,8 +47,7 @@ void Entities::EntityManager::m_UpdateTransformations(float delta)
 
     if (glm::length(ball->m_speed) < 0.2f)
     {
-        ball->m_speed = glm::vec3{0.f};
-        return;
+        ball->m_speed = glm::vec3{0.f};        
     }
 
     ball->position += delta * ball->m_speed;
@@ -59,6 +58,9 @@ void Entities::EntityManager::m_UpdateTransformations(float delta)
 
 void Entities::EntityManager::Update(float delta)
 {
+#ifdef _DEBUG
+    if(!ms_SkipTransform)
+#endif        
     m_UpdateTransformations(delta);
 
     Entity::view = CAMERA.LookAt();

@@ -1,5 +1,4 @@
 #pragma once
-#include <precomp.h>
 
 #include <Render/Shader.h>
 #include <Render/Texture.h>

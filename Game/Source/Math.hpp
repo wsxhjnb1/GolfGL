@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <future>
 
 namespace Math
 {
@@ -34,7 +35,7 @@ namespace Math
                 kernel[i][j] = Gaussian(i, j, sigma);
                 sum += kernel[i][j];
             }
-
+        
         for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++)
                 kernel[i][j] /= sum;
@@ -43,29 +44,54 @@ namespace Math
     }
 
 
-    [[nodiscard]] inline Image GaussianSmoothing(Image &image)
+    inline Image ApplyFilterParallel(Image& im, Image& filter, bool hor)
     {
-        auto filter{GaussianFilter(5, 5, 100.0)};
-
-        int height = image.size();
-        int width  = image[0].size();
-
-        int filterHeight = filter.size();
-        int filterWidth  = filter[0].size();
-
-        int newImageHeight = height - filterHeight + 1;
-        int newImageWidth  = width - filterWidth + 1;
-
-        Image newImage(newImageHeight, Array<float>(newImageWidth, 0));
-
-        for (int i = 0; i < newImageHeight; i++)
-            for (int j = 0; j < newImageWidth; j++)
-                for (int h = i; h < i + filterHeight; h++)
-                    for (int w = j; w < j + filterWidth; w++)
-                        newImage[i][j] += filter[h - i][w - j] * image[h][w];
-
+        int n = hor ? im.size()    - filter.size() + 1 :  - filter[0].size() + 1 + im[0].size();
+        int m = hor ? im[0].size() - filter[0].size() + 1 :  - filter.size() + 1 + im.size();
+        Image newImage(n, std::vector<float>(m, 0.f));
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                for (int h = i; h < i + filter.size(); h++)
+                    for (int w = j; w < j + filter[0].size(); w++)
+                        newImage[i][j] += filter[h - i][w - j] * im[h][w];
 
         return newImage;
+    }
+
+
+    [[nodiscard]] inline Image GaussianSmoothing(Image &image)
+    {        
+        const auto filter { GaussianFilter(5, 5, 50.f) };
+        Image rotated(image.size(), std::vector<float>(image[0].size()));
+        std::reverse_copy(image.begin(), image.end(), rotated.begin());
+            
+
+        auto a1 = std::async(std::launch::deferred, ApplyFilterParallel, image, filter, true);
+        auto a2 = std::async(std::launch::async, ApplyFilterParallel, image, filter,  false);
+        auto a3 = std::async(std::launch::async, ApplyFilterParallel, rotated, filter,  true);
+        auto a4 = std::async(std::launch::async, ApplyFilterParallel, rotated, filter,  false);
+
+        a1.wait();
+        Image newImageV1 = a2.get();
+        Image newImageH2 = a3.get();
+        Image newImageV2 = a4.get();
+        Image newImageH1 = a1.get();
+
+        
+        
+        int newImageHeight = newImageV1.size();        
+        int newImageWidth = newImageV1[0].size();
+        image.resize(newImageHeight, Array<float>(newImageWidth, 0));        
+
+        for(int i = 0; i < newImageHeight; i++)
+            for(int j = 0; j < newImageHeight; j++)
+                image[i][j] = (newImageH1[i][j] + newImageV1[i][j] 
+                    + newImageH2[newImageHeight-i-1][newImageWidth-j-1]
+                    + newImageV2[newImageHeight-i-1][newImageWidth-j-1]
+                    ) / 4.f;
+
+        return image;
+        
     }
 
     template <typename T>

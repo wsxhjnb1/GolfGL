@@ -6,7 +6,7 @@ namespace Entities
 {
     Ball::Ball()        
         : Entity("pbr")
-        , m_material(shader, ballDefault::modelDir)
+        , m_material("material")
         , m_model(ballDefault::modelPath)
         , m_speed(ballDefault::speed)                
         , m_scale(ballDefault::scale)
@@ -14,6 +14,7 @@ namespace Entities
         , m_angle(ballDefault::angle)        
         , m_scaleMatrix(glm::scale(Math::I4, ballDefault::scale * Math::e3) )
     {
+        m_material.Init(&shader, ballDefault::modelDir);
         this->position = ballDefault::position;        
         m_UpdateModelMatrix();
 
@@ -22,8 +23,9 @@ namespace Entities
             LOG_TRACE("Texture {}, {}, type {}", tex.GetID(), tex.GetName(), tex.GetType());
 
         shader.ActivateShader();
-        setUniformPVM();        
-        shader.DeactivateShader();
+        setUniformPVM();
+        m_material.Bind();
+        shader.DeactivateShader();        
     }
 
     void Ball::Update(float delta)
