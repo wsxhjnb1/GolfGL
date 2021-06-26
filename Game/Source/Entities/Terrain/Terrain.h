@@ -1,16 +1,17 @@
 #pragma once
 
-/*
- * Generating terrain from height map
- * Terrain loading from raw pixel reading
- * Smoothing with Gaussian blur
- * Multitexture height based terrain
- */
 #include <Entities/Entity.h>
 
 namespace Entities
 {
-    class TerrainMesh;
+    struct TerrainMesh;
+
+    /** @class Terrain
+     * Generating terrain from height map
+     * Terrain loading from raw pixel reading
+     * Smoothing with Gaussian blur
+     * Multitexture height based terrain
+     */
     class Terrain : public Entity
     {
     public:
@@ -56,7 +57,7 @@ namespace Entities
         float m_scale = 1.0f;
 
 
-        // std::vector<unsigned> m_textures;
+        // Resources
         Material::BlinnPhong m_grass, m_mud;
         std::vector<std::vector<float>> m_heightMap;
 
@@ -65,6 +66,8 @@ namespace Entities
         void m_LoadHeightMap(const char *path);
 
         /* Helper methods for loading mesh */
+        // Using Gaussian blur
+        void m_Smooth();
         // Loading Position, Normal, TexCoords into mesh
         void m_LoadPNT(TerrainMesh& mesh, int x, int z) const;
         // Calculating and loading Tangent and Bitanget into mesh

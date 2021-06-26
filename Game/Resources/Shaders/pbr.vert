@@ -12,8 +12,7 @@ out VERT_OUT
     vec3 Normal;
 } vertOut;
 
-uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 PV;
 uniform mat4 model;
 
 void main()
@@ -22,5 +21,5 @@ void main()
     vertOut.WorldPos = vec3(model * vec4(Position, 1.0));
     vertOut.Normal = mat3(model) * Normal;
 
-    gl_Position =  projection * view * vec4(vertOut.WorldPos, 1.0);
+    gl_Position =  PV * vec4(vertOut.WorldPos, 1.0);
 }

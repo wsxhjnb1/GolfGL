@@ -1,5 +1,4 @@
 #pragma once
-#include <precomp.h>
 
 #include <Render/Shader.h>
 #include <Render/Texture.h>
@@ -26,7 +25,9 @@ namespace Entities
         Entity(const std::string &shaderName) : shader(shaderName) { shader.Compile(); }
 
         inline static glm::mat4 projection{
-            glm::perspective(glm::radians(CAMERA.GetCameraZoom()), WindowData::W / WindowData::H, 0.1f, 2000.0f)};
+            glm::perspective(glm::radians(CAMERA.GetCameraZoom()), 
+            WindowData::W / WindowData::H, 
+            0.1f, 2000.0f)};
         inline static glm::mat4 view{Math::I4};
         glm::mat4 model{Math::I4};
         glm::vec3 position{0.f};
@@ -35,8 +36,7 @@ namespace Entities
 
         inline void setUniformPVM() const
         {
-            shader.setMat4("projection", projection);
-            shader.setMat4("view", view);
+            shader.setMat4("PV", projection * view);            
             shader.setMat4("model", model);
         }
 

@@ -26,12 +26,7 @@ namespace Window
         void m_DrawGFXSettings() const;
         void m_DrawCameraMenu()  const;
         void m_DrawLightMenu()   const;
-        void m_DrawBallMenu()    const;
-        /**
-         * Helper function
-         * Attaches movable entity to terrain
-         */
-        void m_CorrectPosition(Entities::Entity* entity) const;
+        void m_DrawBallMenu()    const;        
 #endif
 
         bool m_DebugMenuActive = true;
