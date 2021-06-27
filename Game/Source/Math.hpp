@@ -61,27 +61,25 @@ namespace Math
 
     [[nodiscard]] inline Image GaussianSmoothing(Image &image)
     {        
-        const auto filter { GaussianFilter(5, 5, 50.f) };
+        Image filter { GaussianFilter(5, 5, 50.f) };
         Image rotated(image.size(), std::vector<float>(image[0].size()));
         std::reverse_copy(image.begin(), image.end(), rotated.begin());
             
 
-        auto a1 = std::async(std::launch::deferred, ApplyFilterParallel, image, filter, true);
-        auto a2 = std::async(std::launch::async, ApplyFilterParallel, image, filter,  false);
-        auto a3 = std::async(std::launch::async, ApplyFilterParallel, rotated, filter,  true);
-        auto a4 = std::async(std::launch::async, ApplyFilterParallel, rotated, filter,  false);
-
-        a1.wait();
+        auto a1 = std::async(std::launch::async, [&]{ return ApplyFilterParallel(image,   filter, true); } );
+        auto a2 = std::async(std::launch::async, [&]{ return ApplyFilterParallel(image,   filter, false); } );
+        auto a3 = std::async(std::launch::async, [&]{ return ApplyFilterParallel(rotated, filter, true); } );
+        auto a4 = std::async(std::launch::async, [&]{ return ApplyFilterParallel(rotated, filter, false); } );
+                
+        Image newImageH1 = a1.get();
         Image newImageV1 = a2.get();
         Image newImageH2 = a3.get();
         Image newImageV2 = a4.get();
-        Image newImageH1 = a1.get();
 
-        
         
         int newImageHeight = newImageV1.size();        
         int newImageWidth = newImageV1[0].size();
-        image.resize(newImageHeight, Array<float>(newImageWidth, 0));        
+        image.resize(newImageHeight, Array<float>(newImageWidth, 0));
 
         for(int i = 0; i < newImageHeight; i++)
             for(int j = 0; j < newImageHeight; j++)
