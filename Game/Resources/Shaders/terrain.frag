@@ -97,7 +97,7 @@ vec3 PointLight(Light light, int i, vec3 normal, vec3 textureColor, vec3 specula
 	return ambient + diffuse + spec * light.specular * specularColor;
 }
 
-#define outerCutoff(theta) theta
+
 vec3 SpotLight(Light light, int i, vec3 normal, vec3 textureColor, vec3 specularColor, float shininess)
 {	
 	vec3 toLight = normalize(fragIn.LightPos[i] - fragIn.FragPos);	

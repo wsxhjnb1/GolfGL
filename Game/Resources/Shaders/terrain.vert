@@ -14,7 +14,7 @@ out VERT_OUT
 {
 	vec2 TexCoords;	
 	float texH;
-	int numLights;
+	flat int numLights;
 
 	// Tangent-space
 	vec3 FragPos;
