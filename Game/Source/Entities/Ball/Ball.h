@@ -20,8 +20,7 @@ namespace Entities
         // Transformations
         Render::Model m_model;
         glm::vec3 m_speed;        
-        glm::vec3 m_acceleration;
-        glm::vec3 m_direction;
+        glm::vec3 m_acceleration{0.f};        
         float m_scale;
         float m_frictionFactor;
         float m_angle;

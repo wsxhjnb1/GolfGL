@@ -58,9 +58,19 @@ void Render::Shader::ActivateShader() { glUseProgram(m_ID); }
 
 void Render::Shader::DeactivateShader() { glUseProgram(0); }
 
+void Render::Shader::SetValue(const std::string &name, int value) const
+{
+    glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
+}
+
 void Render::Shader::SetValue(const std::string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+}
+
+void Render::Shader::SetValue(const std::string &name, unsigned value) const
+{
+    glUniform1ui(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
 void Render::Shader::SetValue(const char *name, float val1, float val2, float val3) const

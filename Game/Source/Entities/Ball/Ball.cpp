@@ -6,16 +6,15 @@ namespace Entities
 {
     Ball::Ball()        
         : Entity("pbr")
-        , m_material(shader, ballDefault::modelDir)
+        , m_material("material")
         , m_model(ballDefault::modelPath)
-        , m_speed(ballDefault::speed)
-        , m_acceleration(0.f)
-        , m_direction(0.f)
+        , m_speed(ballDefault::speed)                
         , m_scale(ballDefault::scale)
         , m_frictionFactor(ballDefault::frictionFactor)
         , m_angle(ballDefault::angle)        
         , m_scaleMatrix(glm::scale(Math::I4, ballDefault::scale * Math::e3) )
     {
+        m_material.Init(&shader, ballDefault::modelDir);
         this->position = ballDefault::position;        
         m_UpdateModelMatrix();
 
@@ -24,8 +23,9 @@ namespace Entities
             LOG_TRACE("Texture {}, {}, type {}", tex.GetID(), tex.GetName(), tex.GetType());
 
         shader.ActivateShader();
-        setUniformPVM();        
-        shader.DeactivateShader();
+        setUniformPVM();
+        m_material.Bind();
+        shader.DeactivateShader();        
     }
 
     void Ball::Update(float delta)
@@ -42,22 +42,30 @@ namespace Entities
         shader.DeactivateShader();
     }
 
+    inline void setOneLight(const Render::Shader& shader, const PhongLight& light, int i)
+    {
+        shader.setVec3("light[" + std::to_string(i) + "].position", light.Position);
+        shader.setVec3("light[" + std::to_string(i) + "].color", 250.f * light.Color);
+    }
     inline void Ball::m_SetLightUniforms() const
     {
-        for(int i = 0; i < 4; i++)
+        int i = 0;
+        for(int l = 0; l < LIGHT.Size(); l++)
         {
-            shader.setVec3("light[" + std::to_string(i) + "].position", LIGHT[i].Position);
-            shader.setVec3("light[" + std::to_string(i) + "].color", LIGHT[i].Color);            
+            if(LIGHT[l].Type == LightType::DISABLED)
+                continue;
+            else if (LIGHT[l].Type == LightType::DIRECTIONAL)
+            {
+                shader.setVec3("light[" + std::to_string(i) + "].position", position - 10.f * glm::normalize(LIGHT[l].Position));
+                shader.setVec3("light[" + std::to_string(i) + "].color", 250.f * LIGHT[l].Color);
+                ++i;
+            }
+            else
+                setOneLight(shader, LIGHT[l], i++);
         }
-        shader.setVec3("viewPos", CAMERA.GetCameraPos());
-
-        /*
-        shader.setVec3("light.ambient", Light::Ambient);
-        shader.setVec3("light.diffuse", Light::Diffuse);
-        shader.setVec3("light.specular", Light::Specular);
-        */
-        // shader.setVec3("material.specular", ballDefault::material_specular);
-        // shader.SetValue("material.shininess", ballDefault::material_shininess);
+        if(LIGHT.Flashlight) { setOneLight(shader, LIGHT.GetFlashlight(), i++); }
+        shader.SetValue("numLights", i);
+        shader.setVec3("viewPos", CAMERA.GetCameraPos());        
     }
 
     void Ball::m_UpdateModelMatrix()

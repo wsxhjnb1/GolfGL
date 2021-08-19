@@ -16,9 +16,7 @@ namespace Render
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(Data.vertices), &Data.vertices, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)nullptr);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)nullptr);        
 
         shader = new Shader("screen");
         SASSERT(shader->Compile());
@@ -65,7 +63,7 @@ namespace Render
     void Framebuffer::BindSceneEnd()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);        
 
         shader->ActivateShader();
         shader->setVec2("frameBufSize", WindowData::W, WindowData::H);

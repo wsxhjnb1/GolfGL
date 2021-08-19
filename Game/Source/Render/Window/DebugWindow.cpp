@@ -81,18 +81,71 @@ void Window::DebugWindow::Destroy()
 }
 
 #ifdef _DEBUG
+
+inline std::string GetLightType(LightType type)
+{
+    switch (type)
+    {
+    case LightType::DIRECTIONAL: return "Directional";
+    case LightType::POINT:       return "Point";
+    case LightType::SPOT:        return "Spot";
+    case LightType::DISABLED:    return "Disabled";
+    default: return "";
+    }    
+}
+
+inline static int idx = 0;
+static int size;
 void Window::DebugWindow::m_DrawLightMenu() const
 {
     ImGui::Text("Light");
 
     ImGui::Indent(10.f);
-    ImGui::BeginGroup();
-    static int idx = 0;
-    ImGui::SliderInt("", &idx, 0, 3);
-    ImGui::InputFloat3("Light position", &LIGHT[idx].Position[0]);
-    ImGui::InputFloat3("Light ambient",  &LIGHT[idx].Ambient[0]);
-    ImGui::InputFloat3("Light diffuse",  &LIGHT[idx].Diffuse[0]);
-    ImGui::InputFloat3("Light specular", &LIGHT[idx].Specular[0]);
+    ImGui::BeginGroup();    
+
+    size = LIGHT.ms_PLights.size();
+    ImGui::SliderInt("", &(++idx), 1, size+1, (idx < size ? "%d" : "Flashlight"));
+    if(--idx == size) { ImGui::SameLine(); ImGui::Checkbox("Flashlight", &LIGHT.Flashlight); }    
+
+    ImGui::InputFloat3((LIGHT[idx].Type == LightType::DIRECTIONAL ? "Direction" : "Position"), &LIGHT[idx].Position[0]);
+    ImGui::InputFloat3("Ambient",  &LIGHT[idx].Ambient[0]);
+    ImGui::InputFloat3("Diffuse",  &LIGHT[idx].Diffuse[0]);
+    ImGui::InputFloat3("Specular", &LIGHT[idx].Specular[0]);
+    ImGui::InputFloat3("Color",    &LIGHT[idx].Color[0]);
+
+    if(LIGHT[idx].Type == LightType::POINT || LIGHT[idx].Type == LightType::SPOT)
+    {   
+        ImGui::SliderFloat2("Linear - Quadratic", &LIGHT[idx].linear, 0.001f, 1.f);
+
+        if(LIGHT[idx].Type == LightType::SPOT)
+        {
+            ImGui::InputFloat3("Direction", &LIGHT[idx].Direction[0]);
+            ImGui::SliderFloat("Angle",     &LIGHT[idx].CutoffAngle, 0.f, 90.f);
+        }
+    }
+
+
+    if(idx != size && ImGui::BeginMenu(GetLightType(LIGHT[idx].Type).c_str()) )
+    {
+        if( ImGui::MenuItem("Directional") ) { LIGHT[idx].Type = LightType::DIRECTIONAL; }
+        if( ImGui::MenuItem("Point") )       { LIGHT[idx].Type = LightType::POINT; }
+        if( ImGui::MenuItem("Spot") )        { LIGHT[idx].Type = LightType::SPOT; }        
+        if( ImGui::MenuItem("Disabled") )    { LIGHT[idx].Type = LightType::DISABLED; }
+        ImGui::EndMenu();        
+    }
+
+    
+    if( ImGui::Button("Add light") && size < 9)
+    {
+        LIGHT.ms_PLights.emplace_back(PhongLight{});
+        idx = size++;        
+    }
+
+    if(size == 9)
+    {
+        ImGui::SameLine();
+        ImGui::TextColored({1.f,0.f,0.f,1.f}, "Max number of lights added");        
+    }
 
     ImGui::EndGroup();
     ImGui::Indent(-10.f);
@@ -177,7 +230,7 @@ void Window::DebugWindow::m_DrawBallMenu() const
         ball->position = Entities::ballDefault::position;
         if(attach)
         {
-            m_CorrectPosition(ball);
+            m_EntityManager->ms_SkipTransform = false;
         }
         ball->m_UpdateModelMatrix();
         ball->m_speed  = glm::vec3{0.f};
@@ -185,7 +238,7 @@ void Window::DebugWindow::m_DrawBallMenu() const
     ImGui::SameLine();
     if( ImGui::Checkbox("Attach to terrain", &attach) )
     {
-        m_CorrectPosition(ball);
+        m_EntityManager->ms_SkipTransform = false;
         ball->m_UpdateModelMatrix();
     }
 
@@ -194,22 +247,10 @@ void Window::DebugWindow::m_DrawBallMenu() const
         float s = Entities::ballDefault::scale;
         ball->m_scaleMatrix = glm::scale(Math::I4, glm::vec3{s,s,s});
         ball->m_UpdateModelMatrix();
-    }
-    
-    ImGui::BeginGroup();
-        ImGui::Text("Material:");        
-        ImGui::SliderFloat("shininess", &Entities::ballDefault::material_shininess, 0.f, 256.f);
-    ImGui::EndGroup();
+    }    
 
     ImGui::EndGroup();
     ImGui::Indent(-10.f);
     ImGui::Separator();
-}
-
-void Window::DebugWindow::m_CorrectPosition(Entities::Entity* entity) const
-{
-    auto* terrain = static_cast<Entities::Terrain*>(m_EntityManager->GetEntity("terrain"));
-    terrain->CorrectPosition(entity->position.x, entity->position.z);
-    entity->position.y = 3.5f + terrain->GetHeight(entity->position.x, entity->position.z);
 }
 #endif

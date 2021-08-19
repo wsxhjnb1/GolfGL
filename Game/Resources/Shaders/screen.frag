@@ -7,70 +7,156 @@ in vec2 TexCoords;
 
 uniform bool AA;
 
+float FxaaLuma(vec3 rgb) 
+{
+    return rgb.g * 1.9632107f + rgb.r;
+}
+
+vec4 FxaaTexOff(vec2 offset) 
+{
+    return texture2D(screenTexture, TexCoords + offset / frameBufSize);
+}
 
 vec3 FXAA()
-{  
-    float FXAA_SPAN_MAX = 8.0;
-    float FXAA_REDUCE_MUL = 1.0/8.0;
-    float FXAA_REDUCE_MIN = 1.0/128.0;
+{      
+    const float FXAA_EDGE_THRESHOLD      = 1.f/8.f;   // Minimum local contrast required to apply algorithm
+    const float FXAA_EDGE_THRESHOLD_MIN  = 1.f/24.f;  // Trims the algorithm from processing darks
+    const float FXAA_SEARCH_STEPS        = 32.f;      // Maximum number of search steps
+    const float FXAA_SEARCH_THRESHOLD    = 0.25f;     // Controls search stopping
+    const float FXAA_SUBPIX_TRIM         = 0.25f;     // Controls removal of sub-pixel aliasing
+    const float FXAA_SUBPIX_CAP          = 0.75f;     // Insures fine detail is not completely removed (partly overrides FXAA_SUBPIX_TRIM)
 
+    const float FXAA_SUBPIX_TRIM_SCALE   = 1.f / (1.f - FXAA_SUBPIX_TRIM);
 
-    vec3 rgbNW = texture2D(screenTexture,TexCoords+(vec2(-1.0,-1.0)/frameBufSize)).xyz;
-    vec3 rgbNE = texture2D(screenTexture,TexCoords+(vec2(1.0,-1.0)/frameBufSize)).xyz;
-    vec3 rgbSW = texture2D(screenTexture,TexCoords+(vec2(-1.0,1.0)/frameBufSize)).xyz;
-    vec3 rgbSE = texture2D(screenTexture,TexCoords+(vec2(1.0,1.0)/frameBufSize)).xyz;
-    vec3 rgbM  = texture2D(screenTexture,TexCoords).xyz;
-
-    vec3 luma=vec3(0.299, 0.587, 0.114);
-    float lumaNW = dot(rgbNW, luma);
-    float lumaNE = dot(rgbNE, luma);
-    float lumaSW = dot(rgbSW, luma);
-    float lumaSE = dot(rgbSE, luma);
-    float lumaM  = dot(rgbM,  luma);
-
-    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
-    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
-
-    vec2 dir;
-    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
-    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
-
-    float dirReduce = max(
-        (lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL),
-        FXAA_REDUCE_MIN);
-
-    float rcpDirMin = 1.0/(min(abs(dir.x), abs(dir.y)) + dirReduce);
-
-    dir = min(vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),
-          max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),
-          dir * rcpDirMin)) / frameBufSize;
-
-
-    vec3 rgbA = (1.0/2.0) * (
-        texture2D(screenTexture, TexCoords.xy + dir * (1.0/3.0 - 0.5)).xyz +
-        texture2D(screenTexture, TexCoords.xy + dir * (2.0/3.0 - 0.5)).xyz);
-    vec3 rgbB = rgbA * (1.0/2.0) + (1.0/4.0) 
-         * ( texture2D(screenTexture, TexCoords.xy + dir * (0.0/3.0 - 0.5)).xyz
-         + texture2D(screenTexture, TexCoords.xy + dir * (3.0/3.0 - 0.5)).xyz);
-
-
-    float lumaB = dot(rgbB, luma);
-
-
-
-    if((lumaB < lumaMin) || (lumaB > lumaMax))    
-        return rgbA;
-        
+    // CONTRAST TEST
+    vec3 rgbN = FxaaTexOff(vec2( 0.f,-1.f)).xyz;
+    vec3 rgbW = FxaaTexOff(vec2(-1.f, 0.f)).xyz;
+    vec3 rgbE = FxaaTexOff(vec2( 1.f, 0.f)).xyz;
+    vec3 rgbS = FxaaTexOff(vec2( 0.f, 1.f)).xyz;
+    vec3 rgbM = texture2D(screenTexture, TexCoords).xyz;
     
-    return rgbB;        
+    float lumaN = FxaaLuma(rgbN);
+    float lumaW = FxaaLuma(rgbW);
+    float lumaM = FxaaLuma(rgbM);
+    float lumaE = FxaaLuma(rgbE);
+    float lumaS = FxaaLuma(rgbS);
+    float rangeMin = min(lumaM, min(min(lumaN, lumaW), min(lumaS, lumaE)));
+    float rangeMax = max(lumaM, max(max(lumaN, lumaW), max(lumaS, lumaE)));
+    
+    float range = rangeMax - rangeMin;
+    if(range < max(FXAA_EDGE_THRESHOLD_MIN, rangeMax * FXAA_EDGE_THRESHOLD))            
+        return rgbM;            
+    
+    // SUB-PIXEL ALIASING TEST
+    vec3 rgbL = rgbN + rgbW + rgbM + rgbE + rgbS;
+    
+    float lumaL = (lumaN + lumaW + lumaE + lumaS) * 0.25f;
+    float rangeL = abs(lumaL - lumaM);
+    float blendL = max(0.0, (rangeL / range) - FXAA_SUBPIX_TRIM) * FXAA_SUBPIX_TRIM_SCALE;
+    blendL = min(FXAA_SUBPIX_CAP, blendL);
+    
+    vec3 rgbNW = FxaaTexOff(vec2(-1.f, -1.f)).xyz;
+    vec3 rgbNE = FxaaTexOff(vec2( 1.f, -1.f)).xyz;
+    vec3 rgbSW = FxaaTexOff(vec2(-1.f,  1.f)).xyz;
+    vec3 rgbSE = FxaaTexOff(vec2( 1.f,  1.f)).xyz;
+    rgbL += rgbNW + rgbNE + rgbSW + rgbSE;
+    rgbL *= (1.f/9.f);
+    
+    float lumaNW = FxaaLuma(rgbNW);
+    float lumaNE = FxaaLuma(rgbNE);
+    float lumaSW = FxaaLuma(rgbSW);
+    float lumaSE = FxaaLuma(rgbSE);
+    
+    // EDGE CLASSIFICATION
+    float edgeVert = abs(0.25f * lumaNW + -0.5f * lumaN + 0.25f * lumaNE)
+                   + abs(0.5f  * lumaW  + -1.f  * lumaM + 0.5f  * lumaE)
+                   + abs(0.25f * lumaSW + -0.5f * lumaS + 0.25f * lumaSE);
+    float edgeHorz = 
+        abs(0.25f * lumaNW + -0.5f * lumaW + 0.25f * lumaSW)
+      + abs(0.5f  * lumaN  + -1.f  * lumaM + 0.5f  * lumaS )
+      + abs(0.25f * lumaNE + -0.5f * lumaE + 0.25f * lumaSE);
+        
+    bool horzSpan = edgeHorz >= edgeVert;
+    vec2 rFrameBufSize = 1.f / frameBufSize;
+    float lengthSign = horzSpan ? -rFrameBufSize.y : -rFrameBufSize.x;
+    
+    if(!horzSpan)
+    {
+        lumaN = lumaW;
+        lumaS = lumaE;
+    }
+    
+    float gradientN = abs(lumaN - lumaM);
+    float gradientS = abs(lumaS - lumaM);
+    lumaN = (lumaN + lumaM) * 0.5f;
+    lumaS = (lumaS + lumaM) * 0.5f;
+    
+    if (gradientN < gradientS)
+    {
+        lumaN = lumaS;
+        lumaN = lumaS;
+        gradientN = gradientS;
+        lengthSign *= -1.f;
+    }
+    
+    vec2 posN;
+    posN.x = TexCoords.x + (horzSpan ? 0.f : lengthSign * 0.5f);
+    posN.y = TexCoords.y + (horzSpan ? lengthSign * 0.5f : 0.f);
+    
+    gradientN *= FXAA_SEARCH_THRESHOLD;
+    
+    vec2 posP = posN;     
+    vec2 offNP = horzSpan ? vec2(rFrameBufSize.x, 0.f) : vec2(0.f, rFrameBufSize.y);
+    float lumaEndN = lumaN;
+    float lumaEndP = lumaN;
+    bool doneN = false;
+    bool doneP = false;
+    posN += offNP * vec2(-1.f, -1.f);
+    posP += offNP * vec2( 1.f,  1.f);
+    
+    // END-OF-EDGE SEARCH
+    for(int i = 0; i < FXAA_SEARCH_STEPS; i++) 
+    {
+        if(!doneN)        
+            lumaEndN = FxaaLuma(texture2D(screenTexture, posN.xy).xyz);
+        
+        if(!doneP)        
+            lumaEndP = FxaaLuma(texture2D(screenTexture, posP.xy).xyz);
+        
+        doneN = doneN || (abs(lumaEndN - lumaN) >= gradientN);
+        doneP = doneP || (abs(lumaEndP - lumaN) >= gradientN);
+        
+        if(doneN && doneP)        
+            break;        
+        if(!doneN)        
+            posN -= offNP;        
+        if(!doneP)        
+            posP += offNP;        
+    }
+    
+    float dstN = horzSpan ? TexCoords.x - posN.x : TexCoords.y - posN.y;
+    float dstP = horzSpan ? posP.x - TexCoords.x : posP.y - TexCoords.y;
+    bool directionN = dstN < dstP;
+    lumaEndN = directionN ? lumaEndN : lumaEndP;
+    
+    if((lumaM - lumaN) < 0.f == (lumaEndN - lumaN) < 0.f)    
+        lengthSign = 0.f; 
+
+    float spanLength = (dstP + dstN);
+    dstN = directionN ? dstN : dstP;
+    float subPixelOffset = (0.5f + (dstN * (-1.f/spanLength))) * lengthSign;
+    vec3 rgbF = texture2D(screenTexture, vec2(
+        TexCoords.x + (horzSpan ? 0.f : subPixelOffset),
+        TexCoords.y + (horzSpan ? subPixelOffset : 0.f))).xyz;
+    
+    return mix(rgbF, rgbL, blendL);    
 }  
 
 
 void main()
 {
-    if(AA)
-        FragColor = vec4(FXAA(), 1);
-
-    else
-        FragColor = texture(screenTexture, TexCoords);
+    if(AA)        
+        FragColor = vec4(FXAA(), 1.f);
+    else        
+        FragColor = vec4(texture2D(screenTexture, TexCoords).rgb, 1.f);
 }

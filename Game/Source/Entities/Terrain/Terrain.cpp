@@ -10,18 +10,19 @@ namespace Entities
     Terrain::Terrain(float scale) /* This texture will be on higher points */
         : Entity("terrain"),
         m_scale(scale),
-        m_grass(shader, terrainData::grassDir),
-        m_mud(shader, terrainData::mudDir)
+        m_grass("material1"),
+        m_mud(  "material2")
     {
+        m_grass.Init(&shader, terrainData::grassDir, 256.f);
+        m_mud  .Init(&shader, terrainData::mudDir, 256.f);
         m_LoadHeightMap(terrainData::heightMapPath);
 
         shader.ActivateShader();
         m_SetModelMatrix();
         setUniformPVM();
-        shader.SetValue("texture1.diffuse", 0);
-        shader.SetValue("texture1.normal",  1);
-        shader.SetValue("texture2.diffuse", 2);
-        shader.SetValue("texture2.normal",  3);
+        if( m_grass.Bind(0) && m_mud.Bind(3) )
+            LOG_INFO("Terrain materials initialized");
+        LIGHT.SetAllLights(shader);        
         shader.DeactivateShader();
     }
 
@@ -36,16 +37,16 @@ namespace Entities
         glDeleteVertexArrays(1, &m_VAO);
     }
 
+    
 
     void Terrain::Update(float delta)
     {
         shader.ActivateShader();
 
-        shader.setMat4("view", view);
-        shader.setVec3("lightPos", LIGHT[0].Position);
-        shader.setVec3("light.ambient", LIGHT[0].Ambient);
-        shader.setVec3("light.diffuse", LIGHT[0].Diffuse);
-        shader.setVec3("light.specular", LIGHT[0].Specular);
+        shader.setMat4("PV", projection*view);
+        
+        LIGHT.SetAllLights(shader);
+        
         shader.setVec3("viewPos", CAMERA.GetCameraPos());
 
         glBindVertexArray(m_VAO);
@@ -236,6 +237,32 @@ namespace Entities
         mesh.indices.push_back(bottomRight);
     }
 
+    void Terrain::m_Smooth()
+    {
+        double start = glfwGetTime();
+        /* Smoothing terrain surface using Gaussian blur */
+        m_heightMap = std::move(Math::GaussianSmoothing(m_heightMap));
+        LOG_TRACE("Finished in {}s", glfwGetTime() - start);
+        m_size      = std::min(m_heightMap.size(), m_heightMap[0].size()); // Keeping map squared        
+        m_halfSize  = static_cast<int>(m_scale * m_size / 2);
+
+
+        // TODO: Delete
+        float hmMin = 100.f;
+        float hmMax = -100.f;
+        for(int i = 0; i < m_size; i++)
+            for(int j = 0; j < m_size; j++)
+            {
+                if(m_heightMap[i][j] > hmMax) 
+                    hmMax = m_heightMap[i][j];
+                if(m_heightMap[i][j] < hmMin)
+                    hmMin = m_heightMap[i][j];
+            }
+
+        LOG_TRACE("Max: {}, Min: {}", hmMax, hmMin);
+    }
+
+
     void Terrain::m_LoadHeightMap(const char *path)
     {
         auto [width, height, channels, data] = Render::Texture::LoadRawImage(path, STBI_grey);
@@ -260,16 +287,12 @@ namespace Entities
             }
         }
 
-        /* Smoothing terrain surface using Gaussian blur */
-        m_heightMap = std::move(Math::GaussianSmoothing(m_heightMap));
-        m_size      = std::min(m_heightMap.size(), m_heightMap[0].size()); // Keeping map squared
+        m_Smooth();
         
-                
         m_SetModelMatrix();
 
         m_Init();
     }
-
 
     void Terrain::m_Init()
     {

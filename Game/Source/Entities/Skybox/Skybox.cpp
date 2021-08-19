@@ -15,10 +15,9 @@ Entities::Skybox::Skybox() : Entity("skybox")
 
     m_textureID = m_LoadCubemap();
     shader.ActivateShader();
+    m_SetPV();    
     shader.SetValue("skybox", 0);
-    shader.setMat4("projection", projection);
-    m_SetViewMatrix();
-    shader.setMat4("model", model);
+    shader.DeactivateShader();
 }
 
 Entities::Skybox::~Skybox()
@@ -34,7 +33,7 @@ void Entities::Skybox::Update(float delta)
 
     shader.ActivateShader();
     
-    m_SetViewMatrix();    
+    m_SetPV();
 
     glBindVertexArray(m_VAO);
     glActiveTexture(GL_TEXTURE0);
@@ -73,11 +72,12 @@ unsigned Entities::Skybox::m_LoadCubemap() const
     return id;
 }
 
-void Entities::Skybox::m_SetViewMatrix() const
+void Entities::Skybox::m_SetPV() const
 {
-    shader.setMat4("view",
-                   glm::mat4(view[0][0], view[0][1], view[0][2], 0, 
-                             view[1][0], view[1][1], view[1][2], 0,
-                             view[2][0], view[2][1], view[2][2], 0, 
-                             0, 0, 0, 0));
+    shader.setMat4("PV",
+                   projection * glm::mat4{   
+                       view[0][0], view[0][1], view[0][2], 0.f, 
+                       view[1][0], view[1][1], view[1][2], 0.f,
+                       view[2][0], view[2][1], view[2][2], 0.f, 
+                       0.f,        0.f,        0.f,        0.f});
 }

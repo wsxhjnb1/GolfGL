@@ -13,7 +13,7 @@ bool Render::Renderer::Init()
     SMASSERT( m_Window.Init(), "FAILED TO INIT MAIN WINDOW" );    
 
 
-    SMASSERT( gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Glad failed to load gl" );
+    SMASSERT( gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Glad failed to load gl" );
     
 
     glEnable(GL_DEPTH_TEST);
