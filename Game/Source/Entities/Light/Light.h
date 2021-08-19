@@ -26,10 +26,9 @@ struct PhongLight
 
     glm::vec3 Direction{0.f};
     float CutoffAngle = 30.f;
-
-    float linear = 0.09f;
-    float quadratic = 0.032f;
-
+   
+    float linear = 0.022f;        
+    float quadratic = 0.0019f;
 };
 
 /** @class Light

@@ -107,7 +107,7 @@ void Window::DebugWindow::m_DrawLightMenu() const
     ImGui::SliderInt("", &(++idx), 1, size+1, (idx < size ? "%d" : "Flashlight"));
     if(--idx == size) { ImGui::SameLine(); ImGui::Checkbox("Flashlight", &LIGHT.Flashlight); }    
 
-    ImGui::InputFloat3("Position", &LIGHT[idx].Position[0]);
+    ImGui::InputFloat3((LIGHT[idx].Type == LightType::DIRECTIONAL ? "Direction" : "Position"), &LIGHT[idx].Position[0]);
     ImGui::InputFloat3("Ambient",  &LIGHT[idx].Ambient[0]);
     ImGui::InputFloat3("Diffuse",  &LIGHT[idx].Diffuse[0]);
     ImGui::InputFloat3("Specular", &LIGHT[idx].Specular[0]);
@@ -115,7 +115,7 @@ void Window::DebugWindow::m_DrawLightMenu() const
 
     if(LIGHT[idx].Type == LightType::POINT || LIGHT[idx].Type == LightType::SPOT)
     {   
-        ImGui::SliderFloat2("Linear - Quadratic", &LIGHT[idx].linear, 0.001f, 1.7f);
+        ImGui::SliderFloat2("Linear - Quadratic", &LIGHT[idx].linear, 0.001f, 1.f);
 
         if(LIGHT[idx].Type == LightType::SPOT)
         {

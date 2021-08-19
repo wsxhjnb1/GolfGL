@@ -54,8 +54,14 @@ namespace Entities
         {
             if(LIGHT[l].Type == LightType::DISABLED)
                 continue;
-
-            setOneLight(shader, LIGHT[l], i++);
+            else if (LIGHT[l].Type == LightType::DIRECTIONAL)
+            {
+                shader.setVec3("light[" + std::to_string(i) + "].position", position - 10.f * glm::normalize(LIGHT[l].Position));
+                shader.setVec3("light[" + std::to_string(i) + "].color", 250.f * LIGHT[l].Color);
+                ++i;
+            }
+            else
+                setOneLight(shader, LIGHT[l], i++);
         }
         if(LIGHT.Flashlight) { setOneLight(shader, LIGHT.GetFlashlight(), i++); }
         shader.SetValue("numLights", i);

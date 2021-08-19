@@ -1,7 +1,6 @@
 #version 330 core
 
 /* Attributes */
-// layout(location = 0) out vec4 FragColor;
 out vec4 FragColor;
 
 #define MAX_LIGHTS 10
@@ -48,7 +47,7 @@ struct Material
 	sampler2D diffuse;
 	sampler2D normal;
 	sampler2D specular;
-	float shininess;
+	float	  shininess;
 };
 
 // Uniforms
@@ -133,8 +132,8 @@ void main()
 {				
 	vec3 normal = mix(texture(material2.normal, fragIn.TexCoords), texture(material1.normal, fragIn.TexCoords), fragIn.texH).rgb;
 	normal = normalize(normal * 2.f - 1.f);
-	vec3 textureColor = mix(texture(material2.diffuse, fragIn.TexCoords),  texture(material1.diffuse, fragIn.TexCoords), fragIn.texH).rgb;	
-	vec3 specularColor = mix(texture(material2.diffuse, fragIn.TexCoords), texture(material1.diffuse, fragIn.TexCoords), fragIn.texH).rgb;
+	vec3 textureColor  = mix(texture(material2.diffuse,  fragIn.TexCoords), texture(material1.diffuse,  fragIn.TexCoords), fragIn.texH).rgb;	
+	vec3 specularColor = mix(texture(material2.specular, fragIn.TexCoords), texture(material1.specular, fragIn.TexCoords), fragIn.texH).rgb;
 	float shininess = fragIn.texH * material1.shininess + (1.f - fragIn.texH) * material2.shininess;
 
 	vec3 result = vec3(0.f);

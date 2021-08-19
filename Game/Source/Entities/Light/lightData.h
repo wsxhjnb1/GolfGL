@@ -5,32 +5,30 @@ struct PhongLight;
 PhongLight{                \
  {14.f, 0.f, 0.f},         \
  {0.1f, 0.1f, 0.1f},       \
+ {0.7f, 0.7f, 0.7f},       \
  {0.5f, 0.5f, 0.5f},       \
- {0.3f, 0.3f, 0.3f},       \
  {0.65f, 0.65f, 0.65f},    \
- LightType::SPOT,		   \
+ LightType::SPOT,	       \
  }						   \
 
 //-----------------------------
 
 #define allLights {        \
 PhongLight{                \
- {20.f, -1.f, 8.f},        \
- {0.1f, 0.1f, 0.1f},       \
- {0.5f, 0.5f, 0.5f},       \
- {0.3f, 0.3f, 0.3f},       \
- {0.65f, 0.65f, 0.65f},    \
- LightType::POINT,	       \
- {38.f, -5.f, 4.3f},       \
- 30.f					   \
- },                        \
-PhongLight{                \
- {0.2f, -1.f, 0.3f},	   \
+ {4.f, -7.f, -8.f},  	   \
  {0.1f, 0.1f, 0.1f},       \
  {0.5f, 0.5f, 0.5f},       \
  {0.1f, 0.1f, 0.1f},       \
  {0.65f, 0.65f, 0.65f},    \
  LightType::DIRECTIONAL    \
+ },                        \
+PhongLight{                \
+ {3.f, -7.f, -8.f},        \
+ {0.1f, 0.1f, 0.1f},       \
+ {0.5f, 0.5f, 0.5f},       \
+ {0.3f, 0.3f, 0.3f},       \
+ {0.65f, 0.65f, 0.65f},    \
+ LightType::DISABLED	   \
  },                        \
 PhongLight{                \
  {5.2f, 50.f,  2.0f},      \
