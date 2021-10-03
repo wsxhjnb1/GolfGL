@@ -1,7 +1,11 @@
 # **GolfGL**
+[![build](https://github.com/djordjetane/GolfGL/actions/workflows/cmake.yml/badge.svg)](https://github.com/djordjetane/GolfGL/actions/workflows/cmake.yml)  [![DockerHub](https://img.shields.io/docker/image-size/djordjetane/golfgl?label=docker&logo=docker)](https://hub.docker.com/repository/docker/djordjetane/golfgl)
+
 Cross-Platform Golf game in OpenGL. Faculty project for course Computer Graphics. <br>
-Still in early stage.
-------------------------------
+
+| ![img](img/img.png) | ![img](img/options.png) |
+| --- | --- |
+
 # **Build**
 > ### **Windows** 
 > - Prerequisites: 
