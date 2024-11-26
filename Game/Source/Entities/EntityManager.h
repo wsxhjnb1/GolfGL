@@ -15,12 +15,15 @@ namespace Entities
         bool LoadEntity(const std::string &name, std::unique_ptr<Entity> &&entity);
         Entity* GetEntity(const std::string &name);
 
+        // additional functions for getting the golf ball position
+        glm::vec3 GetGolfBallPosition() const;
+
     private:
         std::unordered_map<std::string, std::unique_ptr<Entity>> m_Table;
         void m_UpdateTransformations(float delta);
-#ifdef _DEBUG
+    #ifdef _DEBUG
         friend class Window::DebugWindow;
         inline static bool ms_SkipTransform = false;
-#endif
+    #endif
     };
 } // namespace Entities

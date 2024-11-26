@@ -66,3 +66,22 @@ void Entities::EntityManager::Update(float delta)
     m_Table["terrain"]->Update(delta);
     m_Table["skybox"]->Update(delta);
 }
+
+// the function to get the golf ball position
+
+glm::vec3 Entities::EntityManager::GetGolfBallPosition() const
+{
+    // get the iterator to the golf ball entity
+    auto it = m_Table.find("ball");
+    if (it != m_Table.end())
+    {
+        const Ball* ball = dynamic_cast<const Ball*>(it->second.get());
+        if (ball)
+        {
+            return ball->position; // return the golf ball position
+        }
+    }
+    // if the golf ball entity is not found, return the zero vector
+    return glm::vec3(0.0f);
+}
+
