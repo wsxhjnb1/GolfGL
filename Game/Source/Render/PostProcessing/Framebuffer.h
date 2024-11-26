@@ -21,5 +21,6 @@ namespace Render
         unsigned VAO, VBO, RBO;
         unsigned nativeFb;
         unsigned textureColorBuffer;
+        unsigned velocityBuffer;
     };
 } // namespace Render
