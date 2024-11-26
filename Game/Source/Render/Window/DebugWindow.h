@@ -16,22 +16,23 @@ namespace Window
         bool Update();
 
         void Destroy();
-        void m_DrawCameraMenu();
 
         DebugWindow()  = default;
         ~DebugWindow() = default;
+        
 
     private:
 #ifdef _DEBUG
         
         void m_DrawGFXSettings() const;
         void m_DrawCameraMenu()  const;
-        void m_DrawLightMenu()   const;
-        void m_DrawBallMenu()    const;        
+        void m_DrawLightMenu()   const;    
 #endif
         EntMan* m_EntityManager;
         bool m_DebugMenuActive = true;
         bool m_ViewportsEnable = false;
+        void m_DrawCameraMenu();
+        void m_DrawBallMenu();
         
     };
 } // namespace Window

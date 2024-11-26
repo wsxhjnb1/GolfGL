@@ -8,6 +8,7 @@ namespace Entities
 {
     class ballDefault
     {
+    public:
 #ifdef _DEBUG
         friend Window::DebugWindow;
 #endif
