@@ -3,6 +3,7 @@
 
 /* Output */
 out vec4 FragColor;
+layout (location = 1) out vec3 VelocityOutput;
 
 /* Input from vertex */
 in VERT_OUT
@@ -10,6 +11,7 @@ in VERT_OUT
     vec2 TexCoords;
     vec3 WorldPos;
     vec3 Normal;
+    vec3 Velocity;
 } fragIn;
 
 // material parameters
@@ -158,4 +160,5 @@ void main()
     color = pow(color, vec3(1.0/2.2)); 
 
     FragColor = vec4(color, 1.0);
+    VelocityOutput = fragIn.Velocity;
 }
