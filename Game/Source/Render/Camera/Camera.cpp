@@ -85,3 +85,15 @@ void Camera::m_UpdateCameraVectors()
     // LookRight();
     // LookUp();
 }
+
+void Camera::SetPosition(const glm::vec3& position)
+{
+    cameraPos = position;
+    m_UpdateCameraVectors();
+}
+
+void Camera::SetLookAt(const glm::vec3& target)
+{
+    cameraFront = glm::normalize(target - cameraPos);
+    m_UpdateCameraVectors();
+}

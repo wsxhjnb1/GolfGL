@@ -44,13 +44,13 @@ bool Render::Renderer::Init()
 }
 
 void Render::Renderer::Update()
-{   
+{
     if (!m_Window.IsRunning())
         return;
 
-    float timeValue = static_cast<float>( glfwGetTime() );
+    float timeValue = static_cast<float>(glfwGetTime());
     float delta = timeValue - lastTime;
-    lastTime = timeValue;    
+    lastTime = timeValue;
 
     m_FrameBuff->BindSceneBegin();
 
@@ -58,12 +58,30 @@ void Render::Renderer::Update()
 
     m_EntryManager->Update(delta);
 
+    // Get the position of the golf ball
+    glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
+
+    // set the camera offset
+    glm::vec3 cameraOffset(0.0f, 20.0f, 5.0f);
+
+    // calculate the desired camera position
+    glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
+
+    // to make the camera movement smooth, we will interpolate between the current camera position and the desired camera position
+    float smoothFactor = 0.1f; // smaller values will make the camera movement smoother
+    glm::vec3 smoothedCameraPosition = glm::mix(CAMERA.GetCameraPos(), desiredCameraPosition, smoothFactor);
+
+    // update the camera position
+    CAMERA.SetPosition(golfBallPosition + cameraOffset);
+
+    // make the camera look at the golf ball
+    CAMERA.SetLookAt(golfBallPosition);
+
     m_FrameBuff->BindSceneEnd();
 
-           
     m_UpdateWindows();
-            
 }
+
 
 GLFWwindow* Render::Renderer::GetWindow()
 {

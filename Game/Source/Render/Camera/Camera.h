@@ -31,6 +31,9 @@ public:
 	void ProcessMouseMovement(float xoffset, float yoffset);
 	void ProcessMouseScroll(float yoffset);
 
+	void SetPosition(const glm::vec3& position);
+    void SetLookAt(const glm::vec3& target);
+
 private:
 
 	inline static std::unique_ptr<Camera> ms_Camera;	

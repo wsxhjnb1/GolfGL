@@ -350,10 +350,12 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-
 # Custom user
 log.*
 .ccls*
 .vscode*
 imgui.ini
 Game/Resources/[Tt][Ee][Ss][Tt]*
+
+# CMakeFiles
+CMakeFiles/
