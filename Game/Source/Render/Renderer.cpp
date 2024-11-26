@@ -58,42 +58,45 @@ void Render::Renderer::Update()
 
     m_EntryManager->Update(delta);
 
-    glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
-    glm::vec3 golfBallVelocity = m_EntryManager->GetGolfBallVelocity();
-
-    static glm::vec3 lastForward = glm::vec3(0.0f, 0.0f, -1.0f);
-    glm::vec3 forward;
-    if (glm::length(golfBallVelocity) > 0.01f)
+    if(cameraFollowBall)
     {
-        forward = glm::normalize(golfBallVelocity);
-        lastForward = forward;
+        glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
+        glm::vec3 golfBallVelocity = m_EntryManager->GetGolfBallVelocity();
+
+        static glm::vec3 lastForward = glm::vec3(0.0f, 0.0f, -1.0f);
+        glm::vec3 forward;
+        if (glm::length(golfBallVelocity) > 0.01f)
+        {
+            forward = glm::normalize(golfBallVelocity);
+            lastForward = forward;
+        }
+        else
+        {
+            forward = lastForward;
+        }
+
+        float distanceBehind = 30.0f;
+        float heightAbove = 3.0f;
+        glm::vec3 cameraOffset = -forward * distanceBehind + glm::vec3(0.0f, heightAbove, 0.0f);
+
+        glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
+
+        float smoothFactor = 0.1f;
+        glm::vec3 smoothedCameraPosition = glm::mix(CAMERA.GetCameraPos(), desiredCameraPosition, smoothFactor);
+
+        CAMERA.SetPosition(smoothedCameraPosition);
+
+        glm::vec3 desiredFront = glm::normalize(golfBallPosition - smoothedCameraPosition);
+        CAMERA.cameraFront = glm::normalize(glm::mix(CAMERA.cameraFront, desiredFront, smoothFactor));
+
+        CAMERA.m_UpdateCameraVectors();
+
     }
-    else
-    {
-        forward = lastForward;
-    }
-
-    float distanceBehind = 30.0f;
-    float heightAbove = 3.0f;
-    glm::vec3 cameraOffset = -forward * distanceBehind + glm::vec3(0.0f, heightAbove, 0.0f);
-
-    glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
-
-    float smoothFactor = 0.1f;
-    glm::vec3 smoothedCameraPosition = glm::mix(CAMERA.GetCameraPos(), desiredCameraPosition, smoothFactor);
-
-    CAMERA.SetPosition(smoothedCameraPosition);
-
-    glm::vec3 desiredFront = glm::normalize(golfBallPosition - smoothedCameraPosition);
-    CAMERA.cameraFront = glm::normalize(glm::mix(CAMERA.cameraFront, desiredFront, smoothFactor));
-
-    CAMERA.m_UpdateCameraVectors();
 
     m_FrameBuff->BindSceneEnd();
 
     m_UpdateWindows();
 }
-
 
 GLFWwindow* Render::Renderer::GetWindow()
 {

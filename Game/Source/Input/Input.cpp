@@ -43,7 +43,7 @@ void Input::ProcessInput()
         // W
         if (KEY_PRESSED(GLFW_KEY_W))
         {
-            CAMERA.LookAt();
+            CAMERA.LookUp();
         }
         // S
         if (KEY_PRESSED(GLFW_KEY_S))
