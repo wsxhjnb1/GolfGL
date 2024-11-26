@@ -12,14 +12,14 @@ namespace Entities
         , m_scale(ballDefault::scale)
         , m_frictionFactor(ballDefault::frictionFactor)
         , m_angle(ballDefault::angle)        
-        , m_scaleMatrix(glm::scale(Math::I4, ballDefault::scale * Math::e3) )
+        , m_scaleMatrix(glm::scale(Math::I4, ballDefault::scale * Math::e3))
     {
+
         m_material.Init(&shader, ballDefault::modelDir);
         this->position = ballDefault::position;        
         m_UpdateModelMatrix();
 
-        // diffuse texture is loaded in parent class
-        for(auto& tex : m_model.GetTextures())
+        for (auto& tex : m_model.GetTextures())
             LOG_TRACE("Texture {}, {}, type {}", tex.GetID(), tex.GetName(), tex.GetType());
 
         shader.ActivateShader();
@@ -30,10 +30,21 @@ namespace Entities
 
     void Ball::Update(float delta)
     {
-        shader.ActivateShader();
         m_HandleTransformations(delta);
+        m_UpdateModelMatrix();
+    }
+
+    void Ball::Render()
+    {
+
+        shader.ActivateShader();
+
+
         m_SetLightUniforms();
+        
         setUniformPVM();
+
+        shader.setVec3("ballVelocity", m_speed);
 
         int index = m_material.Activate(GL_TEXTURE0);
         m_model.Draw(&shader);
@@ -47,12 +58,13 @@ namespace Entities
         shader.setVec3("light[" + std::to_string(i) + "].position", light.Position);
         shader.setVec3("light[" + std::to_string(i) + "].color", 250.f * light.Color);
     }
+
     inline void Ball::m_SetLightUniforms() const
     {
         int i = 0;
-        for(int l = 0; l < LIGHT.Size(); l++)
+        for (int l = 0; l < LIGHT.Size(); l++)
         {
-            if(LIGHT[l].Type == LightType::DISABLED)
+            if (LIGHT[l].Type == LightType::DISABLED)
                 continue;
             else if (LIGHT[l].Type == LightType::DIRECTIONAL)
             {
@@ -63,7 +75,7 @@ namespace Entities
             else
                 setOneLight(shader, LIGHT[l], i++);
         }
-        if(LIGHT.Flashlight) { setOneLight(shader, LIGHT.GetFlashlight(), i++); }
+        if (LIGHT.Flashlight) { setOneLight(shader, LIGHT.GetFlashlight(), i++); }
         shader.SetValue("numLights", i);
         shader.setVec3("viewPos", CAMERA.GetCameraPos());        
     }
@@ -78,7 +90,7 @@ namespace Entities
         if (m_speed != glm::vec3{0.f})
         {
             auto rot = m_NormalOnVec(m_speed);            
-            m_angle = (delta / 3.14f)* glm::length(m_speed);            
+            m_angle = (delta / 3.14f) * glm::length(m_speed);            
 
             m_rotationMatrix = glm::rotate(Math::I4, -m_angle, rot) * m_rotationMatrix;
             m_UpdateModelMatrix();

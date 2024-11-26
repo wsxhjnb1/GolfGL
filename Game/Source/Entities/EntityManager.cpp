@@ -60,9 +60,15 @@ void Entities::EntityManager::Update(float delta)
 {
     m_UpdateTransformations(delta);
 
-    Entity::view = CAMERA.LookAt();
+    Entity::view = CAMERA.LookAt(); 
 
-    m_Table["ball"]->Update(delta);
+    auto* ball = static_cast<Ball*>(GetEntity("ball"));
+    if (ball)
+    {
+        ball->Update(delta); 
+        ball->Render(); 
+    }
+
     m_Table["terrain"]->Update(delta);
     m_Table["skybox"]->Update(delta);
 }

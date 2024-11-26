@@ -2,6 +2,7 @@
 
 #include <Entities/Entity.h>
 #include <Model/Model.h>
+#include <Render/Shader.h>
 
 namespace Entities
 {
@@ -11,6 +12,7 @@ namespace Entities
         Ball();
 
         void Update(float delta) override;
+        void Render();
 
     private:
         // Light & material
@@ -19,15 +21,14 @@ namespace Entities
 
         // Transformations
         Render::Model m_model;
-        glm::vec3 m_speed;        
-        glm::vec3 m_acceleration{0.f};        
+        glm::vec3 m_speed;
+        glm::vec3 m_acceleration{0.f};
         float m_scale;
         float m_frictionFactor;
         float m_angle;
         glm::vec3 m_friction{0.f};
         glm::mat4 m_rotationMatrix{Math::I4};
         glm::mat4 m_scaleMatrix;
-
 
         /**
          * \brief Model matrix recalculation
