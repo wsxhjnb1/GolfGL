@@ -36,13 +36,14 @@ public:
 
 	inline static float MovementSpeed = 4.5f;
 	inline static float MouseSensitivity = 0.1f;
+	inline static glm::vec3 cameraFront { 0.f, 0.f, -1.f };
+	void m_UpdateCameraVectors();
 
 private:
 
 	inline static std::unique_ptr<Camera> ms_Camera;	
 
 	inline static glm::vec3 cameraPos {11.4f, -1.7f, 25.f};
-	inline static glm::vec3 cameraFront { 0.f, 0.f, -1.f };
 	inline static glm::vec3 cameraUp{ 0.f, 1.f, 0.f };
 	inline static float cameraSpeed = 0.5f;
 
@@ -57,8 +58,6 @@ private:
 	inline static const float zoomUpperBound = 45.f;
 	
 	Camera() = default;
-
-	void m_UpdateCameraVectors();
 
 	/* Keeping angles in range [lower, upper], to prevent flipping */
 	inline void m_BoundAngleInRange(float& angle, float lower, float upper) const
