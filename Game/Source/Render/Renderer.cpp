@@ -62,7 +62,7 @@ void Render::Renderer::Update()
     glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
 
     // set the camera offset
-    glm::vec3 cameraOffset(0.0f, 20.0f, 5.0f);
+    glm::vec3 cameraOffset(0.0f, 3.0f, 30.0f);
 
     // calculate the desired camera position
     glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
