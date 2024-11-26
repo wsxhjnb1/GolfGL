@@ -17,6 +17,7 @@ namespace Entities
 
         // additional functions for getting the golf ball position
         glm::vec3 GetGolfBallPosition() const;
+        glm::vec3 GetGolfBallVelocity() const;
 
     private:
         std::unordered_map<std::string, std::unique_ptr<Entity>> m_Table;

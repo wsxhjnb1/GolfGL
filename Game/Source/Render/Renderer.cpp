@@ -62,7 +62,7 @@ void Render::Renderer::Update()
     {
         glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
 
-        glm::vec3 cameraOffset(0.0f, 5.0f, 10.0f);
+        glm::vec3 cameraOffset(0.0f, 3.0f, 30.0f);
         glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
 
         float smoothFactor = 0.1f;

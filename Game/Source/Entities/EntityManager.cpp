@@ -85,3 +85,16 @@ glm::vec3 Entities::EntityManager::GetGolfBallPosition() const
     return glm::vec3(0.0f);
 }
 
+glm::vec3 Entities::EntityManager::GetGolfBallVelocity() const
+{
+    auto it = m_Table.find("ball");
+    if (it != m_Table.end())
+    {
+        const Ball* ball = dynamic_cast<const Ball*>(it->second.get());
+        if (ball)
+        {
+            return ball->m_speed;
+        }
+    }
+    return glm::vec3(0.0f);
+}
