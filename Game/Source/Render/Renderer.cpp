@@ -58,24 +58,19 @@ void Render::Renderer::Update()
 
     m_EntryManager->Update(delta);
 
-    // Get the position of the golf ball
-    glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
+    if (cameraFollowBall)
+    {
+        glm::vec3 golfBallPosition = m_EntryManager->GetGolfBallPosition();
 
-    // set the camera offset
-    glm::vec3 cameraOffset(0.0f, 3.0f, 30.0f);
+        glm::vec3 cameraOffset(0.0f, 5.0f, 10.0f);
+        glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
 
-    // calculate the desired camera position
-    glm::vec3 desiredCameraPosition = golfBallPosition + cameraOffset;
+        float smoothFactor = 0.1f;
+        glm::vec3 smoothedCameraPosition = glm::mix(CAMERA.GetCameraPos(), desiredCameraPosition, smoothFactor);
 
-    // to make the camera movement smooth, we will interpolate between the current camera position and the desired camera position
-    float smoothFactor = 0.1f; // smaller values will make the camera movement smoother
-    glm::vec3 smoothedCameraPosition = glm::mix(CAMERA.GetCameraPos(), desiredCameraPosition, smoothFactor);
-
-    // update the camera position
-    CAMERA.SetPosition(golfBallPosition + cameraOffset);
-
-    // make the camera look at the golf ball
-    CAMERA.SetLookAt(golfBallPosition);
+        CAMERA.SetPosition(smoothedCameraPosition);
+        CAMERA.SetLookAt(golfBallPosition);
+    }
 
     m_FrameBuff->BindSceneEnd();
 
@@ -111,3 +106,5 @@ void Render::Renderer::m_UpdateWindows()
 #endif
     m_Window.Update();
 }
+
+bool Render::Renderer::cameraFollowBall = true;

@@ -26,6 +26,7 @@ namespace Render
 
         Renderer() = default;
         ~Renderer();
+        static bool cameraFollowBall;
 
     private:
         float lastTime;

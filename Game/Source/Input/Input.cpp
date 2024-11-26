@@ -34,32 +34,34 @@ void Input::ProcessInput()
     }
 
     float currentFrame = static_cast<float>(glfwGetTime());
-    deltaTime          = currentFrame - lastFrame;
-    lastFrame          = currentFrame;
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
     CAMERA.SetCameraSpeed(deltaTime);
 
-    // W
-    if (KEY_PRESSED(GLFW_KEY_W))
+    if (!Render::Renderer::cameraFollowBall)
     {
-        CAMERA.LookUp();
-    }
-    // S
-    if (KEY_PRESSED(GLFW_KEY_S))
-    {
-        CAMERA.LookDown();
-    }
-    // D
-    if (KEY_PRESSED(GLFW_KEY_D))
-    {
-        CAMERA.LookRight();
-    }
-    // A
-    if (KEY_PRESSED(GLFW_KEY_A))
-    {
-        CAMERA.LookLeft();
+        // W
+        if (KEY_PRESSED(GLFW_KEY_W))
+        {
+            CAMERA.LookAt();
+        }
+        // S
+        if (KEY_PRESSED(GLFW_KEY_S))
+        {
+            CAMERA.LookDown();
+        }
+        // D
+        if (KEY_PRESSED(GLFW_KEY_D))
+        {
+            CAMERA.LookRight();
+        }
+        // A
+        if (KEY_PRESSED(GLFW_KEY_A))
+        {
+            CAMERA.LookLeft();
+        }
     }
 }
-
 
 void Input::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mod)
 {

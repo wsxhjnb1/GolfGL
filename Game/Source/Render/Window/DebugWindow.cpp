@@ -11,6 +11,7 @@
 #include <Entities/Ball/Ball.h>
 #include <Entities/Ball/ballDefault.h>
 #include <Entities/Terrain/Terrain.h>
+#include <Render/Camera/Camera.h>
 
 /* Initialize after setting up native opengl viewport */
 bool Window::DebugWindow::Init(EntMan *entityManager)
@@ -78,6 +79,25 @@ void Window::DebugWindow::Destroy()
     ImGui::DestroyContext();
 
     m_DebugMenuActive = false;
+}
+
+void Window::DebugWindow::m_DrawCameraMenu()
+{
+    ImGui::Text("Camera");
+
+    ImGui::Indent(10.f);
+    ImGui::BeginGroup();
+
+    auto& pos = CAMERA.GetCameraPos();
+    ImGui::Text("Position: (%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
+    ImGui::SliderFloat("Movement speed", &CAMERA.MovementSpeed, 0.f, 50.f);
+    ImGui::SliderFloat("Sensitivity", &CAMERA.MouseSensitivity, 0.f, 1.f);
+
+    ImGui::Checkbox("Follow Golf Ball", &Render::Renderer::cameraFollowBall);
+
+    ImGui::EndGroup();
+    ImGui::Indent(-10.f);
+    ImGui::Separator();
 }
 
 #ifdef _DEBUG
@@ -194,23 +214,6 @@ void Window::DebugWindow::m_DrawGFXSettings() const
     if (ImGui::Checkbox("VSync", &WindowData::vsync))
     {
     }
-    ImGui::Indent(-10.f);
-    ImGui::Separator();
-}
-
-void Window::DebugWindow::m_DrawCameraMenu() const
-{
-    ImGui::Text("Camera");
-
-    ImGui::Indent(10.f);
-    ImGui::BeginGroup();
-
-    auto& pos = CAMERA.GetCameraPos();
-    ImGui::Text("Position: (%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
-    ImGui::SliderFloat("Movement speed", &CAMERA.MovementSpeed, 0.f, 50.f);
-    ImGui::SliderFloat("Sensitivity", &CAMERA.MouseSensitivity, 0.f, 1.f);
-
-    ImGui::EndGroup();
     ImGui::Indent(-10.f);
     ImGui::Separator();
 }

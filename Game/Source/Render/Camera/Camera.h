@@ -34,6 +34,9 @@ public:
 	void SetPosition(const glm::vec3& position);
     void SetLookAt(const glm::vec3& target);
 
+	inline static float MovementSpeed = 4.5f;
+	inline static float MouseSensitivity = 0.1f;
+
 private:
 
 	inline static std::unique_ptr<Camera> ms_Camera;	
@@ -45,8 +48,7 @@ private:
 
 	inline static float Yaw = -90.f;
 	inline static float Pitch = 0.f;		
-	inline static float MovementSpeed = 4.5f;
-	inline static float MouseSensitivity = 0.1f;
+	
 	inline static float Zoom = 45.f;
 
 	/* Bounds */
