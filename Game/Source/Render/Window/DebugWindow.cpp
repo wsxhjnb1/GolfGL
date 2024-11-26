@@ -100,6 +100,50 @@ void Window::DebugWindow::m_DrawCameraMenu()
     ImGui::Separator();
 }
 
+void Window::DebugWindow::m_DrawBallMenu()
+{
+    ImGui::Text("Ball");
+
+    ImGui::Indent(10.f);
+    ImGui::BeginGroup();
+    auto* ball = static_cast<Entities::Ball*>(m_EntityManager->GetEntity("ball"));
+    static bool attach = true;
+    
+    ImGui::Text("Position: %s", glm::to_string(ball->position).c_str()+4);
+    if( ImGui::InputFloat3("Set position", &Entities::ballDefault::position[0]) )
+    {
+        ball->position = Entities::ballDefault::position;
+        if(attach)
+        {
+            m_EntityManager->ms_SkipTransform = false;
+        }
+        ball->m_UpdateModelMatrix();
+        ball->m_speed  = glm::vec3{0.f};
+    }
+    ImGui::SameLine();
+    if( ImGui::Checkbox("Attach to terrain", &attach) )
+    {
+        m_EntityManager->ms_SkipTransform = false;
+        ball->m_UpdateModelMatrix();
+    }
+
+    if( ImGui::InputFloat("Scale", &Entities::ballDefault::scale) )
+    {
+        float s = Entities::ballDefault::scale;
+        ball->m_scaleMatrix = glm::scale(Math::I4, glm::vec3{s,s,s});
+        ball->m_UpdateModelMatrix();
+    }
+
+    if( ImGui::SliderFloat("Shoot Speed", &Entities::ballDefault::shootSpeed, 1.0f, 50.0f) )
+    {
+        // do nothing
+    }
+
+    ImGui::EndGroup();
+    ImGui::Indent(-10.f);
+    ImGui::Separator();
+}
+
 #ifdef _DEBUG
 
 inline std::string GetLightType(LightType type)
@@ -214,45 +258,6 @@ void Window::DebugWindow::m_DrawGFXSettings() const
     if (ImGui::Checkbox("VSync", &WindowData::vsync))
     {
     }
-    ImGui::Indent(-10.f);
-    ImGui::Separator();
-}
-
-void Window::DebugWindow::m_DrawBallMenu() const
-{
-    ImGui::Text("Ball");
-
-    ImGui::Indent(10.f);
-    ImGui::BeginGroup();
-    auto* ball = static_cast<Entities::Ball*>(m_EntityManager->GetEntity("ball"));
-    static bool attach = true;
-    
-    ImGui::Text("Position: %s", glm::to_string(ball->position).c_str()+4);
-    if( ImGui::InputFloat3("Set position", &Entities::ballDefault::position[0]) )
-    {
-        ball->position = Entities::ballDefault::position;
-        if(attach)
-        {
-            m_EntityManager->ms_SkipTransform = false;
-        }
-        ball->m_UpdateModelMatrix();
-        ball->m_speed  = glm::vec3{0.f};
-    }
-    ImGui::SameLine();
-    if( ImGui::Checkbox("Attach to terrain", &attach) )
-    {
-        m_EntityManager->ms_SkipTransform = false;
-        ball->m_UpdateModelMatrix();
-    }
-
-    if( ImGui::InputFloat("Scale", &Entities::ballDefault::scale) )
-    {
-        float s = Entities::ballDefault::scale;
-        ball->m_scaleMatrix = glm::scale(Math::I4, glm::vec3{s,s,s});
-        ball->m_UpdateModelMatrix();
-    }    
-
-    ImGui::EndGroup();
     ImGui::Indent(-10.f);
     ImGui::Separator();
 }
