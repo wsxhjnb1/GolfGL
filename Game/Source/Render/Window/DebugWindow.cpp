@@ -134,7 +134,7 @@ void Window::DebugWindow::m_DrawBallMenu()
         ball->m_UpdateModelMatrix();
     }
 
-    if( ImGui::SliderFloat("Shoot Speed", &Entities::ballDefault::shootSpeed, 1.0f, 50.0f) )
+    if( ImGui::SliderFloat("Shoot Speed", &Entities::ballDefault::shootSpeed, 1.0f, 300000.0f) )
     {
         // do nothing
     }

@@ -3,12 +3,13 @@ out vec4 FragColor;
 
 uniform sampler2D screenTexture;
 uniform sampler2D velocityTexture;
+
 uniform vec2 frameBufSize;
 in vec2 TexCoords;
 
 uniform bool AA;
 
-uniform float maxBlurAmount = 1.0;
+uniform float maxBlurAmount = 10.0;
 
 float FxaaLuma(vec3 rgb) 
 {

@@ -45,6 +45,9 @@ namespace Render
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WindowData::width, WindowData::height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
 
+        GLuint attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        glDrawBuffers(2, attachments);
+
         SMASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -71,11 +74,14 @@ namespace Render
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);        
 
+        //glm::mat4 currentViewMatrix = CAMERA.LookAt();
+        //glm::mat4 inversePreviousView = glm::inverse(CAMERA.previousViewMatrix);
+        //glm::mat4 cameraMotion = currentViewMatrix * inversePreviousView;
+
         shader->ActivateShader();
         shader->setVec2("frameBufSize", WindowData::W, WindowData::H);
         shader->SetValue("AA", WindowData::fxaa);
-
-        glBindVertexArray(VAO);
+        //shader->setMat4("cameraMotion", cameraMotion);
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
@@ -83,6 +89,7 @@ namespace Render
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, velocityBuffer);
 
+        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, Data.n_triangles);
     }
 } // namespace Render
