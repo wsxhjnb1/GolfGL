@@ -4,6 +4,7 @@ int main()
 {
     Log::Init();
     Light::Init();
+    Camera::Init();
     Render::Renderer renderer;
     Input input;
 

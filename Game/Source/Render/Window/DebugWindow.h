@@ -12,7 +12,7 @@ namespace Window
     class DebugWindow
     {
     public:
-        bool Init(EntMan* entityManager = nullptr);
+        bool Init(Entities::EntityManager* entityManager, Render::Renderer* renderer);
         bool Update();
 
         void Destroy();
@@ -24,6 +24,7 @@ namespace Window
     private:
 #ifdef _DEBUG
         
+        Render::Renderer* m_Renderer = nullptr;
         void m_DrawGFXSettings() const;
         void m_DrawCameraMenu()  const;
         void m_DrawLightMenu()   const;    

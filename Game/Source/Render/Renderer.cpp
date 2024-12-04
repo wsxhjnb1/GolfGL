@@ -32,7 +32,7 @@ bool Render::Renderer::Init()
     SMASSERT( m_EntryManager->Init(), "Failed to init Entity Manager" );
 
 #ifdef _DEBUG
-    m_DebugWindow.Init(m_EntryManager);
+    m_DebugWindow.Init(m_EntryManager, this);
 #endif
     
 
@@ -96,6 +96,8 @@ void Render::Renderer::Update()
     m_FrameBuff->BindSceneEnd();
 
     m_UpdateWindows();
+
+    CAMERA.UpdatePreviousViewMatrix();
 }
 
 GLFWwindow* Render::Renderer::GetWindow()

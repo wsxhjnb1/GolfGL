@@ -28,6 +28,8 @@ namespace Render
         ~Renderer();
         static bool cameraFollowBall;
 
+        Framebuffer *m_FrameBuff = nullptr;
+
     private:
         float lastTime;
         Window::Window m_Window;
@@ -36,7 +38,6 @@ namespace Render
         Window::DebugWindow m_DebugWindow;
 #endif
 
-        Framebuffer *m_FrameBuff                = nullptr;
         Entities::EntityManager *m_EntryManager = nullptr;
 
         inline static float m_clearColorRgba[4] = {0.5f, 0.5f, 0.5f, 1.f};

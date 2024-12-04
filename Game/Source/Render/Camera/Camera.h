@@ -39,6 +39,18 @@ public:
 	inline static glm::vec3 cameraFront { 0.f, 0.f, -1.f };
 	void m_UpdateCameraVectors();
 
+	glm::mat4 GetViewMatrix() {
+        return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    }
+
+    glm::mat4 previousViewMatrix;
+
+    void UpdatePreviousViewMatrix() {
+        previousViewMatrix = GetViewMatrix();
+    }
+
+	Camera() = default;
+
 private:
 
 	inline static std::unique_ptr<Camera> ms_Camera;	
@@ -56,8 +68,6 @@ private:
 	inline static const float constrainPitchBound = 89.f;
 	inline static const float zoomLowerBound = 1.f;
 	inline static const float zoomUpperBound = 45.f;
-	
-	Camera() = default;
 
 	/* Keeping angles in range [lower, upper], to prevent flipping */
 	inline void m_BoundAngleInRange(float& angle, float lower, float upper) const

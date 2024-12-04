@@ -12,11 +12,13 @@
 #include <Entities/Ball/ballDefault.h>
 #include <Entities/Terrain/Terrain.h>
 #include <Render/Camera/Camera.h>
+#include <Render/PostProcessing/Framebuffer.h>
 
 /* Initialize after setting up native opengl viewport */
-bool Window::DebugWindow::Init(EntMan *entityManager)
+bool Window::DebugWindow::Init(Entities::EntityManager* entityManager, Render::Renderer* renderer)
 {
     m_EntityManager = entityManager;
+    m_Renderer = renderer;
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -134,7 +136,7 @@ void Window::DebugWindow::m_DrawBallMenu()
         ball->m_UpdateModelMatrix();
     }
 
-    if( ImGui::SliderFloat("Shoot Speed", &Entities::ballDefault::shootSpeed, 1.0f, 300000.0f) )
+    if( ImGui::SliderFloat("Shoot Speed", &Entities::ballDefault::shootSpeed, 1.0f, 1000.0f) )
     {
         // do nothing
     }
@@ -258,6 +260,11 @@ void Window::DebugWindow::m_DrawGFXSettings() const
     if (ImGui::Checkbox("VSync", &WindowData::vsync))
     {
     }
+
+    if (m_Renderer && ImGui::Checkbox("Motion Blur", &m_Renderer->m_FrameBuff->motionBlurEnabled))
+    {
+    }
+
     ImGui::Indent(-10.f);
     ImGui::Separator();
 }

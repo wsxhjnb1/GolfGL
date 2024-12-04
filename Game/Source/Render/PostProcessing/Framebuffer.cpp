@@ -74,14 +74,15 @@ namespace Render
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);        
 
-        //glm::mat4 currentViewMatrix = CAMERA.LookAt();
-        //glm::mat4 inversePreviousView = glm::inverse(CAMERA.previousViewMatrix);
-        //glm::mat4 cameraMotion = currentViewMatrix * inversePreviousView;
+        glm::mat4 currentViewMatrix = CAMERA.LookAt();
+        glm::mat4 inversePreviousView = glm::inverse(CAMERA.previousViewMatrix);
+        glm::mat4 cameraMotion = currentViewMatrix * inversePreviousView;
 
         shader->ActivateShader();
         shader->setVec2("frameBufSize", WindowData::W, WindowData::H);
         shader->SetValue("AA", WindowData::fxaa);
-        //shader->setMat4("cameraMotion", cameraMotion);
+        shader->setMat4("cameraMotion", cameraMotion);
+        shader->SetValue("motionBlurEnabled", motionBlurEnabled);
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);

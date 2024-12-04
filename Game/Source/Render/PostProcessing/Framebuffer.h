@@ -15,6 +15,8 @@ namespace Render
         void BindSceneBegin();
         void BindSceneEnd();
 
+        bool motionBlurEnabled = true;
+
     private:
         Shader *shader;
 

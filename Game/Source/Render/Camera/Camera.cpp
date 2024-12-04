@@ -4,7 +4,7 @@
 
 void Camera::Init()
 {    
-    ms_Camera = std::move( std::unique_ptr<Camera>() );
+    ms_Camera = std::make_unique<Camera>();
 }
 
 void Camera::LookUp()

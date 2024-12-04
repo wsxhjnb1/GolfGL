@@ -3,11 +3,12 @@ out vec4 FragColor;
 
 uniform sampler2D screenTexture;
 uniform sampler2D velocityTexture;
-
+uniform mat4 cameraMotion;
 uniform vec2 frameBufSize;
 in vec2 TexCoords;
 
 uniform bool AA;
+uniform bool motionBlurEnabled;
 
 uniform float maxBlurAmount = 10.0;
 
@@ -158,13 +159,24 @@ vec3 FXAA()
 
 vec4 applyMotionBlur(vec4 color)
 {
+    if (!motionBlurEnabled) {
+        return color;  
+    }
+
     vec3 velocity = texture2D(velocityTexture, TexCoords).rgb;
-    float speed = length(velocity);
-    float blurAmount = clamp(speed * 5.0, 0.0, maxBlurAmount); 
+
+    vec4 currentPos = vec4(TexCoords, 0.0, 1.0);
+    vec4 previousPos = cameraMotion * currentPos;
+    vec2 cameraVelocity = (previousPos.xy - currentPos.xy) * frameBufSize;
+
+    vec2 finalVelocity = velocity.xy + cameraVelocity;
+
+    float speed = length(finalVelocity);
+    float blurAmount = clamp(speed * 5.0, 0.0, maxBlurAmount);
 
     vec4 blurredColor = vec4(0.0);
     int samples = int(blurAmount);
-    vec2 texOffset = velocity.xy / textureSize(screenTexture, 0);
+    vec2 texOffset = finalVelocity / textureSize(screenTexture, 0);
 
     for (int i = -samples; i <= samples; ++i)
     {
