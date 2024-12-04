@@ -51,3 +51,9 @@ Cross-Platform Golf game in OpenGL. Faculty project for course Computer Graphics
 | Space | Shoot |
 |  ***General***  |
 | Esc | Exit |
+
+## **Add on Features compared with original one**
+
+- Supports motion blurred vision
+- Supports camera following the ball
+- Supports adjusting the ball speed
